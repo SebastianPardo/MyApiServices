@@ -5,14 +5,29 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <UserSecretsId>61261a0b-94ed-42aa-b7ae-f1bef9384f39</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.66.0" />
+    <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.66.0.1869" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="OhMyMoney.AuthMiddleware">
+      <HintPath>..\..\OhMyMoney_DataModel\OhMyMoney.AuthMiddleware\bin\Debug\net8.0\OhMyMoney.AuthMiddleware.dll</HintPath>
+    </Reference>
+    <Reference Include="OhMyMoney.DataCore">
+      <HintPath>..\..\OhMyMoney_DataModel\OhMyMoney.DataCore\bin\Debug\net8.0\OhMyMoney.DataCore.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
