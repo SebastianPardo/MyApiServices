@@ -49,7 +49,7 @@ public class AccountController : ControllerBase
             throw new AppException("User Account is Deactivated Please Contact Admin");
         }
         //No validate recaptcha when is testing that's why ignore local host and Office Ip.
-        else if (!await GoogleReCaptcha.Validate(googleReCaptchaString) && enviroment != "Development" && IP != "::1" && IP != "70.52.127.163")
+        else if (!await GoogleReCaptcha.Validate(googleReCaptchaString) && enviroment != "Development" && IP != "::1")
         {
             throw new AppException("Recaptcha validation failed");
         }

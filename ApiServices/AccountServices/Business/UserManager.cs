@@ -6,36 +6,44 @@ namespace AccountServices.Business
 {
     public class UserManager : IUserManager
     {
-        public UserManager(DatabaseContext databaseContext) { }
-
-        public User Add(User user)
+        DatabaseContext context;
+        public UserManager(DatabaseContext context)
         {
-            throw new NotImplementedException();
+            this.context = context;
+        }
+
+        public bool Add(User user)
+        {
+            context.User.Add(user);
+            return context.SaveChanges() > 0;
         }
 
         public bool Delete(User user)
         {
-            throw new NotImplementedException();
+            context.User.Remove(user);
+            return context.SaveChanges() > 0;
         }
 
-        public List<User> GetAll()
+        public IEnumerable<User> GetAll()
         {
-            throw new NotImplementedException();
+            return context.User;
         }
 
-        public User GetById(int id)
+        public User GetById(Guid id)
         {
-            throw new NotImplementedException();
+            return context.User.FirstOrDefault(x => x.UserId == id);
         }
 
         public User? getByUserOrEmail(string user)
         {
-            throw new NotImplementedException();
+            return context.User.FirstOrDefault(x => x.Email == user || x.UserName == user);
         }
 
         public User Update(User user)
         {
-            throw new NotImplementedException();
+            user = context.User.Update(user).Entity;
+            context.SaveChanges();
+            return user;
         }
     }
 }

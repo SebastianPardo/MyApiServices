@@ -13,8 +13,11 @@
     <PackageReference Include="Google.Apis.Auth" Version="1.66.0" />
     <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.66.0.1869" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.3.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,10 +26,10 @@
 
   <ItemGroup>
     <Reference Include="OhMyMoney.AuthMiddleware">
-      <HintPath>..\..\OhMyMoney_DataModel\OhMyMoney.AuthMiddleware\bin\Debug\net8.0\OhMyMoney.AuthMiddleware.dll</HintPath>
+      <HintPath>..\..\..\OhMyMoney_DataModel\OhMyMoney\OhMyMoney.AuthMiddleware\bin\Debug\net8.0\OhMyMoney.AuthMiddleware.dll</HintPath>
     </Reference>
     <Reference Include="OhMyMoney.DataCore">
-      <HintPath>..\..\OhMyMoney_DataModel\OhMyMoney.DataCore\bin\Debug\net8.0\OhMyMoney.DataCore.dll</HintPath>
+      <HintPath>..\..\..\OhMyMoney_DataModel\OhMyMoney\OhMyMoney.DataCore\bin\Debug\net8.0\OhMyMoney.DataCore.dll</HintPath>
     </Reference>
   </ItemGroup>
 
