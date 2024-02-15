@@ -1,5 +1,6 @@
 using AccountServices.Business;
 using AccountServices.Business.Interfaces;
+using Google.Apis.Auth.AspNetCore3;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using OhMyMoney.AuthMiddleware;
@@ -9,11 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-f DEBUG
-//builder.Services.AddDbContext<OrderDirectContext>(options => options.UseSqlServer(Environment.GetEnvironmentVariable("DB_ORDER_DIRECT_ALDER")));
-builder.Services.AddDbContext<OrderDirectContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("OrderDirectAlder")));
+#if DEBUG
+builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("OrderDirectAlder")));
 #else
-builder.Services.AddDbContext<OrderDirectContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("OrderDirect")));
+builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("OrderDirect")));
 #endif
 
 builder.Services.AddCors();
