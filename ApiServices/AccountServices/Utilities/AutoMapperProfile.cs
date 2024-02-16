@@ -9,10 +9,14 @@ public class AutoMapperProfile : Profile
     public AutoMapperProfile()
     {
         // User -> AuthenticateResponse
-        CreateMap<User, AuthenticateResponse>();
+        CreateMap<User, AuthenticateResponse>()
+            .ForMember(d => d.UserId, o => o.MapFrom(p => p.UserId));
 
         //AuthenticateRequest -> AuthenticationRequest
-        CreateMap<AuthenticateRequest, AuthenticationRequest>();
+        CreateMap<AuthenticateRequest, AuthenticationRequest>()
+            .ForMember(d => d.EmailUser, o => o.MapFrom(p => p.Param_1))
+            .ForMember(d => d.Password, o => o.MapFrom(p => p.Param_2)); ; 
+        ;
 
         // RegisterRequest -> User
         CreateMap<RegisterRequest, User>();
