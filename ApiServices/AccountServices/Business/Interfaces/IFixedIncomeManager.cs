@@ -6,8 +6,8 @@ namespace AccountServices.Business.Interfaces
     {
         IEnumerable<FixedIncome> GetAllByUserId(Guid userId);
         FixedIncome GetById(Guid id);
-        FixedIncome Add(FixedIncome user);
-        bool Update(FixedIncome user);
-        bool Delete(FixedIncome user);
+        FixedIncome Add(FixedIncome fixedIncome);
+        bool Update(FixedIncome fixedIncome);
+        bool Delete(FixedIncome fixedIncome);
     }
 }
