@@ -8,9 +8,9 @@ public class AutoMapperProfile : Profile
 {
     public AutoMapperProfile()
     {
-        // User -> AuthenticateResponse
-        CreateMap<User, AuthenticateResponse>()
-            .ForMember(d => d.UserId, o => o.MapFrom(p => p.UserId));
+        // Account -> AuthenticateResponse
+        CreateMap<Account, AuthenticateResponse>()
+            .ForMember(d => d.UserId, o => o.MapFrom(p => p.Id));
 
         //AuthenticateRequest -> AuthenticationRequest
         CreateMap<AuthenticateRequest, AuthenticationRequest>()
@@ -18,11 +18,11 @@ public class AutoMapperProfile : Profile
             .ForMember(d => d.Password, o => o.MapFrom(p => p.Param_2)); ; 
         ;
 
-        // RegisterRequest -> User
-        CreateMap<RegisterRequest, User>();
+        // RegisterRequest -> Account
+        CreateMap<RegisterRequest, Account>();
 
         // UpdateRequest -> User
-        CreateMap<UpdateRequest, User>()
+        CreateMap<UpdateRequest, Account>()
             .ForAllMembers(x => x.Condition(
                 (src, dest, prop) =>
                 {

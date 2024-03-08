@@ -18,14 +18,14 @@ using Microsoft.AspNetCore.Authorization;
 [Route("Api/[controller]")]
 public class AccountController : ControllerBase
 {
-    IAccountManager UserManager;
+    IAccountManager accountManager;
     IMapper Mapper;
     readonly GoogleReCaptcha GoogleReCaptcha;
     readonly JwtTokenHandler JwtTokenHandler;
 
-    public AccountController(IMapper mapper, IConfiguration configuration, IAccountManager userManager, JwtTokenHandler jwtTokenHandler)
+    public AccountController(IMapper mapper, IConfiguration configuration, IAccountManager accountManager, JwtTokenHandler jwtTokenHandler)
     {
-        UserManager = userManager;
+        this.accountManager = accountManager;
         Mapper = mapper;
         GoogleReCaptcha = new GoogleReCaptcha(configuration);
         JwtTokenHandler = jwtTokenHandler;
@@ -40,11 +40,11 @@ public class AccountController : ControllerBase
         var googleReCaptchaString = model.Param_3;
         var IP = HttpContext.Connection.RemoteIpAddress.ToString();
 
-        var user = UserManager.getByUserOrEmail(email);
+        var account = accountManager.getByUserNameOrEmail(email);
         var enviroment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        if (user == null || !GeneralUtilities.ComparePassword(password, user.Password))
+        if (account == null || !GeneralUtilities.ComparePassword(password, account.Password))
             throw new AppException("Username or password is incorrect");
-        else if (!user.IsActive)
+        else if (!account.IsActive)
         {
             throw new AppException("User Account is Deactivated Please Contact Admin");
         }
@@ -53,7 +53,7 @@ public class AccountController : ControllerBase
         {
             throw new AppException("Recaptcha validation failed");
         }
-        var response = Mapper.Map<AuthenticateResponse>(user);
+        var response = Mapper.Map<AuthenticateResponse>(account);
         var request = Mapper.Map<AuthenticationRequest>(model);
         response.Token = JwtTokenHandler.GenerateToken(request);
         return Ok(response);
@@ -73,10 +73,10 @@ public class AccountController : ControllerBase
             var userGet = oauthSerivce.Userinfo.V2.Me.Get();
             var userinfo = userGet.Execute();
 
-            var user = UserManager.getByUserOrEmail(userinfo.Email);
-            if (user.Email == email)
+            var account = accountManager.getByUserNameOrEmail(userinfo.Email);
+            if (account.Email == email)
             {
-                var response = Mapper.Map<AuthenticateResponse>(user);
+                var response = Mapper.Map<AuthenticateResponse>(account);
                 var request = Mapper.Map<AuthenticationRequest>(model);
                 response.Token = JwtTokenHandler.GenerateToken(request);
                 return Ok(response);
@@ -94,30 +94,30 @@ public class AccountController : ControllerBase
     [HttpPost("register")]
     public IActionResult Register(RegisterRequest model)
     {
-        var user = UserManager.getByUserOrEmail(model.Username);
-        if (user != null)
+        var account = accountManager.getByUserNameOrEmail(model.Username);
+        if (account != null)
             throw new AppException("Username '" + model.Username + "' is already taken");
-        user = Mapper.Map<User>(model);
-        user.Password = GeneralUtilities.ValidatePassword(model.Password);
-        if (user.Password == null)
+        account = Mapper.Map<Account>(model);
+        account.Password = GeneralUtilities.ValidatePassword(model.Password);
+        if (account.Password == null)
             throw new AppException("Minimum of different classes of characters in password is 3. Classes of characters: Lower Case, Upper Case, Digits, Special Characters.");
-        UserManager.Add(user);
+        accountManager.Add(account);
         return Ok(new { message = "Registration successful" });
     }
 
     [HttpPut("{id}")]
     public IActionResult Update(UpdateRequest model)
     {
-        var user = UserManager.getByUserOrEmail(model.Username);
-        if (user == null || !GeneralUtilities.ComparePassword(model.Password, user.Password))
+        var account = accountManager.getByUserNameOrEmail(model.Username);
+        if (account == null || !GeneralUtilities.ComparePassword(model.Password, account.Password))
             throw new AppException("Username or password is incorrect");
 
-        Mapper.Map(model, user);
-        user.Password = GeneralUtilities.ValidatePassword(model.Password);
-        if (user.Password == null)
+        Mapper.Map(model, account);
+        account.Password = GeneralUtilities.ValidatePassword(model.Password);
+        if (account.Password == null)
             throw new AppException("Minimum of different classes of characters in password is 3. Classes of characters: Lower Case, Upper Case, Digits, Special Characters.");
 
-        UserManager.Update(user);
+        accountManager.Update(account);
         return Ok(new { message = "User updated successfully" });
     }
 }
