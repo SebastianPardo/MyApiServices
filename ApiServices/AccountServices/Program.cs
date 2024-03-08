@@ -40,7 +40,7 @@ builder.Services.AddAuthentication(o =>
 
 builder.Services.AddSingleton<JwtTokenHandler>();
 
-builder.Services.AddScoped<IUserManager, UserManager>();
+builder.Services.AddScoped<IAccountManager, AccountManager>();
 
 var app = builder.Build();
 

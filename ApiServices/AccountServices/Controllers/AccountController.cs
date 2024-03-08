@@ -18,12 +18,12 @@ using Microsoft.AspNetCore.Authorization;
 [Route("Api/[controller]")]
 public class AccountController : ControllerBase
 {
-    IUserManager UserManager;
+    IAccountManager UserManager;
     IMapper Mapper;
     readonly GoogleReCaptcha GoogleReCaptcha;
     readonly JwtTokenHandler JwtTokenHandler;
 
-    public AccountController(IMapper mapper, IConfiguration configuration, IUserManager userManager, JwtTokenHandler jwtTokenHandler)
+    public AccountController(IMapper mapper, IConfiguration configuration, IAccountManager userManager, JwtTokenHandler jwtTokenHandler)
     {
         UserManager = userManager;
         Mapper = mapper;

@@ -17,13 +17,13 @@ namespace AuthenticationServices.Authorization
         public async Task Invoke(HttpContext context)
         {
             var dbcontext = context.RequestServices.GetRequiredService<DatabaseContext>();
-            var userManager = new UserManager(dbcontext);
+            var userManager = new AccountManager(dbcontext);
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             string? userId = JwtTokenHandler.ValidateToken(token);
             if (userId != null)
             {
                 // attach user to context on successful jwt validation
-                context.Items["User"] = userManager.getByUserOrEmail(userId);
+                context.Items["User"] = userManager.getByUserNameOrEmail(userId);
             }
 
             await RequestDelegate(context);
