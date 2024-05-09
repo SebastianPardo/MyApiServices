@@ -1,4 +1,5 @@
-﻿using AccountServices.Business.Interfaces;
+﻿
+using AccountServices.Business.Interfaces;
 using OhMyMoney.DataCore.Data;
 using OhMyMoney.DataCore.Entities;
 
@@ -32,7 +33,7 @@ namespace AccountServices.Business
             return context.SaveChanges() > 0;
         }
 
-        IEnumerable<VariableExpense> GetAllByUserId(Guid userId)
+        IEnumerable<VariableExpense> IVariableExpenseManager.GetAllByUserId(Guid userId)
         {
             return context.VariableExpense.Where(fe => fe.ExpensesBudget.UserId == userId);
         }
@@ -40,6 +41,11 @@ namespace AccountServices.Business
         VariableExpense GetById(Guid id)
         {
             return context.VariableExpense.FirstOrDefault(x => x.Id == id);
+        }
+
+        VariableExpense IVariableExpenseManager.GetById(Guid id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
