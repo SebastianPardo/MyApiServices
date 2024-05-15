@@ -1,4 +1,4 @@
-﻿using OhMyMoney.DataCore.Entities;
+﻿using Famnances.DataCore.Entities;
 
 namespace AccountServices.Business.Interfaces
 {

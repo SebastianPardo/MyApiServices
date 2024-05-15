@@ -3,17 +3,17 @@ using AccountServices.Business.Interfaces;
 using Google.Apis.Auth.AspNetCore3;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using OhMyMoney.AuthMiddleware;
-using OhMyMoney.DataCore.Data;
+using Famnances.AuthMiddleware;
+using Famnances.DataCore.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 #if DEBUG
-builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Database"), x => x.MigrationsAssembly("OhMyMoney.DataCore")));
+builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Database"), x => x.MigrationsAssembly("Famnances.DataCore")));
 #else
-builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Database"), x => x.MigrationsAssembly("OhMyMoney.DataCore")));
+builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Database"), x => x.MigrationsAssembly("Famnances.DataCore")));
 #endif
 
 builder.Services.AddCors();

@@ -1,7 +1,7 @@
 ﻿
 using AccountServices.Business.Interfaces;
-using OhMyMoney.DataCore.Data;
-using OhMyMoney.DataCore.Entities;
+using Famnances.DataCore.Data;
+using Famnances.DataCore.Entities;
 
 namespace AccountServices.Business
 {

@@ -4,13 +4,13 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using AccountServices.Utilities;
 using AccountServices.Models.Api;
-using OhMyMoney.DataCore.Entities;
+using Famnances.DataCore.Entities;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Oauth2.v2;
 using Google.Apis.Services;
 using AccountServices.Business.Interfaces;
-using OhMyMoney.AuthMiddleware;
-using OhMyMoney.AuthMiddleware.Models;
+using Famnances.AuthMiddleware;
+using Famnances.AuthMiddleware.Models;
 using Microsoft.AspNetCore.Authorization;
 
 [Authorize]

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
-using OhMyMoney.DataCore.Entities;
+using Famnances.DataCore.Entities;
 
 namespace AccountServices.Authorization
 {

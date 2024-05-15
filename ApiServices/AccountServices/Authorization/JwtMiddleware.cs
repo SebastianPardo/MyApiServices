@@ -1,6 +1,6 @@
-﻿using OhMyMoney.AuthMiddleware;
+﻿using Famnances.AuthMiddleware;
 using AccountServices.Business;
-using OhMyMoney.DataCore.Data;
+using Famnances.DataCore.Data;
 
 namespace AuthenticationServices.Authorization
 {

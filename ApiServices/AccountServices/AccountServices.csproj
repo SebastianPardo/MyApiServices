@@ -27,11 +27,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="OhMyMoney.AuthMiddleware">
-      <HintPath>..\..\..\OhMyMoney_DataModel\OhMyMoney\OhMyMoney.AuthMiddleware\bin\Debug\net7.0\OhMyMoney.AuthMiddleware.dll</HintPath>
+    <Reference Include="Famnances.AuthMiddleware">
+      <HintPath>..\..\..\Famnances_DataModel\Famnances\Famnances.AuthMiddleware\bin\Debug\net7.0\Famnances.AuthMiddleware.dll</HintPath>
     </Reference>
-    <Reference Include="OhMyMoney.DataCore">
-      <HintPath>..\..\..\OhMyMoney_DataModel\OhMyMoney\OhMyMoney.DataCore\bin\Debug\net7.0\OhMyMoney.DataCore.dll</HintPath>
+    <Reference Include="Famnances.DataCore">
+      <HintPath>..\..\..\Famnances_DataModel\Famnances\Famnances.DataCore\bin\Debug\net7.0\Famnances.DataCore.dll</HintPath>
     </Reference>
   </ItemGroup>
 

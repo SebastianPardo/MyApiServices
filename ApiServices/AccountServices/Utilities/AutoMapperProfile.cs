@@ -1,8 +1,8 @@
 namespace AccountServices.Utilities;
 using AutoMapper;
-using OhMyMoney.DataCore.Entities;
+using Famnances.DataCore.Entities;
 using AccountServices.Models.Api;
-using OhMyMoney.AuthMiddleware.Models;
+using Famnances.AuthMiddleware.Models;
 
 public class AutoMapperProfile : Profile
 {
