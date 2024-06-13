@@ -1,32 +1,38 @@
 ﻿using Famnances.AuthMiddleware;
-using AccountServices.Business;
-using Famnances.DataCore.Data;
+using AccountServices.Business.Interfaces;
+using Microsoft.Extensions.Options;
+using Famnances.AuthMiddleware.Models;
 
 namespace AuthenticationServices.Authorization
 {
     public class JwtMiddleware
     {
-        private readonly RequestDelegate RequestDelegate;
+        private readonly RequestDelegate _next;
+        private readonly AppSettings _appSettings;
         JwtTokenHandler JwtTokenHandler;
-        public JwtMiddleware(RequestDelegate requestDelegate, JwtTokenHandler jwtTokenHandler)
+
+        public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
         {
-            JwtTokenHandler = jwtTokenHandler;
-            RequestDelegate = requestDelegate;
+            _next = next;
+            JwtTokenHandler = new JwtTokenHandler(appSettings.Value);
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IAccountManager accountManager)
         {
-            var dbcontext = context.RequestServices.GetRequiredService<DatabaseContext>();
-            var userManager = new AccountManager(dbcontext);
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            string? userId = JwtTokenHandler.ValidateToken(token);
-            if (userId != null)
+            try
             {
-                // attach user to context on successful jwt validation
-                context.Items["User"] = userManager.getByUserNameOrEmail(userId);
+                var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                string? userId = JwtTokenHandler.ValidateToken(token);
+                if (userId != null)
+                {
+                    context.Items["User"] = accountManager.getByUserNameOrEmail(userId);
+                }
+                await _next(context);
             }
-
-            await RequestDelegate(context);
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }        
     }
 }

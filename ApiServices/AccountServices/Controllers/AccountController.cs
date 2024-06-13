@@ -12,6 +12,8 @@ using AccountServices.Business.Interfaces;
 using Famnances.AuthMiddleware;
 using Famnances.AuthMiddleware.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
+using Famnances.AuthMiddleware.Models;
 
 [Authorize]
 [ApiController]
@@ -20,15 +22,13 @@ public class AccountController : ControllerBase
 {
     IAccountManager accountManager;
     IMapper Mapper;
-    readonly GoogleReCaptcha GoogleReCaptcha;
     readonly JwtTokenHandler JwtTokenHandler;
 
-    public AccountController(IMapper mapper, IConfiguration configuration, IAccountManager accountManager, JwtTokenHandler jwtTokenHandler)
+    public AccountController(IMapper mapper, IAccountManager accountManager, IOptions<AppSettings> appSettings)
     {
         this.accountManager = accountManager;
         Mapper = mapper;
-        GoogleReCaptcha = new GoogleReCaptcha(configuration);
-        JwtTokenHandler = jwtTokenHandler;
+        JwtTokenHandler = new JwtTokenHandler(appSettings.Value);
     }
 
     [AllowAnonymous]
@@ -37,21 +37,14 @@ public class AccountController : ControllerBase
     {
         var email = model.Param_1;
         var password = model.Param_2;
-        var googleReCaptchaString = model.Param_3;
-        var IP = HttpContext.Connection.RemoteIpAddress.ToString();
 
         var account = accountManager.getByUserNameOrEmail(email);
-        var enviroment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
         if (account == null || !GeneralUtilities.ComparePassword(password, account.Password))
             throw new AppException("Username or password is incorrect");
         else if (!account.IsActive)
         {
             throw new AppException("User Account is Deactivated Please Contact Admin");
-        }
-        //No validate recaptcha when is testing that's why ignore local host and Office Ip.
-        else if (!await GoogleReCaptcha.Validate(googleReCaptchaString) && enviroment != "Development" && IP != "::1")
-        {
-            throw new AppException("Recaptcha validation failed");
         }
         var response = Mapper.Map<AuthenticateResponse>(account);
         var request = Mapper.Map<AuthenticationRequest>(model);
@@ -103,6 +96,12 @@ public class AccountController : ControllerBase
             throw new AppException("Minimum of different classes of characters in password is 3. Classes of characters: Lower Case, Upper Case, Digits, Special Characters.");
         accountManager.Add(account);
         return Ok(new { message = "Registration successful" });
+    }
+
+    [HttpGet]
+    public IActionResult GetAccountById(Guid id)
+    {
+        return Ok(accountManager.GetById(id));
     }
 
     [HttpPut("{id}")]
