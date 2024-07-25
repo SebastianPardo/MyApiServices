@@ -1,0 +1,13 @@
+﻿using Famnances.DataCore.Entities;
+
+namespace AccountServices.Business.Interfaces
+{
+    public interface IOutflowManager
+    {
+        IEnumerable<Outflow> GetAllByUserId(Guid userId);
+        Outflow GetById(Guid id);
+        Outflow Add(Outflow variableExpense);
+        bool Update(Outflow variableExpense);
+        bool Delete(Outflow variableExpense);
+    }
+}

@@ -4,38 +4,38 @@ using Famnances.DataCore.Entities;
 
 namespace AccountServices.Business
 {
-    public class SavingsRecordManager : ISavingsRecordManager
+    public class SavingsTransactionManager : ISavingsTransactionManager
     {
         DatabaseContext context;
-        public SavingsRecordManager(DatabaseContext context)
+        public SavingsTransactionManager(DatabaseContext context)
         {
             this.context = context;
         }
 
-        public SavingsRecord Add(SavingsRecord savingsRecord)
+        public SavingsTransaction Add(SavingsTransaction savingsRecord)
         {
             savingsRecord = context.SavingsRecord.Add(savingsRecord).Entity;
             context.SaveChanges();
             return savingsRecord;
         }
 
-        public bool Delete(SavingsRecord savingsRecord)
+        public bool Delete(SavingsTransaction savingsRecord)
         {
             context.SavingsRecord.Remove(savingsRecord);
             return context.SaveChanges() > 0;
         }
 
-        public IEnumerable<SavingsRecord> GetAllByUserId(Guid userId)
+        public IEnumerable<SavingsTransaction> GetAllByUserId(Guid userId)
         {
             return context.SavingsRecord.Where(e => e.Id == userId);
         }
 
-        public SavingsRecord GetById(Guid id)
+        public SavingsTransaction GetById(Guid id)
         {
             return context.SavingsRecord.FirstOrDefault(x => x.Id == id);
         }
 
-        public bool Update(SavingsRecord savingsRecord)
+        public bool Update(SavingsTransaction savingsRecord)
         {
             context.SavingsRecord.Update(savingsRecord);
             context.SaveChanges();

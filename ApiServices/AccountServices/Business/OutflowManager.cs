@@ -5,45 +5,50 @@ using Famnances.DataCore.Entities;
 
 namespace AccountServices.Business
 {
-    public class VariableExpenseManager : IVariableExpenseManager
+    public class OutflowManager : IOutflowManager
     {
         DatabaseContext context;
-        public VariableExpenseManager(DatabaseContext context)
+        public OutflowManager(DatabaseContext context)
         {
             this.context = context;
         }
 
-        public VariableExpense Add(VariableExpense variableExpense)
+        public Outflow Add(Outflow variableExpense)
         {
             variableExpense = context.VariableExpense.Add(variableExpense).Entity;
             context.SaveChanges();
             return variableExpense;
         }
 
-        public bool Delete(VariableExpense variableExpense)
+        public bool Delete(Outflow variableExpense)
         {
             context.VariableExpense.Remove(variableExpense);
             return context.SaveChanges() > 0;
         }
 
-        public bool Update(VariableExpense variableExpense)
+        public bool Update(Outflow variableExpense)
         {
             context.VariableExpense.Update(variableExpense);
             context.SaveChanges();
             return context.SaveChanges() > 0;
         }
 
-        IEnumerable<VariableExpense> IVariableExpenseManager.GetAllByUserId(Guid userId)
+        IEnumerable<Outflow> GetAllByUserId(Guid userId)
         {
             return context.VariableExpense.Where(fe => fe.ExpensesBudget.UserId == userId);
         }
 
-        VariableExpense GetById(Guid id)
+        IEnumerable<Outflow> IOutflowManager.GetAllByUserId(Guid userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        Outflow GetById(Guid id)
         {
             return context.VariableExpense.FirstOrDefault(x => x.Id == id);
         }
 
-        VariableExpense IVariableExpenseManager.GetById(Guid id)
+        Outflow IOutflowManager.GetById(Guid id)
         {
             throw new NotImplementedException();
         }
