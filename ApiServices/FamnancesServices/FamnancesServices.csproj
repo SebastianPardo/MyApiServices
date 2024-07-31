@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>8b9efb8c-329d-425d-a1f1-cf642780179d</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.18" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.20" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.20" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Famnances.AuthMiddleware">
+      <HintPath>..\..\..\Famnances_DataModel\Famnances\Famnances.AuthMiddleware\bin\Debug\net7.0\Famnances.AuthMiddleware.dll</HintPath>
+    </Reference>
+    <Reference Include="Famnances.DataCore">
+      <HintPath>..\..\..\Famnances_DataModel\Famnances\Famnances.DataCore\bin\Debug\net7.0\Famnances.DataCore.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
+</Project>

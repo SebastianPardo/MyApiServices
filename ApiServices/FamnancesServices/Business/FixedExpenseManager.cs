@@ -1,8 +1,8 @@
-﻿using AccountServices.Business.Interfaces;
-using Famnances.DataCore.Data;
+﻿using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
+using FamnancesServices.Business.Interfaces;
 
-namespace AccountServices.Business
+namespace FamnancesServices.Business
 {
     public class FixedExpenseManager : IFixedExpenseManager
     {

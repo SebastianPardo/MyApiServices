@@ -1,6 +1,6 @@
 ﻿using Famnances.DataCore.Entities;
 
-namespace AccountServices.Business.Interfaces
+namespace FamnancesServices.Business.Interfaces
 {
     public interface ISavingsPocketManager
     {

@@ -1,7 +1,5 @@
 using AccountServices.Business;
 using AccountServices.Business.Interfaces;
-using Google.Apis.Auth.AspNetCore3;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Famnances.DataCore.Data;
 using Microsoft.OpenApi.Models;
