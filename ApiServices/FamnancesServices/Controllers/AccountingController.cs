@@ -1,8 +1,11 @@
-﻿using FamnancesServices.Business.Interfaces;
+﻿using Famnances.DataCore.Entities;
+using FamnancesServices.Business.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamnancesServices.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("Api/[controller]")]
     public class AccountingController : ControllerBase
@@ -17,7 +20,8 @@ namespace FamnancesServices.Controllers
         [HttpGet("CurentTotals")]
         public async Task<IActionResult> CurentTotals()
         {
-            return Ok(_totalsByPeriodManager.GetByCurrentPeriod());
+            HttpContext.Items.TryGetValue("AccountId", out var accountId);
+            return Ok(_totalsByPeriodManager.GetByCurrentPeriod(Guid.Parse(accountId.ToString())));
         }
     }
 }

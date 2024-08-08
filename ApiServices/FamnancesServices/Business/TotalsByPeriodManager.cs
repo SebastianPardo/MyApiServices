@@ -1,6 +1,7 @@
 ﻿using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Business
 {
@@ -11,9 +12,16 @@ namespace FamnancesServices.Business
         {
             _context = context;
         }
-        public TotalsByPeriod? GetByCurrentPeriod()
+        public TotalsByPeriod? GetByCurrentPeriod(Guid userId)
         {
-            return _context.TotalsByPeriod.SingleOrDefault(e => e.PeriodDateStart <= DateTime.Now && e.PeriodDateEnd >= DateTime.Now);
+            try
+            {
+                return _context.TotalsByPeriod.Include(e => e.User).SingleOrDefault(e => e.UserId == userId && e.PeriodDateStart <= DateTime.Now && e.PeriodDateEnd >= DateTime.Now);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

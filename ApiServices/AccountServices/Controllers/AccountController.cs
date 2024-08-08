@@ -46,9 +46,22 @@ public class AccountController : ControllerBase
         {
             throw new AppException("User Account is Deactivated Please Contact Admin");
         }
-        var response = Mapper.Map<AuthenticateResponse>(account);
-        var request = Mapper.Map<AuthenticationRequest>(model);
-        response.Token = JwtTokenHandler.GenerateToken(request);
+        
+        TokenContent tokenContent = new TokenContent
+        {
+            UserId = account.Id,
+            Email = account.Email,
+            User = account.UserName
+        };
+
+        AuthenticateResponse response = new AuthenticateResponse
+        {
+            UserId = account.Id,
+            UserName = account.UserName,
+            Email = account.Email,
+            Token = JwtTokenHandler.GenerateToken(tokenContent)
+        };
+
         return Ok(response);
     }
 
@@ -69,9 +82,21 @@ public class AccountController : ControllerBase
             var account = accountManager.getByUserNameOrEmail(userinfo.Email);
             if (account.Email == email)
             {
-                var response = Mapper.Map<AuthenticateResponse>(account);
-                var request = Mapper.Map<AuthenticationRequest>(model);
-                response.Token = JwtTokenHandler.GenerateToken(request);
+                TokenContent tokenContent = new TokenContent
+                {
+                    UserId = account.Id,
+                    Email = account.Email,
+                    User = account.UserName
+                };
+
+                AuthenticateResponse response = new AuthenticateResponse
+                {
+                    UserId = account.Id,
+                    UserName = account.UserName,
+                    Email = account.Email,
+                    Token = JwtTokenHandler.GenerateToken(tokenContent)
+                };
+
                 return Ok(response);
             }
             return BadRequest();

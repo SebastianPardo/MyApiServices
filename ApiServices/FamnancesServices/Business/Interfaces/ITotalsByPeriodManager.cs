@@ -4,6 +4,6 @@ namespace FamnancesServices.Business.Interfaces
 {
     public interface ITotalsByPeriodManager
     {
-        TotalsByPeriod? GetByCurrentPeriod();
+        TotalsByPeriod? GetByCurrentPeriod(Guid userId);
     }
 }

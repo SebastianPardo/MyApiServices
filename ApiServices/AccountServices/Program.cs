@@ -3,7 +3,6 @@ using AccountServices.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Famnances.DataCore.Data;
 using Microsoft.OpenApi.Models;
-using AuthenticationServices.Authorization;
 using Famnances.AuthMiddleware.Models;
 using Famnances.AuthMiddleware;
 
@@ -11,14 +10,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+
+builder.Services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+builder.Services.AddCors();
+
 #if DEBUG
 builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Database"), x => x.MigrationsAssembly("Famnances.DataCore")));
 #else
 builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Database"), x => x.MigrationsAssembly("Famnances.DataCore")));
 #endif
-
-builder.Services.AddCors();
-builder.Services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
 builder.Services.AddAutoMapper(typeof(Program));
 
