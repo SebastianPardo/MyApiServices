@@ -14,7 +14,7 @@ namespace FamnancesServices.Controllers
             _totalsByPeriodManager = totalsByPeriodManager;
         }
 
-        [HttpGet]
+        [HttpGet("CurentTotals")]
         public async Task<IActionResult> CurentTotals()
         {
             return Ok(_totalsByPeriodManager.GetByCurrentPeriod());

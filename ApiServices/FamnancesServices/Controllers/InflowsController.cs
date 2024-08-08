@@ -2,11 +2,10 @@
 
 namespace FamnancesServices.Controllers
 {
-    public class InflowsController : Controller
+    [ApiController]
+    [Route("Api/[controller]")]
+    public class InflowsController : ControllerBase
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        public InflowsController() { }
     }
 }
