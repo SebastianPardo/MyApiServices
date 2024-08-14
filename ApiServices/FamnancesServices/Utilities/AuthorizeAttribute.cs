@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Famnances.DataCore.Entities;
-using AccountServices.Business.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Famnances.AuthMiddleware.Models;
+using FamnancesServices.Business.Interfaces;
 using Famnances.AuthMiddleware;
+using Famnances.AuthMiddleware.Models;
 using Microsoft.Extensions.Options;
 
-namespace AccountServices.Authorization
+namespace FamnancesServices.Utilities
 {
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]

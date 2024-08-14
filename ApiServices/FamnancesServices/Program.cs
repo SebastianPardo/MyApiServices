@@ -26,7 +26,7 @@ builder.Services.AddSwaggerGen(swagger =>
     swagger.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
-        Title = "JWT Token Authentication API",
+        Title = "JWT Token Famnances API",
         Description = ".NET 8 Web API"
     });
     // To Enable authorization using Swagger (JWT)  
@@ -56,6 +56,7 @@ builder.Services.AddSwaggerGen(swagger =>
                 });
 });
 
+builder.Services.AddScoped<IAccountManager, AccountManager>();
 builder.Services.AddScoped<ITotalsByPeriodManager, TotalsByPeriodManager>();
 
 var app = builder.Build();
@@ -70,7 +71,9 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<JwtMiddleware>();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

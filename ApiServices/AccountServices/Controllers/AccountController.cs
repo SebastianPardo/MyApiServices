@@ -11,9 +11,9 @@ using Google.Apis.Services;
 using AccountServices.Business.Interfaces;
 using Famnances.AuthMiddleware;
 using Famnances.AuthMiddleware.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
-using Famnances.AuthMiddleware.Models;
+using Microsoft.AspNetCore.Authorization;
+using AuthorizeAttribute = Authorization.AuthorizeAttribute;
 
 [Authorize]
 [ApiController]
