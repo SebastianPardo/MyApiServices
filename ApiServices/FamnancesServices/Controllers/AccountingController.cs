@@ -1,4 +1,6 @@
-﻿using FamnancesServices.Business.Interfaces;
+﻿using Famnances.DataCore.Entities;
+using FamnancesServices.Business.Interfaces;
+using FamnancesServices.Models;
 using FamnancesServices.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,10 +19,23 @@ namespace FamnancesServices.Controllers
         }
 
         [HttpGet("CurentTotals")]
-        public async Task<IActionResult> CurentTotals()
+        public IActionResult CurentTotals()
         {
             HttpContext.Items.TryGetValue("AccountId", out var accountId);
-            return Ok(_totalsByPeriodManager.GetByCurrentPeriod(Guid.Parse(accountId.ToString())));
+            TotalsByPeriod? totalsByPeriod = _totalsByPeriodManager.GetByCurrentPeriod(Guid.Parse(accountId.ToString()));
+            if (totalsByPeriod != null)
+            {
+                SummaryModel summaryModel = new SummaryModel
+                {
+                    MonthlyBlance = totalsByPeriod.TotalIncomes - totalsByPeriod.TotalExpenses,
+                    MonthlyBudget = totalsByPeriod.TotalIncomes,
+                    MonthlyExpenses = totalsByPeriod.TotalExpenses,
+                    MonthlySavings = totalsByPeriod.TotalSavings,
+                    TotalSavings = totalsByPeriod.User.TotalSavings
+                };
+                return Ok(summaryModel);
+            }
+            return Ok(new SummaryModel());
         }
     }
 }
