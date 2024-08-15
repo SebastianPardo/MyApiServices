@@ -1,6 +1,6 @@
 ﻿using Famnances.DataCore.Entities;
+using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business.Interfaces;
-using FamnancesServices.Models;
 using FamnancesServices.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,10 +28,13 @@ namespace FamnancesServices.Controllers
                 SummaryModel summaryModel = new SummaryModel
                 {
                     MonthlyBlance = totalsByPeriod.TotalIncomes - totalsByPeriod.TotalExpenses,
-                    MonthlyBudget = totalsByPeriod.TotalIncomes,
                     MonthlyExpenses = totalsByPeriod.TotalExpenses,
                     MonthlySavings = totalsByPeriod.TotalSavings,
-                    TotalSavings = totalsByPeriod.User.TotalSavings
+                    MonthlySavingsExpeses = totalsByPeriod.TotalSavingsExpenses,
+                    TotalBudget = totalsByPeriod.User.TotalBudget,
+                    TotalSavings = totalsByPeriod.User.TotalSavings,
+                    PeriodStartDate = totalsByPeriod.PeriodDateStart,
+                    PeriodEndDate = totalsByPeriod.PeriodDateEnd
                 };
                 return Ok(summaryModel);
             }
