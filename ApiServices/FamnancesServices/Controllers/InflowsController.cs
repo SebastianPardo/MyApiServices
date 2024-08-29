@@ -1,11 +1,37 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Famnances.DataCore.Entities;
+using FamnancesServices.Business.Interfaces;
+using FamnancesServices.Utilities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FamnancesServices.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("Api/[controller]")]
     public class InflowsController : ControllerBase
     {
-        public InflowsController() { }
+        IInflowManager _inflowManager;
+        IFixedIncomeManager _fixedIncomeManager;
+
+        public InflowsController(IInflowManager inflowManager, IFixedIncomeManager fixedIncomeManager)
+        {
+            _inflowManager = inflowManager;
+            _fixedIncomeManager = fixedIncomeManager;
+        }
+
+        [HttpPost("Deposit")]
+        public async Task<IActionResult> Deposit(Inflow inflow)
+        {
+            HttpContext.Items.TryGetValue("AccountId", out var accountId);
+            inflow.UserId = Guid.Parse(accountId.ToString());
+            if (_fixedIncomeManager != null)
+            {
+                FixedIncome fixedIncome = _fixedIncomeManager.GetById(inflow.FixedIncomeId.Value);
+                inflow.Value = fixedIncome.Value;
+                inflow.Description = fixedIncome.Description;
+            }
+            inflow = _inflowManager.Add(inflow);
+            return Ok(inflow);
+        }
     }
 }

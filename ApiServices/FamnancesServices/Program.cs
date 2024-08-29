@@ -56,8 +56,12 @@ builder.Services.AddSwaggerGen(swagger =>
                 });
 });
 
+builder.Services.AddScoped<IPeriodManager, PeriodManager>();
 builder.Services.AddScoped<IAccountManager, AccountManager>();
 builder.Services.AddScoped<ITotalsByPeriodManager, TotalsByPeriodManager>();
+builder.Services.AddScoped<IInflowManager, InflowManager>();
+builder.Services.AddScoped<IFixedIncomeManager, FixedIncomeManager>();
+builder.Services.AddScoped<IIncomeDiscountManager, IncomeDiscountManager>();
 
 var app = builder.Build();
 
