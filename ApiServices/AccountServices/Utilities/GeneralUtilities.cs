@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace AccountServices.Utilities
@@ -7,10 +8,9 @@ namespace AccountServices.Utilities
     {
         public static bool ComparePassword(string password, byte[] hashPass)
         {
-            Byte[] bytes = System.Text.Encoding.UTF8.GetBytes(password);
-            SHA512 hash = SHA512.Create();
-            var hashedBytes = hash.ComputeHash(bytes);
-            return Convert.ToBase64String(hashPass) == Convert.ToBase64String(hashedBytes);
+            byte[] bytes = Encoding.UTF8.GetBytes(password);
+            var hashedPassword = SHA512.Create().ComputeHash(bytes);
+            return Convert.ToBase64String(hashPass) == Convert.ToBase64String(hashedPassword);
         }
 
         public static byte[] ValidatePassword(string password)

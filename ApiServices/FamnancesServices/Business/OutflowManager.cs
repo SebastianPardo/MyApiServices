@@ -34,7 +34,7 @@ namespace FamnancesServices.Business
 
         public IEnumerable<Outflow> GetAllByUserId(Guid userId)
         {
-            return context.Outflow.Where(fe => fe.UserId == userId);
+            return context.Outflow.Where(fe => fe.ExpensesBudget.UserId == userId);
         }
 
         public Outflow GetById(Guid id)
