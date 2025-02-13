@@ -1,4 +1,4 @@
-namespace AccountServices.Models.Api;
+namespace AccountServices.Models.ApiModels;
 
 public class UpdateRequest
 {

@@ -1,5 +1,5 @@
-﻿using FamnancesServices.Business.Interfaces;
-using FamnancesServices.Utilities;
+﻿using Famnances.AuthMiddleware;
+using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamnancesServices.Controllers

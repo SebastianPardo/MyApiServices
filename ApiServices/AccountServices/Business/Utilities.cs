@@ -1,21 +1,21 @@
 ﻿using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 
-namespace AccountServices.Utilities
+namespace AccountServices.Business
 {
-    public class GeneralUtilities
+    public class Utilities
     {
         public static bool ComparePassword(string password, byte[] hashPass)
         {
-            byte[] bytes = Encoding.UTF8.GetBytes(password);
-            var hashedPassword = SHA512.Create().ComputeHash(bytes);
-            return Convert.ToBase64String(hashPass) == Convert.ToBase64String(hashedPassword);
+            byte[] bytes = System.Text.Encoding.UTF8.GetBytes(password);
+            SHA512 hash = SHA512.Create();
+            var hashedBytes = hash.ComputeHash(bytes);
+            return Convert.ToBase64String(hashPass) == Convert.ToBase64String(hashedBytes);
         }
 
         public static byte[] ValidatePassword(string password)
         {
-            Byte[] bytes = System.Text.Encoding.UTF8.GetBytes(password);
+            byte[] bytes = System.Text.Encoding.UTF8.GetBytes(password);
             SHA512 hash = SHA512.Create();
             var hashedBytes = hash.ComputeHash(bytes);
 
@@ -27,7 +27,7 @@ namespace AccountServices.Utilities
             var noWhiteSpace = password.Any(c => !char.IsWhiteSpace(c));
             if (!noWhiteSpace || password.Length < 8 || forbiddenPwd)
             {
-               return null;
+                return null;
             }
             else if (!hasNumber)
             {

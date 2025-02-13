@@ -1,11 +1,14 @@
-using AccountServices.Business;
-using AccountServices.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Famnances.DataCore.Data;
 using Microsoft.OpenApi.Models;
-using Famnances.AuthMiddleware.Models;
+using Famnances.AuthMiddleware.Entities;
 using Famnances.AuthMiddleware;
+using Google.Apis.Auth.AspNetCore3;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using JwtMiddleware = Famnances.AuthMiddleware.JwtMiddleware;
 
+
+AppContext.SetSwitch("Switch.Microsoft.Data.SqlClient.UseManagedNetworkingOnWindows", true);
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -23,13 +26,28 @@ builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(b
 
 builder.Services.AddAutoMapper(typeof(Program));
 
+builder.Services.AddAuthentication(o =>
+{
+    o.DefaultChallengeScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+    o.DefaultForbidScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+    .AddCookie()
+    .AddGoogleOpenIdConnect(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    });
+builder.Services.AddCustomJwtAuthentication();
+
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(swagger =>
 {
     //This is to generate the Default UI of Swagger Documentation  
     swagger.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
-        Title = "JWT Token Authentication API",
+        Title = "Auth Services API",
         Description = ".NET 8 Web API"
     });
     // To Enable authorization using Swagger (JWT)  
@@ -59,28 +77,7 @@ builder.Services.AddSwaggerGen(swagger =>
                 });
 });
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddCustomJwtAuthentication();
-//builder.Services.AddAuthentication(o =>
-//{
-//    o.DefaultChallengeScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
-//    o.DefaultForbidScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
-//    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//})
-//      .AddCookie()
-//      .AddGoogleOpenIdConnect(options =>
-//      {
-//          options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-//          options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-//      });
-
-
-builder.Services.AddScoped<IAccountManager, AccountManager>();
-
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -88,10 +85,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// global error handler
+app.UseMiddleware<ErrorHandlerMiddleware>();
+
 app.UseMiddleware<JwtMiddleware>();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

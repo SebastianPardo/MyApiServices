@@ -1,7 +1,7 @@
-﻿using Famnances.DataCore.Entities;
+﻿using Famnances.AuthMiddleware;
+using Famnances.DataCore.Entities;
 using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business.Interfaces;
-using FamnancesServices.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamnancesServices.Controllers

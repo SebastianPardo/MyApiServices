@@ -1,5 +1,5 @@
 using Famnances.AuthMiddleware;
-using Famnances.AuthMiddleware.Models;
+using Famnances.AuthMiddleware.Entities;
 using Famnances.DataCore.Data;
 using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
