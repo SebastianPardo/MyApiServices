@@ -37,7 +37,7 @@ public class AccountController : ControllerBase
     public async Task<IActionResult> Authenticate(AuthenticateRequest model)
     {
 #if DEBUG
-        var email = "WebDev+1@huntmarketingservices.com";
+        var email = "js.pardo.j@gamil.com";
         var password = "Test@User1";
         var googleReCaptchaString = string.Empty;
         var IP = HttpContext.Connection.RemoteIpAddress.ToString();
