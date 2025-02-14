@@ -12,38 +12,29 @@ namespace AccountServices.Business
             this.context = context;
         }
 
-        public bool Add(Account account)
+        public IEnumerable<Account> GetAll() => context.Account;
+
+        public Account GetById(Guid id) => context.Account.FirstOrDefault(x => x.Id == id);
+
+        public Account? getByUserNameOrEmail(string accountEmail) => context.Account.FirstOrDefault(x => x.Email == accountEmail || x.UserName == accountEmail);
+
+        public Account Add(Account account)
         {
-            context.Account.Add(account);
-            return context.SaveChanges() > 0;
+            account.LastLogin = DateTime.Now;
+            account = context.Account.Add(account).Entity;
+            context.SaveChanges();
+            return account;
         }
 
+        public bool Update(Account account)
+        {
+            context.Account.Update(account);
+            return context.SaveChanges() > 0;
+        }
         public bool Delete(Account account)
         {
             context.Account.Remove(account);
             return context.SaveChanges() > 0;
-        }
-
-        public IEnumerable<Account> GetAll()
-        {
-            return context.Account;
-        }
-
-        public Account GetById(Guid id)
-        {
-            return context.Account.FirstOrDefault(x => x.Id == id);
-        }
-
-        public Account? getByUserNameOrEmail(string accountEmail)
-        {
-            return context.Account.FirstOrDefault(x => x.Email == accountEmail || x.UserName == accountEmail);
-        }
-
-        public Account Update(Account account)
-        {
-            account = context.Account.Update(account).Entity;
-            context.SaveChanges();
-            return account;
         }
     }
 }

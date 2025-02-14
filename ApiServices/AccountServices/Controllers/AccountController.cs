@@ -19,6 +19,7 @@ using Famnances.DataCore.Entities;
 [Route("Api/[controller]")]
 public class AccountController : ControllerBase
 {
+    Utilities utilities = new Utilities();
     IAccountManager _accountManager;
     IMapper Mapper;
     readonly GoogleReCaptcha GoogleReCaptcha;
@@ -37,7 +38,7 @@ public class AccountController : ControllerBase
     public async Task<IActionResult> Authenticate(AuthenticateRequest model)
     {
 #if DEBUG
-        var email = "js.pardo.j@gamil.com";
+        var email = "js.pardo.j@gmail.com";
         var password = "Test@User1";
         var googleReCaptchaString = string.Empty;
         var IP = HttpContext.Connection.RemoteIpAddress.ToString();
@@ -47,11 +48,11 @@ public class AccountController : ControllerBase
         var googleReCaptchaString = model.Param_3;
         var IP = HttpContext.Connection.RemoteIpAddress.ToString();
 #endif
-        var user = _accountManager.getByUserNameOrEmail(email);
+        var account = _accountManager.getByUserNameOrEmail(email);
         var enviroment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        if (user == null || !Utilities.ComparePassword(password, user.Password))
+        if (account == null || !utilities.ComparePassword(password, account.Password))
             throw new AppException("Username or password is incorrect");
-        else if (!user.IsActive)
+        else if (!account.IsActive)
         {
             throw new AppException("User Account is Deactivated Please Contact Admin");
         }
@@ -60,18 +61,19 @@ public class AccountController : ControllerBase
         {
             throw new AppException("Recaptcha validation failed");
         }
+
         TokenContent tokenContent = new TokenContent
         {
-            UserId = user.Id,
-            Email = user.Email,
-            User = user.UserName
+            UserId = account.Id,
+            Email = account.Email,
+            User = account.UserName
         };
 
         AuthenticateResponse response = new AuthenticateResponse
         {
-            UserId = user.Id,
-            UserName = user.UserName,
-            Email = user.Email,
+            AccountId = account.Id,
+            UserName = account.UserName,
+            Email = account.Email,
             Token = JwtTokenHandler.GenerateToken(tokenContent)
         };
 
@@ -87,32 +89,54 @@ public class AccountController : ControllerBase
             var email = model.Param_1;
             var token = model.Param_2;
 
+            bool firstLogin = false;
+
             GoogleCredential cred2 = GoogleCredential.FromAccessToken(token);
             var oauthSerivce = new Oauth2Service(new BaseClientService.Initializer { HttpClientInitializer = cred2 });
             var userGet = oauthSerivce.Userinfo.V2.Me.Get();
             var userinfo = userGet.Execute();
 
-            var user = _accountManager.getByUserNameOrEmail(userinfo.Email);
-            if (user.Email == email)
+            var account = _accountManager.getByUserNameOrEmail(userinfo.Email);
+            if (account == null)
             {
-                TokenContent tokenContent = new TokenContent
+                account = new Account
                 {
-                    UserId = user.Id,
-                    Email = user.Email,
-                    User = user.UserName
+                    Email = email,
+                    UserName = email,
+                    IsActive = true,
+                    Password = utilities.GeneratePassword(),
+                    LinkedSocialMedias = new List<LinkedSocialMedia>
+                    {
+                        new LinkedSocialMedia {
+                            SocialMediaId = Guid.Parse("8CA31668-B21C-4D41-A635-DDAD787EFA59"),
+                            ToLogin = true,
+                            UserName = userinfo.Id,
+                        }
+                    }
                 };
-
-                AuthenticateResponse response = new AuthenticateResponse
-                {
-                    UserId = user.Id,
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    Token = JwtTokenHandler.GenerateToken(tokenContent)
-                };
-
-                return Ok(response);
+                account = _accountManager.Add(account);
+                firstLogin = true;
             }
-            return BadRequest();
+
+            TokenContent tokenContent = new TokenContent
+            {
+                UserId = account.Id,
+                Email = account.Email,
+                User = account.UserName
+            };
+
+            AuthenticateResponse response = new AuthenticateResponse
+            {
+                AccountId = account.Id,
+                FirstName = userinfo.GivenName,
+                LastName = userinfo.FamilyName,
+                UserName = account.UserName,
+                Email = account.Email,
+                Token = JwtTokenHandler.GenerateToken(tokenContent),
+                IsFirstLogin = firstLogin
+            };
+
+            return Ok(response);
         }
         catch
         {
@@ -135,7 +159,7 @@ public class AccountController : ControllerBase
         if (user != null)
             throw new AppException("Username '" + model.Username + "' is already taken");
         user = Mapper.Map<Account>(model);
-        user.Password = Utilities.ValidatePassword(model.Password);
+        user.Password = utilities.ValidatePassword(model.Password);
         if (user.Password == null)
             throw new AppException("Minimum of different classes of characters in password is 3. Classes of characters: Lower Case, Upper Case, Digits, Special Characters.");
         _accountManager.Add(user);
@@ -146,11 +170,11 @@ public class AccountController : ControllerBase
     public IActionResult Update(UpdateRequest model)
     {
         var user = _accountManager.getByUserNameOrEmail(model.Username);
-        if (user == null || !Utilities.ComparePassword(model.Password, user.Password))
+        if (user == null || !utilities.ComparePassword(model.Password, user.Password))
             throw new AppException("Username or password is incorrect");
 
         Mapper.Map(model, user);
-        user.Password = Utilities.ValidatePassword(model.Password);
+        user.Password = utilities.ValidatePassword(model.Password);
         if (user.Password == null)
             throw new AppException("Minimum of different classes of characters in password is 3. Classes of characters: Lower Case, Upper Case, Digits, Special Characters.");
 
