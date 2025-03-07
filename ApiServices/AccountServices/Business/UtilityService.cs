@@ -1,20 +1,31 @@
-﻿using System.Security.Cryptography;
+﻿using AccountServices.Business.Interfaces;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 namespace AccountServices.Business
 {
-    public class Utilities
+    public class UtilityService : IUtilityService
     {
-        private static byte[] GetHashPassword(string password)
+        public byte[] GeneratePassword()
+        {
+            int length = 15;
+            string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+            var random = new Random();
+            string password = new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
+            var hashPassword = ValidatePassword(password);
+            while(hashPassword == null)
+            {
+                hashPassword = ValidatePassword(password);
+            }
+            return hashPassword;
+        }
+
+        public bool ComparePassword(string password, byte[] hashPass)
         {
             byte[] bytes = System.Text.Encoding.UTF8.GetBytes(password);
             SHA512 hash = SHA512.Create();
-            return hash.ComputeHash(bytes);
-
-        }
-        public bool ComparePassword(string password, byte[] hashPass)
-        {
-            var hashedBytes = GetHashPassword(password);
+            var hashedBytes = hash.ComputeHash(bytes);
             return Convert.ToBase64String(hashPass) == Convert.ToBase64String(hashedBytes);
         }
 
@@ -24,7 +35,7 @@ namespace AccountServices.Business
             SHA512 hash = SHA512.Create();
             var hashedBytes = hash.ComputeHash(bytes);
 
-            var forbiddenPwd = Regex.IsMatch(password, @"(((A|a)(D|d)(M|m)(I|i)(N|n))|((P|p)(A|a)(S|s)(S|s)(W|w)(O|o)(R|r)(D|d)))([12345])");
+            var forbiddenPwd = Regex.IsMatch(password, @"(((A|a)(D|d)(M|m)(I|i)(N|n))|((P|p)(A|a)(S|s)(S|s)(W|w)(O|o)(R|r)(D|d))|)([12345])");
             var hasNumber = Regex.IsMatch(password, @"[0-9]");
             var hasLowerCase = Regex.IsMatch(password, @"[a-z]");
             var hasUpperCase = Regex.IsMatch(password, @"[A-Z]");
@@ -54,16 +65,6 @@ namespace AccountServices.Business
             {
                 return hashedBytes;
             }
-        }
-
-        public byte[] GeneratePassword()
-        {
-            int length = 20;
-            string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-            var random = new Random();
-            string password = new string(Enumerable.Repeat(chars, length)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
-            return GetHashPassword(password);
         }
     }
 }

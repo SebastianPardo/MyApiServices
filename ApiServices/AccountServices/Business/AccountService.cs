@@ -1,13 +1,14 @@
 ﻿using AccountServices.Business.Interfaces;
 using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace AccountServices.Business
 {
-    public class AccountManager : IAccountManager
+    public class AccountService : IAccountService
     {
         DatabaseContext context;
-        public AccountManager(DatabaseContext context)
+        public AccountService(DatabaseContext context)
         {
             this.context = context;
         }
@@ -16,7 +17,7 @@ namespace AccountServices.Business
 
         public Account GetById(Guid id) => context.Account.FirstOrDefault(x => x.Id == id);
 
-        public Account? getByUserNameOrEmail(string accountEmail) => context.Account.FirstOrDefault(x => x.Email == accountEmail || x.UserName == accountEmail);
+        public Account? getByUserNameOrEmail(string accountEmail) => context.Account.Include(e => e.User).FirstOrDefault(x => x.Email == accountEmail || x.UserName == accountEmail);
 
         public Account Add(Account account)
         {

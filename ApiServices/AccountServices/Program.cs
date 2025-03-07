@@ -5,9 +5,10 @@ using Famnances.AuthMiddleware.Entities;
 using Famnances.AuthMiddleware;
 using Google.Apis.Auth.AspNetCore3;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using JwtMiddleware = Famnances.AuthMiddleware.JwtMiddleware;
+using JwtMiddleware = AccountServices.Business.JwtMiddleware;
 using AccountServices.Business.Interfaces;
 using AccountServices.Business;
+using Famnances.AuthMiddleware.Interfaces;
 
 
 //AppContext.SetSwitch("Switch.Microsoft.Data.SqlClient.UseManagedNetworkingOnWindows", true);
@@ -79,7 +80,10 @@ builder.Services.AddSwaggerGen(swagger =>
                 });
 });
 
-builder.Services.AddScoped<IAccountManager, AccountManager>();
+builder.Services.AddSingleton<ITokenHandler, TokenHandler>();
+
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IUtilityService, UtilityService>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.

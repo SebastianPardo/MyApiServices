@@ -13,24 +13,27 @@ using AccountServices.Models.ApiModels;
 using AccountServices.Business;
 using AccountServices.Business.Interfaces;
 using Famnances.DataCore.Entities;
+using Famnances.AuthMiddleware.Interfaces;
 
 [Authorize]
 [ApiController]
 [Route("Api/[controller]")]
 public class AccountController : ControllerBase
 {
-    Utilities utilities = new Utilities();
-    IAccountManager _accountManager;
+    IAccountService _accountService;
     IMapper Mapper;
-    readonly GoogleReCaptcha GoogleReCaptcha;
-    readonly JwtTokenHandler JwtTokenHandler;
+    IUtilityService _utilityService;
+    GoogleReCaptcha _googleReCaptcha;
+    ITokenHandler _tokenHandler;
 
-    public AccountController(IMapper mapper, IConfiguration configuration, IAccountManager accountManager, IOptions<AppSettings> appSettings)
+    public AccountController(IMapper mapper, IConfiguration configuration, IAccountService accountService, IUtilityService utilityService, ITokenHandler tokenHandler)
     {
-        _accountManager = accountManager;
+        _accountService = accountService;
+        _utilityService = utilityService;
+        _tokenHandler = tokenHandler;
         Mapper = mapper;
-        GoogleReCaptcha = new GoogleReCaptcha(configuration);
-        JwtTokenHandler = new JwtTokenHandler(appSettings.Value);
+        _googleReCaptcha = new GoogleReCaptcha(configuration);
+        
     }
 
     [AllowAnonymous]
@@ -48,20 +51,21 @@ public class AccountController : ControllerBase
         var googleReCaptchaString = model.Param_3;
         var IP = HttpContext.Connection.RemoteIpAddress.ToString();
 #endif
-        var account = _accountManager.getByUserNameOrEmail(email);
+        var account = _accountService.getByUserNameOrEmail(email);
         var enviroment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        if (account == null || !utilities.ComparePassword(password, account.Password))
+        if (account == null || !_utilityService.ComparePassword(password, account.Password))
             throw new AppException("Username or password is incorrect");
         else if (!account.IsActive)
         {
             throw new AppException("User Account is Deactivated Please Contact Admin");
         }
-        //No validate recaptcha when is testing that's why ignore local host and Office Ip.
-        else if (!await GoogleReCaptcha.Validate(googleReCaptchaString) && enviroment != "Development" && IP != "::1" && IP != "70.52.127.163")
-        {
+#if DEBUG
+#else
+        else if (!await _googleReCaptcha.Validate(googleReCaptchaString))
+        {   
             throw new AppException("Recaptcha validation failed");
         }
-
+#endif
         TokenContent tokenContent = new TokenContent
         {
             UserId = account.Id,
@@ -74,7 +78,7 @@ public class AccountController : ControllerBase
             AccountId = account.Id,
             UserName = account.UserName,
             Email = account.Email,
-            Token = JwtTokenHandler.GenerateToken(tokenContent)
+            Token = _tokenHandler.GetToken(tokenContent)
         };
 
         return Ok(response);
@@ -96,7 +100,7 @@ public class AccountController : ControllerBase
             var userGet = oauthSerivce.Userinfo.V2.Me.Get();
             var userinfo = userGet.Execute();
 
-            var account = _accountManager.getByUserNameOrEmail(userinfo.Email);
+            var account = _accountService.getByUserNameOrEmail(userinfo.Email);
             if (account == null)
             {
                 account = new Account
@@ -104,7 +108,7 @@ public class AccountController : ControllerBase
                     Email = email,
                     UserName = email,
                     IsActive = true,
-                    Password = utilities.GeneratePassword(),
+                    Password = _utilityService.GeneratePassword(),
                     LinkedSocialMedias = new List<LinkedSocialMedia>
                     {
                         new LinkedSocialMedia {
@@ -114,9 +118,11 @@ public class AccountController : ControllerBase
                         }
                     }
                 };
-                account = _accountManager.Add(account);
+                account = _accountService.Add(account);
                 firstLogin = true;
             }
+
+            firstLogin = account.User == null;
 
             TokenContent tokenContent = new TokenContent
             {
@@ -132,7 +138,7 @@ public class AccountController : ControllerBase
                 LastName = userinfo.FamilyName,
                 UserName = account.UserName,
                 Email = account.Email,
-                Token = JwtTokenHandler.GenerateToken(tokenContent),
+                Token = _tokenHandler.GetToken(tokenContent),
                 IsFirstLogin = firstLogin
             };
 
@@ -147,7 +153,7 @@ public class AccountController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetById(Guid id)
     {
-        var user = _accountManager.GetById(id);
+        var user = _accountService.GetById(id);
         return Ok(user);
     }
 
@@ -155,30 +161,30 @@ public class AccountController : ControllerBase
     [HttpPost("register")]
     public IActionResult Register(RegisterRequest model)
     {
-        var user = _accountManager.getByUserNameOrEmail(model.Username);
+        var user = _accountService.getByUserNameOrEmail(model.Username);
         if (user != null)
             throw new AppException("Username '" + model.Username + "' is already taken");
         user = Mapper.Map<Account>(model);
-        user.Password = utilities.ValidatePassword(model.Password);
+        user.Password = _utilityService.ValidatePassword(model.Password);
         if (user.Password == null)
             throw new AppException("Minimum of different classes of characters in password is 3. Classes of characters: Lower Case, Upper Case, Digits, Special Characters.");
-        _accountManager.Add(user);
+        _accountService.Add(user);
         return Ok(new { message = "Registration successful" });
     }
 
     [HttpPut("{id}")]
     public IActionResult Update(UpdateRequest model)
     {
-        var user = _accountManager.getByUserNameOrEmail(model.Username);
-        if (user == null || !utilities.ComparePassword(model.Password, user.Password))
+        var user = _accountService.getByUserNameOrEmail(model.Username);
+        if (user == null || !_utilityService.ComparePassword(model.Password, user.Password))
             throw new AppException("Username or password is incorrect");
 
         Mapper.Map(model, user);
-        user.Password = utilities.ValidatePassword(model.Password);
+        user.Password = _utilityService.ValidatePassword(model.Password);
         if (user.Password == null)
             throw new AppException("Minimum of different classes of characters in password is 3. Classes of characters: Lower Case, Upper Case, Digits, Special Characters.");
 
-        _accountManager.Update(user);
+        _accountService.Update(user);
         return Ok(new { message = "User updated successfully" });
     }
 }

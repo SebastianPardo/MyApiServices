@@ -2,7 +2,7 @@
 
 namespace AccountServices.Business.Interfaces
 {
-    public interface IAccountManager
+    public interface IAccountService
     {
         IEnumerable<Account> GetAll();
         Account GetById(Guid id);
