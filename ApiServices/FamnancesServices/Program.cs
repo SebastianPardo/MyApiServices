@@ -1,5 +1,6 @@
 using Famnances.AuthMiddleware;
 using Famnances.AuthMiddleware.Entities;
+using Famnances.AuthMiddleware.Interfaces;
 using Famnances.DataCore.Data;
 using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
@@ -56,6 +57,11 @@ builder.Services.AddSwaggerGen(swagger =>
                 });
 });
 
+builder.Services.AddSingleton<ITokenHandler, TokenHandler>();
+
+builder.Services.AddScoped<ICountryManager, CountryManager>();
+builder.Services.AddScoped<ICityManager, CityManager>();
+builder.Services.AddScoped<IProvinceManager, ProvinceManager>();
 builder.Services.AddScoped<IPeriodManager, PeriodManager>();
 builder.Services.AddScoped<IAccountManager, AccountManager>();
 builder.Services.AddScoped<ITotalsByPeriodManager, TotalsByPeriodManager>();
