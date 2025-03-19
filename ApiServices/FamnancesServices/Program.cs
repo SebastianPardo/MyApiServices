@@ -64,6 +64,7 @@ builder.Services.AddScoped<ICityManager, CityManager>();
 builder.Services.AddScoped<IProvinceManager, ProvinceManager>();
 builder.Services.AddScoped<IPeriodManager, PeriodManager>();
 builder.Services.AddScoped<IAccountManager, AccountManager>();
+builder.Services.AddScoped<IUserManager, UserManager>();
 builder.Services.AddScoped<ITotalsByPeriodManager, TotalsByPeriodManager>();
 builder.Services.AddScoped<IInflowManager, InflowManager>();
 builder.Services.AddScoped<IFixedIncomeManager, FixedIncomeManager>();
