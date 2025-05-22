@@ -29,7 +29,9 @@ namespace FamnancesServices.Controllers
         [HttpGet("CurentTotals")]
         public async Task<IActionResult> CurentTotals()
         {
-            HttpContext.Items.TryGetValue("AccountId", out var accountId);
+            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            //var accountId = account.GetType().GetProperty("Id").GetValue(account);
+            
             TotalsByPeriod? totalsByPeriod = _totalsByPeriodManager.GetByCurrentPeriod(Guid.Parse(accountId.ToString()));
             if (totalsByPeriod != null)
             {
@@ -53,7 +55,7 @@ namespace FamnancesServices.Controllers
         [HttpGet("GetFixedIncomes")]
         public async Task<ActionResult> GetFixedIncomes()
         {
-            HttpContext.Items.TryGetValue("AccountId", out var accountId);
+            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             var fixedIncomes = _fixedIncomeManager.GetAllByUserId(userId);
             return Ok(fixedIncomes);

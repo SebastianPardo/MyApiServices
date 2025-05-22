@@ -15,7 +15,8 @@ namespace AccountServices.Business
 
         public IEnumerable<Account> GetAll() => context.Account;
 
-        public Account GetById(Guid id) => context.Account.FirstOrDefault(x => x.Id == id);
+        public Account? GetById(Guid id) => context.Account.FirstOrDefault(x => x.Id == id);
+        public AccountType? GetType(Guid id) => context.Account.Include(e=>e.AccountType).FirstOrDefault(x => x.Id == id)?.AccountType;
 
         public Account? getByUserNameOrEmail(string accountEmail) => context.Account.Include(e => e.User).FirstOrDefault(x => x.Email == accountEmail || x.UserName == accountEmail);
 

@@ -30,7 +30,8 @@ namespace AccountServices.Business
                     if (tokenContent != null)
                     {
                         var accountManager = context.RequestServices.GetRequiredService<IAccountService>();
-                        context.Items["User"] = accountManager.GetById(tokenContent.UserId);
+                        var account = accountManager.GetById(tokenContent.UserId);
+                        context.Items[Constants.USER] = account.Id;
                         await _next(context);
                     }
                     else
