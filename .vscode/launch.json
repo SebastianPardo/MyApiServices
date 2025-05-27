@@ -3,5 +3,58 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": []
+    "configurations": [
+        {
+        "name": ".NET Core Launch (AccountServices)",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "buildAccountServices",
+        "program": "${workspaceFolder}/AccountServices/bin/Debug/net8.0/AccountServices.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/AccountServices",
+        "stopAtEntry": false,
+        "serverReadyAction": {
+            "action": "openExternally",
+            "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+            "uriFormat": "%s/swagger"
+        },
+        "env": {
+            "ASPNETCORE_ENVIRONMENT": "Development"
+        },
+        "sourceFileMap": {
+            "/Views": "${workspaceFolder}/Views"
+        }
+        },
+        {
+        "name": ".NET Core Launch (FamnancesServices)",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "buildFamnancesServices",
+        "program": "${workspaceFolder}/FamnancesServices/bin/Debug/net8.0/FamnancesServices.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/FamnancesServices",
+        "stopAtEntry": false,
+        "serverReadyAction": {
+            "action": "openExternally",
+            "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+            "uriFormat": "%s/swagger"
+        },
+        "env": {
+            "ASPNETCORE_ENVIRONMENT": "Development"
+        },
+        "sourceFileMap": {
+            "/Views": "${workspaceFolder}/Views"
+        }
+        }
+    ],
+    "compounds": [
+        {
+          "name": "All Services",
+          "configurations": [
+            ".NET Core Launch (AccountServices)",
+            ".NET Core Launch (FamnancesServices)"
+          ],
+          "stopAll": true
+        }
+      ]
 }

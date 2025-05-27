@@ -1,0 +1,6 @@
+@FamnancesServices_HostAddress = http://localhost:5153
+
+GET {{FamnancesServices_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
