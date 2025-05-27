@@ -14,6 +14,7 @@ namespace FamnancesServices.Business
 
         public FixedIncome Add(FixedIncome fixedIncome)
         {
+            fixedIncome.TaxId = 0;
             fixedIncome = context.FixedIncome.Add(fixedIncome).Entity;
             context.SaveChanges();
             return fixedIncome;
