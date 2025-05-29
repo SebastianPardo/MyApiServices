@@ -7,12 +7,13 @@ namespace FamnancesServices.Controllers
     [Authorize]
     [ApiController]
     [Route("Api/[controller]")]
-    public class OutflowsController : Controller
+    public class FixedExpensesController : ControllerBase
     {
-        IOutflowManager _outflowManager;
-        public OutflowsController(IOutflowManager outflowManager)
+        IFixedExpenseManager _fixedExpenseManager;
+
+        public FixedExpensesController(IFixedExpenseManager fixedExpenseManager)
         {
-            _outflowManager = outflowManager;
+            _fixedExpenseManager = fixedExpenseManager;
         }
     }
 }

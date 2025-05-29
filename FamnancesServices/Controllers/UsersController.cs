@@ -9,11 +9,14 @@ namespace FamnancesServices.Controllers
     [Authorize]
     [Route("Api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         IUserManager _userManager;
+        IAccountManager _accountManager;
+        IAccountTypeManager _accountTypeManager;
+        ILinkedSocialMediaManager _linkedSocialMediaManager;
 
-        public UserController(IUserManager userManager)
+        public UsersController(IUserManager userManager)
         {
             _userManager = userManager;
         }

@@ -1,6 +1,7 @@
 ﻿using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Business
 {
@@ -28,12 +29,12 @@ namespace FamnancesServices.Business
 
         public IEnumerable<FixedIncome> GetAllByUserId(Guid userId)
         {
-            return context.FixedIncome.Where(fe => fe.UserId == userId);
+            return context.FixedIncome.Include(e => e.PayablePeriod).Where(e => e.UserId == userId);
         }
 
-        public FixedIncome GetById(Guid id)
+        public FixedIncome GetById(Guid userId, Guid id)
         {
-            return context.FixedIncome.FirstOrDefault(x => x.Id == id);
+            return context.FixedIncome.FirstOrDefault(x => x.Id == id && x.UserId == userId);
         }
 
         public bool Update(FixedIncome fixedIncome)

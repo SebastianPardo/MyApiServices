@@ -11,12 +11,10 @@ namespace FamnancesServices.Controllers
     public class InflowsController : ControllerBase
     {
         IInflowManager _inflowManager;
-        IFixedIncomeManager _fixedIncomeManager;
 
-        public InflowsController(IInflowManager inflowManager, IFixedIncomeManager fixedIncomeManager)
+        public InflowsController(IInflowManager inflowManager)
         {
             _inflowManager = inflowManager;
-            _fixedIncomeManager = fixedIncomeManager;
         }
 
         [HttpPost("Deposit")]
