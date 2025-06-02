@@ -14,8 +14,9 @@ namespace AccountServices.Business
             string password = new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
             var hashPassword = ValidatePassword(password);
-            while(hashPassword == null)
+            while (hashPassword == null)
             {
+                password = new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
                 hashPassword = ValidatePassword(password);
             }
             return hashPassword;

@@ -59,16 +59,25 @@ builder.Services.AddSwaggerGen(swagger =>
 
 builder.Services.AddSingleton<ITokenHandler, TokenHandler>();
 
-builder.Services.AddScoped<ICountryManager, CountryManager>();
-builder.Services.AddScoped<ICityManager, CityManager>();
-builder.Services.AddScoped<IProvinceManager, ProvinceManager>();
-builder.Services.AddScoped<IPeriodManager, PeriodManager>();
 builder.Services.AddScoped<IAccountManager, AccountManager>();
-builder.Services.AddScoped<IUserManager, UserManager>();
-builder.Services.AddScoped<ITotalsByPeriodManager, TotalsByPeriodManager>();
-builder.Services.AddScoped<IInflowManager, InflowManager>();
+builder.Services.AddScoped<IAccountTypeManager, AccountTypeManager>();
+builder.Services.AddScoped<IAutomaticDiscountManager, AutomaticDiscountManager>();
+builder.Services.AddScoped<ICityManager, CityManager>();
+builder.Services.AddScoped<ICountryManager, CountryManager>();
+builder.Services.AddScoped<IExpensesBudgetManager, ExpensesBudgetManager>();
+builder.Services.AddScoped<IFixedExpenseManager, FixedExpenseManager>();
 builder.Services.AddScoped<IFixedIncomeManager, FixedIncomeManager>();
 builder.Services.AddScoped<IIncomeDiscountManager, IncomeDiscountManager>();
+builder.Services.AddScoped<IInflowManager, InflowManager>();
+builder.Services.AddScoped<ILinkedSocialMediaManager, LinkedSocialMediaManager>();
+builder.Services.AddScoped<IOutflowManager, OutflowManager>();
+builder.Services.AddScoped<IPeriodManager, PeriodManager>();
+builder.Services.AddScoped<IProvinceManager, ProvinceManager>();
+builder.Services.AddScoped<ISavingRecordManager, SavingRecordManager>();
+builder.Services.AddScoped<ISavingsPocketManager, SavingsPocketManager>();
+builder.Services.AddScoped<ISocialMediaManager, SocialMediaManager>();
+builder.Services.AddScoped<IUserManager, UserManager>();
+builder.Services.AddScoped<ITotalsByPeriodManager, TotalsByPeriodManager>();
 
 var app = builder.Build();
 

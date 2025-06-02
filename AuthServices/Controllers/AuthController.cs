@@ -108,6 +108,7 @@ public class AuthController : ControllerBase
                     UserName = email,
                     IsActive = true,
                     Password = _utilityService.GeneratePassword(),
+                    AccounTypeId = Guid.Parse("db727d49-2de5-4029-9556-055872cdea55"),
                     LinkedSocialMedias = new List<LinkedSocialMedia>
                     {
                         new LinkedSocialMedia {
