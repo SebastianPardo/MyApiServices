@@ -9,5 +9,6 @@ namespace FamnancesServices.Business.Interfaces
         Outflow Add(Outflow variableExpense);
         bool Update(Outflow variableExpense);
         bool Delete(Outflow variableExpense);
+        decimal GetByPeriod(DateTime startDate, DateTime endDate);
     }
 }

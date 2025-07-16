@@ -6,40 +6,45 @@ namespace FamnancesServices.Business
 {
     public class OutflowManager : IOutflowManager
     {
-        DatabaseContext context;
+        DatabaseContext _context;
         public OutflowManager(DatabaseContext context)
         {
-            this.context = context;
+            this._context = context;
         }
 
         public Outflow Add(Outflow outflow)
         {
-            outflow = context.Outflow.Add(outflow).Entity;
-            context.SaveChanges();
+            outflow = _context.Outflow.Add(outflow).Entity;
+            _context.SaveChanges();
             return outflow;
         }
 
         public bool Delete(Outflow outflow)
         {
-            context.Outflow.Remove(outflow);
-            return context.SaveChanges() > 0;
+            _context.Outflow.Remove(outflow);
+            return _context.SaveChanges() > 0;
         }
 
         public bool Update(Outflow outflow)
         {
-            context.Outflow.Update(outflow);
-            context.SaveChanges();
-            return context.SaveChanges() > 0;
+            _context.Outflow.Update(outflow);
+            _context.SaveChanges();
+            return _context.SaveChanges() > 0;
         }
 
         public IEnumerable<Outflow> GetAllByUserId(Guid userId)
         {
-            return context.Outflow.Where(fe => fe.ExpensesBudget.UserId == userId);
+            return _context.Outflow.Where(fe => fe.ExpensesBudget.UserId == userId);
         }
 
         public Outflow GetById(Guid id)
         {
-            return context.Outflow.FirstOrDefault(x => x.Id == id);
+            return _context.Outflow.FirstOrDefault(x => x.Id == id);
+        }
+
+        public decimal GetByPeriod(DateTime startDate, DateTime endDate)
+        {
+            return _context.Outflow.Where(e => e.DateTimeStamp >= startDate && e.DateTimeStamp <= endDate).Sum(e => e.Value);
         }
     }
 }

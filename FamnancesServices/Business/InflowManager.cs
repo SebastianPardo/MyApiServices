@@ -1,35 +1,40 @@
 ﻿using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Business
 {
     public class InflowManager: IInflowManager
     {
-        DatabaseContext context;
+        DatabaseContext _context;
         public InflowManager(DatabaseContext context)
         {
-            this.context = context;
+            this._context = context;
         }
 
         public Inflow Add(Inflow inflow)
         {
-            inflow = context.Inflow.Add(inflow).Entity;
-            context.SaveChanges();
+            inflow = _context.Inflow.Add(inflow).Entity;
+            _context.SaveChanges();
             return inflow;
         }
 
         public bool Delete(Inflow inflow)
         {
-            context.Inflow.Remove(inflow);
-            return context.SaveChanges() > 0;
+            _context.Inflow.Remove(inflow);
+            return _context.SaveChanges() > 0;
         }
 
         public bool Update(Inflow inflow)
         {
-            context.Inflow.Update(inflow);
-            context.SaveChanges();
-            return context.SaveChanges() > 0;
+            _context.Inflow.Update(inflow);
+            _context.SaveChanges();
+            return _context.SaveChanges() > 0;
+        }
+        public decimal GetByPeriod(DateTime startDate, DateTime endDate)
+        {
+            return _context.Outflow.Where(e => e.DateTimeStamp >= startDate && e.DateTimeStamp <= endDate).Sum(e => e.Value);
         }
     }
 }

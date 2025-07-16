@@ -31,19 +31,34 @@ namespace FamnancesServices.Business
             return user;
         }
 
-        IEnumerable<User> IUserManager.GetAll()
+        IEnumerable<User> GetAll()
         {
             return context.User;
         }
 
-        User IUserManager.GetById(Guid id)
+        IEnumerable<User> IUserManager.GetAll()
+        {
+            return GetAll();
+        }
+
+        User GetById(Guid id)
         {
             return context.User.FirstOrDefault(x => x.Id == id);
         }
 
-        User? IUserManager.getByUserNameOrEmail(string accountEmail)
+        User IUserManager.GetById(Guid id)
+        {
+            return GetById(id);
+        }
+
+        User? getByUserNameOrEmail(string accountEmail)
         {
             return context.User.FirstOrDefault(x => x.Account.Email == accountEmail || x.Account.UserName == accountEmail);
+        }
+
+        User? IUserManager.getByUserNameOrEmail(string accountEmail)
+        {
+            return getByUserNameOrEmail(accountEmail);
         }
     }
 }

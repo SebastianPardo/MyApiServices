@@ -9,5 +9,7 @@ namespace FamnancesServices.Business.Interfaces
         SavingRecord Add(SavingRecord savingsRecord);
         bool Update(SavingRecord savingsRecord);
         bool Delete(SavingRecord savingsRecord);
+        decimal GetSavingsIncomeByPeriod(DateTime item1, DateTime item2);
+        decimal GetSavingsExpensesByPeriod(DateTime item1, DateTime item2);
     }
 }

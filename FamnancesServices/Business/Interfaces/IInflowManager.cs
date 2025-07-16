@@ -7,5 +7,6 @@ namespace FamnancesServices.Business.Interfaces
         Inflow Add(Inflow entity);
         bool Delete(Inflow inflow);
         bool Update(Inflow inflow);
+        decimal GetByPeriod(DateTime startDate, DateTime endDate);
     }
 }

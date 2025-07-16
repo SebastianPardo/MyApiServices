@@ -12,6 +12,15 @@ namespace FamnancesServices.Business
         {
             _context = context;
         }
+
+        public TotalsByPeriod Save(TotalsByPeriod totalsByPeriod)
+        {
+            totalsByPeriod = _context.TotalsByPeriod.Add(totalsByPeriod).Entity;
+            _context.SaveChanges();
+            return totalsByPeriod;
+
+        }
+
         public TotalsByPeriod? GetByCurrentPeriod(Guid userId)
         {
             try
@@ -22,6 +31,11 @@ namespace FamnancesServices.Business
             {
                 return null;
             }
+        }
+
+        public TotalsByPeriod? GetByCurrentDay(Guid userId)
+        {
+            return _context.TotalsByPeriod.SingleOrDefault(e=>e.UserId == userId && e.PeriodDateStart < DateTime.Now && e.PeriodDateEnd > DateTime.Now);
         }
     }
 }

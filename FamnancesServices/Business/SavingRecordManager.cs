@@ -6,40 +6,50 @@ namespace FamnancesServices.Business
 {
     public class SavingRecordManager : ISavingRecordManager
     {
-        DatabaseContext context;
+        DatabaseContext _context;
         public SavingRecordManager(DatabaseContext context)
         {
-            this.context = context;
+            this._context = context;
         }
 
         public SavingRecord Add(SavingRecord savingsRecord)
         {
-            savingsRecord = context.SavingRecord.Add(savingsRecord).Entity;
-            context.SaveChanges();
+            savingsRecord = _context.SavingRecord.Add(savingsRecord).Entity;
+            _context.SaveChanges();
             return savingsRecord;
         }
 
         public bool Delete(SavingRecord savingsRecord)
         {
-            context.SavingRecord.Remove(savingsRecord);
-            return context.SaveChanges() > 0;
+            _context.SavingRecord.Remove(savingsRecord);
+            return _context.SaveChanges() > 0;
         }
 
         public IEnumerable<SavingRecord> GetAllByUserId(Guid userId)
         {
-            return context.SavingRecord.Where(e => e.Id == userId);
+            return _context.SavingRecord.Where(e => e.Id == userId);
         }
 
         public SavingRecord GetById(Guid id)
         {
-            return context.SavingRecord.FirstOrDefault(x => x.Id == id);
+            return _context.SavingRecord.FirstOrDefault(x => x.Id == id);
+        }
+
+        public decimal GetSavingsExpensesByPeriod(DateTime startDate, DateTime endDate)
+        {
+            return _context.SavingRecord.Where(e => e.TimeStamp >= startDate && e.TimeStamp <= endDate && e.IsExpense == true).Sum(e => e.Value);
+        }
+
+        public decimal GetSavingsIncomeByPeriod(DateTime startDate, DateTime endDate)
+        {
+            return _context.SavingRecord.Where(e => e.TimeStamp >= startDate && e.TimeStamp <= endDate && e.IsExpense == false).Sum(e => e.Value);
         }
 
         public bool Update(SavingRecord savingsRecord)
         {
-            context.SavingRecord.Update(savingsRecord);
-            context.SaveChanges();
-            return context.SaveChanges() > 0;
+            _context.SavingRecord.Update(savingsRecord);
+            _context.SaveChanges();
+            return _context.SaveChanges() > 0;
         }
     }
 }
