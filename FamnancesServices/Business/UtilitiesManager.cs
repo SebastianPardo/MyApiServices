@@ -25,12 +25,12 @@ namespace FamnancesServices.Business
                 {
                     case "MON":
                         dateStart = DateTime.Parse($"{DateTime.Now.Year}/{DateTime.Now.Month}/{dayStart}");
-                        dateEnd = dateStart.Value.AddMonths(1).AddDays(-1);
+                        dateEnd = dateStart.Value.AddMonths(1).AddMinutes(-1);
                         break;
                     case "SMON":
                         dateStart = dateStart == null ?
                             DateTime.Parse($"{DateTime.Now.Year}/{DateTime.Now.Month}/{dayStart}")
-                        : dateEnd.Value.AddDays(1);
+                        : dateEnd.Value.AddMinutes(1);
 
                         dateEnd = DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month) < 31? 
                             dateStart.Value.AddMonths(1).AddDays(-14).AddMinutes(-1) : 

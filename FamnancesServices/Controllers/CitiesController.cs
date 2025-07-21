@@ -22,5 +22,11 @@ namespace FamnancesServices.Controllers
             List<City> cities = _cityManager.GetAllByProvince(provinceId);
             return Ok(cities);
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            return Ok(_cityManager.GetById(id));
+        }
     }
 }
