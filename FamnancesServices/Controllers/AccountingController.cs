@@ -55,7 +55,7 @@ namespace FamnancesServices.Controllers
                     PeriodDateEnd = periodDates.Item2,
                     PeriodActive = true,
                     TotalExpenses = _outflowManager.GetByPeriod(periodDates.Item1, periodDates.Item2),
-                    TotalIncomes = _inflowManager.GetByPeriod(periodDates.Item1, periodDates.Item2),
+                    TotalIncomes = _inflowManager.GetTotalByPeriod(periodDates.Item1, periodDates.Item2, user.Id),
                     TotalSavings = _savingRecordManager.GetSavingsIncomeByPeriod(periodDates.Item1, periodDates.Item2),
                     TotalSavingsExpenses = _savingRecordManager.GetSavingsExpensesByPeriod(periodDates.Item1, periodDates.Item2),
                     UserId = user.Id

@@ -2,6 +2,7 @@
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Controllers
 {
@@ -11,25 +12,76 @@ namespace FamnancesServices.Controllers
     public class InflowsController : ControllerBase
     {
         IInflowManager _inflowManager;
+        Guid userId;
 
-        public InflowsController(IInflowManager inflowManager)
+        public InflowsController(IInflowManager inflowManager,  IUserManager userManager)
         {
             _inflowManager = inflowManager;
         }
 
-        [HttpPost("Deposit")]
-        public async Task<IActionResult> Deposit(Inflow inflow)
+        // GET: api/Users
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetInflows(DateTime? startDate = null, DateTime? endDate = null)
         {
-            HttpContext.Items.TryGetValue("AccountId", out var accountId);
+            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            userId = Guid.Parse(accountId.ToString());
+            startDate = startDate ?? DateTime.Now.AddDays(-15);
+            endDate = endDate ?? DateTime.Now;
+            return Ok(_inflowManager.GetAllByPeriod(startDate.Value, endDate.Value, userId));
+        }
+
+        // GET: api/Users/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<User>> GetInflow(Guid id)
+        {
+            return Ok(_inflowManager.GetById(id));
+        }
+
+        // PUT: api/Users/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, Inflow inflow)
+        {
+            if (id != inflow.Id)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                _inflowManager.Update(inflow);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+
+            return NoContent();
+        }
+
+        // POST: api/Users
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<User>> Create(Inflow inflow)
+        {
+            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
             inflow.UserId = Guid.Parse(accountId.ToString());
-            //if (_fixedIncomeManager != null)
-            //{
-            //    FixedIncome fixedIncome = _fixedIncomeManager.GetById(inflow.FixedIncomeId.Value);
-            //    inflow.Value = fixedIncome.Value;
-            //    inflow.Description = fixedIncome.Description;
-            //}
-            inflow = _inflowManager.Add(inflow);
-            return Ok(inflow);
+            _inflowManager.Add(inflow);
+            return CreatedAtAction("GetInflow", new { id = inflow.Id }, inflow);
+        }
+
+        // DELETE: api/Users/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(Guid id)
+        {
+            var user = _inflowManager.GetById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            _inflowManager.Delete(user);
+            return NoContent();
         }
     }
 }

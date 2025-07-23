@@ -41,7 +41,7 @@ builder.Services.AddAuthentication(o =>
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
     });
-builder.Services.AddCustomJwtAuthentication();
+//builder.Services.AddCustomJwtAuthentication();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(swagger =>
