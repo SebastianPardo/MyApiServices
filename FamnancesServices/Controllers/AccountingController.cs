@@ -74,18 +74,18 @@ namespace FamnancesServices.Controllers
             TotalsByPeriod? totalsByPeriod = _totalsByPeriodManager.GetByCurrentPeriod(Guid.Parse(accountId.ToString()));
             if (totalsByPeriod != null)
             {
-                decimal balance = totalsByPeriod.User.TotalBudget - totalsByPeriod.TotalExpenses;
+                decimal balance = totalsByPeriod.User.BudgetByPeriod - totalsByPeriod.TotalExpenses;
                 SummaryModel summaryModel = new SummaryModel
                 {
-                    PeriodBalance = balance,
-                    HomeSavings = 0,
-                    PeriodExpenses = totalsByPeriod.TotalExpenses,
-                    PeriodSavings = totalsByPeriod.TotalSavings,
-                    PeriodSavingsExpeses = totalsByPeriod.TotalSavingsExpenses,
-                    FullBudget = totalsByPeriod.User.TotalBudget,
-                    TotalSavings = totalsByPeriod.User.TotalSavings,
                     PeriodStartDate = totalsByPeriod.PeriodDateStart,
                     PeriodEndDate = totalsByPeriod.PeriodDateEnd,
+                    PeriodBudget = totalsByPeriod.User.BudgetByPeriod,
+                    PeriodBalance = balance,
+                    PeriodExpenses = totalsByPeriod.TotalExpenses,
+                    HomeSavings = 0,
+                    Chequing = totalsByPeriod.User.TotalBudget,
+                    Savings = totalsByPeriod.User.TotalSavings,
+                    PeriodSavingsExpeses = totalsByPeriod.TotalSavingsExpenses
                 };
                 return Ok(summaryModel);
             }
