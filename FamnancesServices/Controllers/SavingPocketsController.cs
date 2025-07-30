@@ -1,6 +1,5 @@
 ﻿using Famnances.AuthMiddleware;
 using Famnances.DataCore.Entities;
-using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,51 +9,53 @@ namespace FamnancesServices.Controllers
     [Authorize]
     [ApiController]
     [Route("Api/[controller]")]
-    public class SavingsController : Controller
+    public class SavingPocketsController : Controller
     {
-        ISavingRecordManager _savingRecordManager;
-        public SavingsController(ISavingRecordManager savingRecordManager)
+        ISavingsPocketManager _savingsPocketManager;
+        public SavingPocketsController(ISavingsPocketManager savingsPocketManager)
         {
-            _savingRecordManager = savingRecordManager;
+            _savingsPocketManager = savingsPocketManager;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SavingRecord>>> GetRecords()
+        public async Task<ActionResult<IEnumerable<SavingsPocket>>> GetPockets()
         {
             HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
-            return Ok(_savingRecordManager.GetAll(userId));
+            return Ok(_savingsPocketManager.GetAll(userId));
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<SavingRecord>> GetRecord(Guid id)
+        public async Task<ActionResult<SavingsPocket>> GetPocket(Guid id)
         {
-            return Ok(_savingRecordManager.GetById(id));
+            return Ok(_savingsPocketManager.GetById(id));
         }
 
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> Create(SavingRecord savingRecord)
+        public async Task<ActionResult<SavingsPocket>> Create(SavingsPocket pocket)
         {
-            _savingRecordManager.Add(savingRecord);
-            return CreatedAtAction("GetRecord", new { id = savingRecord.Id }, savingRecord);
+            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            pocket.UserId = Guid.Parse(accountId.ToString());
+            _savingsPocketManager.Add(pocket);
+            return CreatedAtAction("GetPocket", new { id = pocket.Id }, pocket);
         }
 
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, SavingRecord savingRecord)
+        public async Task<IActionResult> Update(Guid id, SavingsPocket pocket)
         {
-            if (id != savingRecord.Id)
+            if (id != pocket.Id)
             {
                 return BadRequest();
             }
 
             try
             {
-                _savingRecordManager.Update(savingRecord);
+                _savingsPocketManager.Update(pocket);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -68,13 +69,13 @@ namespace FamnancesServices.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePocket(Guid id)
         {
-            var savingRecord = _savingRecordManager.GetById(id);
-            if (savingRecord == null)
+            var pocket = _savingsPocketManager.GetById(id);
+            if (pocket == null)
             {
                 return NotFound();
             }
 
-            _savingRecordManager.Delete(savingRecord);
+            _savingsPocketManager.Delete(pocket);
             return NoContent();
         }
     }

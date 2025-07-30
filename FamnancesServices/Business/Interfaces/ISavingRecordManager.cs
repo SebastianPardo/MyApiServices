@@ -4,7 +4,7 @@ namespace FamnancesServices.Business.Interfaces
 {
     public interface ISavingRecordManager
     {
-        IEnumerable<SavingRecord> GetAllByUserId(Guid userId);
+        IEnumerable<SavingRecord> GetAll(Guid userId);
         SavingRecord GetById(Guid id);
         SavingRecord Add(SavingRecord savingsRecord);
         bool Update(SavingRecord savingsRecord);

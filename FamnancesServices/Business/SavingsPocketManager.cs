@@ -26,9 +26,9 @@ namespace FamnancesServices.Business
             return context.SaveChanges() > 0;
         }
 
-        public IEnumerable<SavingsPocket> GetAllByUserId(Guid userId)
+        public IEnumerable<SavingsPocket> GetAll(Guid userId)
         {
-            return context.SavingsPocket.Where(e => e.Id == userId);
+            return context.SavingsPocket.Where(e => e.UserId  == userId);
         }
 
         public SavingsPocket GetById(Guid id)

@@ -1,6 +1,7 @@
 ﻿using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Business
 {
@@ -14,6 +15,7 @@ namespace FamnancesServices.Business
 
         public SavingRecord Add(SavingRecord savingsRecord)
         {
+            savingsRecord.TimeStamp = DateTime.Now;
             savingsRecord = _context.SavingRecord.Add(savingsRecord).Entity;
             _context.SaveChanges();
             return savingsRecord;
@@ -25,14 +27,14 @@ namespace FamnancesServices.Business
             return _context.SaveChanges() > 0;
         }
 
-        public IEnumerable<SavingRecord> GetAllByUserId(Guid userId)
+        public IEnumerable<SavingRecord> GetAll(Guid userId)
         {
-            return _context.SavingRecord.Where(e => e.Id == userId);
+            return _context.SavingRecord.Include(e => e.SavingsPocket).Where(e => e.SavingsPocket.UserId == userId);
         }
 
         public SavingRecord GetById(Guid id)
         {
-            return _context.SavingRecord.FirstOrDefault(x => x.Id == id);
+            return _context.SavingRecord.Include(e => e.SavingsPocket).FirstOrDefault(x => x.Id == id);
         }
 
         public decimal GetSavingsExpensesByPeriod(DateTime startDate, DateTime endDate)
@@ -47,6 +49,7 @@ namespace FamnancesServices.Business
 
         public bool Update(SavingRecord savingsRecord)
         {
+            savingsRecord.TimeStamp = DateTime.Now;
             _context.SavingRecord.Update(savingsRecord);
             _context.SaveChanges();
             return _context.SaveChanges() > 0;
