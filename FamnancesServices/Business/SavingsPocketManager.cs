@@ -1,6 +1,7 @@
 ﻿using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Business
 {
@@ -28,7 +29,7 @@ namespace FamnancesServices.Business
 
         public IEnumerable<SavingsPocket> GetAll(Guid userId)
         {
-            return context.SavingsPocket.Where(e => e.UserId  == userId);
+            return context.SavingsPocket.Include(e=>e.SavingsRecords).Where(e => e.UserId  == userId);
         }
 
         public SavingsPocket GetById(Guid id)

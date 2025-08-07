@@ -18,6 +18,8 @@ namespace FamnancesServices.Controllers
         IOutflowManager _outflowManager;
         IInflowManager _inflowManager;
         ISavingRecordManager _savingRecordManager;
+        ISavingsPocketManager _savingPocketManager;
+        IExpensesBudgetManager _expensesBudgetManager;
 
 
         public AccountingController(
@@ -26,7 +28,9 @@ namespace FamnancesServices.Controllers
             IUtilitiesManager utilitiesManager,
             IOutflowManager outflowManager,
             IInflowManager inflowManager,
-            ISavingRecordManager savingRecordManager
+            ISavingRecordManager savingRecordManager,
+            ISavingsPocketManager savingPocketManager,
+        IExpensesBudgetManager expensesBudgetManager
             )
         {
             _totalsByPeriodManager = totalsByPeriodManager;
@@ -35,6 +39,8 @@ namespace FamnancesServices.Controllers
             _outflowManager = outflowManager;
             _inflowManager = inflowManager;
             _savingRecordManager = savingRecordManager;
+            _savingPocketManager = savingPocketManager;
+            _expensesBudgetManager = expensesBudgetManager;
         }
 
         [HttpGet("CalculatePeriod")]
@@ -45,7 +51,7 @@ namespace FamnancesServices.Controllers
             User user = _userManager.GetById(Guid.Parse(accountId.ToString()));
             TotalsByPeriod totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(user.Id);
 
-            if(totalsByPeriod == null)
+            if (totalsByPeriod == null)
             {
                 var periodDates = _utilitiesManager.GetPeriodDates(user.PeriodId, user.PeriodStartsMonthsDay);
                 totalsByPeriod = new TotalsByPeriod
@@ -69,9 +75,9 @@ namespace FamnancesServices.Controllers
         public async Task<IActionResult> CurentTotals()
         {
             HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
-            //var accountId = account.GetType().GetProperty("Id").GetValue(account);
+            var userId = Guid.Parse(accountId.ToString());
 
-            TotalsByPeriod? totalsByPeriod = _totalsByPeriodManager.GetByCurrentPeriod(Guid.Parse(accountId.ToString()));
+            TotalsByPeriod? totalsByPeriod = _totalsByPeriodManager.GetByCurrentPeriod(userId);
             if (totalsByPeriod != null)
             {
                 decimal balance = totalsByPeriod.User.BudgetByPeriod - totalsByPeriod.TotalExpenses;
@@ -85,7 +91,19 @@ namespace FamnancesServices.Controllers
                     HomeSavings = 0,
                     Chequing = totalsByPeriod.User.TotalBudget,
                     Savings = totalsByPeriod.User.TotalSavings,
-                    PeriodSavingsExpeses = totalsByPeriod.TotalSavingsExpenses
+                    PeriodSavingsExpeses = totalsByPeriod.TotalSavingsExpenses,
+                    SummaryBudgets = _expensesBudgetManager.GetAllByUserId(userId).Select(e => new SummaryBudgetModel
+                    {
+                        Name = e.Name,
+                        Value = e.Value,
+                        Spent = e.Outflow.Where(e => e.DateTimeStamp >= totalsByPeriod.PeriodDateStart || e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
+                    }).ToList(),
+                    SummaryPockets = _savingPocketManager.GetAll(userId).Select( e=> new SummaryPocketModel
+                    {
+                        Name = e.Name,
+                        Value = e.Total,
+                        Spent = e.SavingsRecords.Where(e => e.IsExpense = true && e.TimeStamp >= totalsByPeriod.PeriodDateStart || e.TimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
+                    }).ToList()
                 };
                 return Ok(summaryModel);
             }

@@ -1,6 +1,7 @@
 ﻿using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Business
 {
@@ -35,7 +36,7 @@ namespace FamnancesServices.Business
 
         IEnumerable<ExpensesBudget> IExpensesBudgetManager.GetAllByUserId(Guid userId)
         {
-            return context.ExpensesBudget.Where(fe => fe.UserId == userId);
+            return context.ExpensesBudget.Include(e => e.Outflow).Where(fe => fe.UserId == userId);
         }
 
         ExpensesBudget IExpensesBudgetManager.GetById(Guid id)
