@@ -14,6 +14,7 @@ namespace FamnancesServices.Business
 
         public Outflow Add(Outflow outflow)
         {
+            outflow.DateTimeStamp = DateTime.Now;
             outflow = _context.Outflow.Add(outflow).Entity;
             _context.SaveChanges();
             return outflow;
