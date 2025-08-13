@@ -30,7 +30,6 @@ namespace FamnancesServices.Business
         public bool Update(ExpensesBudget expensesBudget)
         {
             context.ExpensesBudget.Update(expensesBudget);
-            context.SaveChanges();
             return context.SaveChanges() > 0;
         }
 

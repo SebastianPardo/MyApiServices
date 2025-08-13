@@ -28,7 +28,7 @@ namespace FamnancesServices.Controllers
 
         [HttpGet("{id}")]
 
-        public async Task<ActionResult<IEnumerable<ExpensesBudget>>> GetBudget(Guid id)
+        public async Task<ActionResult<ExpensesBudget>> GetBudget(Guid id)
         {
             return Ok(_expensesBudgetManager.GetById(id));
         }
@@ -58,7 +58,7 @@ namespace FamnancesServices.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> Create(ExpensesBudget budget)
+        public async Task<ActionResult<ExpensesBudget>> Create(ExpensesBudget budget)
         {
             HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
             budget.UserId = Guid.Parse(accountId.ToString());

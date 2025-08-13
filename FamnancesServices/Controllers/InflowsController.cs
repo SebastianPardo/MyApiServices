@@ -21,7 +21,7 @@ namespace FamnancesServices.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetInflows(DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<ActionResult<IEnumerable<Inflow>>> GetInflows(DateTime? startDate = null, DateTime? endDate = null)
         {
             HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
             userId = Guid.Parse(accountId.ToString());
@@ -32,7 +32,7 @@ namespace FamnancesServices.Controllers
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetInflow(Guid id)
+        public async Task<ActionResult<Inflow>> GetInflow(Guid id)
         {
             return Ok(_inflowManager.GetById(id));
         }
@@ -62,7 +62,7 @@ namespace FamnancesServices.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> Create(Inflow inflow)
+        public async Task<ActionResult<Inflow>> Create(Inflow inflow)
         {
             HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
             inflow.UserId = Guid.Parse(accountId.ToString());
@@ -72,15 +72,15 @@ namespace FamnancesServices.Controllers
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var user = _inflowManager.GetById(id);
-            if (user == null)
+            var inflow = _inflowManager.GetById(id);
+            if (inflow == null)
             {
                 return NotFound();
             }
 
-            _inflowManager.Delete(user);
+            _inflowManager.Delete(inflow);
             return NoContent();
         }
     }

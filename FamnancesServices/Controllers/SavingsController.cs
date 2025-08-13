@@ -36,7 +36,7 @@ namespace FamnancesServices.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> Create(SavingRecord savingRecord)
+        public async Task<ActionResult<SavingRecord>> Create(SavingRecord savingRecord)
         {
             _savingRecordManager.Add(savingRecord);
             return CreatedAtAction("GetRecord", new { id = savingRecord.Id }, savingRecord);
@@ -66,7 +66,7 @@ namespace FamnancesServices.Controllers
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePocket(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var savingRecord = _savingRecordManager.GetById(id);
             if (savingRecord == null)
