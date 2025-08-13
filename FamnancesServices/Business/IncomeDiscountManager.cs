@@ -20,14 +20,24 @@ namespace FamnancesServices.Business
 
         public IEnumerable<IncomeDiscount> GetAllByUser(Guid userId)
         {
-            return _context.IncomeDiscount.Where(e=>e.UserId == userId);
+            return _context.IncomeDiscount.Where(e => e.UserId == userId);
         }
 
         public bool Update(IncomeDiscount entity)
         {
             _context.IncomeDiscount.Update(entity);
-            _context.SaveChanges();
             return _context.SaveChanges() > 0;
+        }
+
+        public bool Delete(IncomeDiscount entity)
+        {
+            _context.IncomeDiscount.Remove(entity);
+            return _context.SaveChanges() > 0;
+        }
+
+        public IncomeDiscount? GetById(Guid id)
+        {
+            return _context.IncomeDiscount.First(e => e.Id == id);
         }
     }
 }

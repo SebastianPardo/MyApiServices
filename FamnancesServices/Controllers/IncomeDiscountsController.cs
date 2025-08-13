@@ -1,47 +1,85 @@
-﻿using Famnances.DataCore.Entities;
+﻿using Famnances.AuthMiddleware;
+using Famnances.DataCore.Entities;
 using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace FamnancesServices.Controllers
 {
+    [Authorize]
+    [Route("api/[controller]")]
+    [ApiController]
     public class IncomeDiscountsController : ControllerBase
     {
         IIncomeDiscountManager _incomeDiscountManager;
-        IAutomaticDiscountManager _automaticDiscountManager;
-
-        public IncomeDiscountsController(IncomeDiscountManager incomeDiscountManager, IAutomaticDiscountManager automaticDiscountManager)
+        public IncomeDiscountsController(IIncomeDiscountManager incomeDiscountManager)
         {
-            _automaticDiscountManager = automaticDiscountManager;
             _incomeDiscountManager = incomeDiscountManager;
         }
-
-
+        // GET: api/<ValuesController>
         [HttpGet]
-        public async Task<IActionResult> GetIncomeDiscounts()
+        public ActionResult<IEnumerable<IncomeDiscount>> Get()
         {
-            HttpContext.Items.TryGetValue("AccountId", out var accountId);
+            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
-            IEnumerable<IncomeDiscount> entity = _incomeDiscountManager.GetAllByUser(userId);
-            return Ok(entity);
+            var discounts = _incomeDiscountManager.GetAllByUser(userId);
+            return Ok(discounts);
         }
 
+        // GET api/<ValuesController>/5
+        [HttpGet("{id}")]
+        public ActionResult<IEnumerable<IncomeDiscount>> Get(Guid id)
+        {
+            var discounts = _incomeDiscountManager.GetById(id);
+            return Ok(discounts);
+        }
+
+        // POST api/<ValuesController>
         [HttpPost]
-        public async Task<IActionResult> AddIncomeDiscount(IncomeDiscount entity)
+        public IActionResult Create(IncomeDiscount discount)
         {
-            HttpContext.Items.TryGetValue("AccountId", out var accountId);
-            entity.UserId = Guid.Parse(accountId.ToString());
-            entity = _incomeDiscountManager.Add(entity);
-            return Ok(entity);
+            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            discount.UserId = Guid.Parse(accountId.ToString());
+            _incomeDiscountManager.Add(discount);
+            return CreatedAtAction("GetBudget", new { id = discount.Id }, discount);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateIncomeDiscount(IncomeDiscount entity)
+        // PUT api/<ValuesController>/5
+        [HttpPut("{id}")]
+        public IActionResult Update(Guid id, IncomeDiscount discount)
         {
-            HttpContext.Items.TryGetValue("AccountId", out var accountId);
-            entity.UserId = Guid.Parse(accountId.ToString());
-            _incomeDiscountManager.Update(entity);
-            return Ok(entity);
+            if (id != discount.Id)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                _incomeDiscountManager.Update(discount);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+
+            return NoContent();
+        }
+
+        // DELETE api/<ValuesController>/5
+        [HttpDelete("{id}")]
+        public IActionResult Delete(Guid id)
+        {
+            var budget = _incomeDiscountManager.GetById(id);
+            if (budget == null)
+            {
+                return NotFound();
+            }
+
+            _incomeDiscountManager.Delete(budget);
+            return NoContent();
         }
     }
 }

@@ -6,6 +6,8 @@ namespace FamnancesServices.Business.Interfaces
     {
         IncomeDiscount Add(IncomeDiscount incomeDiscount);
         IEnumerable<IncomeDiscount> GetAllByUser(Guid userId);
+        IncomeDiscount? GetById(Guid id);
         bool Update(IncomeDiscount incomeDiscount);
+        bool Delete(IncomeDiscount entity);
     }
 }
