@@ -1,7 +1,9 @@
 ﻿using Famnances.AuthMiddleware;
 using Famnances.DataCore.Entities;
+using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 
 namespace FamnancesServices.Controllers
 {
@@ -18,7 +20,7 @@ namespace FamnancesServices.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetFixedIncomes()
+        public async Task<ActionResult> Get()
         {
             HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
@@ -27,7 +29,7 @@ namespace FamnancesServices.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetFixedIncome(Guid id)
+        public async Task<ActionResult> Get(Guid id)
         {
             HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
@@ -36,12 +38,26 @@ namespace FamnancesServices.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddFixedIncome(FixedIncome entity)
+        public async Task<IActionResult> Add(FixedIncome entity)
         {
             HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
             entity.UserId = Guid.Parse(accountId.ToString());
             entity = _fixedIncomeManager.Add(entity);
             return Ok(entity);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            var userId = Guid.Parse(accountId.ToString());
+            var fixedIncomes = _fixedIncomeManager.GetById(userId, id);
+            if (fixedIncomes == null)
+            {
+                return NotFound();
+            }
+            _fixedIncomeManager.Delete(fixedIncomes);
+            return NoContent();
         }
     }
 }

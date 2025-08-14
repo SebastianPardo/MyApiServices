@@ -71,13 +71,13 @@ namespace FamnancesServices.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var budget = _outflowManager.GetById(id);
-            if (budget == null)
+            var outflow = _outflowManager.GetById(id);
+            if (outflow == null)
             {
                 return NotFound();
             }
 
-            _outflowManager.Delete(budget);
+            _outflowManager.Delete(outflow);
             return NoContent();
         }
     }

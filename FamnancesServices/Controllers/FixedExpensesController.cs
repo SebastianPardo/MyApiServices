@@ -47,6 +47,8 @@ namespace FamnancesServices.Controllers
 
             try
             {
+                HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+                fixedExpense.UserId = Guid.Parse(accountId.ToString());
                 _fixedExpenseManager.Update(fixedExpense);
             }
             catch (DbUpdateConcurrencyException)
