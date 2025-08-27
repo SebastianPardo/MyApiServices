@@ -12,9 +12,6 @@ namespace FamnancesServices.Controllers
     public class UsersController : ControllerBase
     {
         IUserManager _userManager;
-        IAccountManager _accountManager;
-        IAccountTypeManager _accountTypeManager;
-        ILinkedSocialMediaManager _linkedSocialMediaManager;
 
         public UsersController(IUserManager userManager)
         {
@@ -33,6 +30,15 @@ namespace FamnancesServices.Controllers
         public async Task<ActionResult<User>> GetUser(Guid id)
         {
             return Ok(_userManager.GetById(id));
+        }
+
+        [HttpGet("Search/{name}")]
+        public async Task<ActionResult<IEnumerable<User>>> Search(string name)
+        {
+            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            var userId = Guid.Parse(accountId.ToString());
+            var user = _userManager.GetById(userId);
+            return Ok(_userManager.Search(name, user.HomeAdministrator));
         }
 
         // PUT: api/Users/5

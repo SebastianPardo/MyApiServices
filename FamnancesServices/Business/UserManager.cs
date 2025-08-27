@@ -1,6 +1,7 @@
 ﻿using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Business
 {
@@ -22,6 +23,21 @@ namespace FamnancesServices.Business
         {
             context.User.Remove(user);
             return context.SaveChanges() > 0;
+        }
+
+        public List<User> Search(string email, bool admisitrator)
+        {
+            if (admisitrator)
+            {
+                return context.User.Include(e => e.Account)
+                    .Where(e => (e.LegalName.Contains(email) || e.Account.Email.Contains(email)) && e.HomeId == null).ToList();
+            }
+            else
+            {
+                return context.User.Include(e => e.Account)
+                    .Where(e => (e.LegalName.Contains(email) || e.Account.Email.Contains(email)) && e.HomeId != null && e.HomeAdministrator == true).ToList();
+            }
+
         }
 
         public User Update(User user)

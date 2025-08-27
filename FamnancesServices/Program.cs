@@ -79,6 +79,8 @@ builder.Services.AddScoped<ISocialMediaManager, SocialMediaManager>();
 builder.Services.AddScoped<IUserManager, UserManager>();
 builder.Services.AddScoped<IUtilitiesManager, UtilitiesManager>();
 builder.Services.AddScoped<ITotalsByPeriodManager, TotalsByPeriodManager>();
+builder.Services.AddScoped<IHomeManager, HomeManager>();
+builder.Services.AddScoped<IHomeInvitationManager, HomeInvitationManager>();
 
 var app = builder.Build();
 
