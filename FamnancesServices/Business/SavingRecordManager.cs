@@ -13,6 +13,12 @@ namespace FamnancesServices.Business
             this._context = context;
         }
 
+        public decimal GetHomeSavings(Guid homeId)
+        {
+            var users = _context.User.Where(e => e.HomeId == homeId);
+            return users.Sum(e => e.TotalSavings);
+        }
+
         public SavingRecord Add(SavingRecord savingsRecord)
         {
             savingsRecord.TimeStamp = DateTime.Now;
@@ -37,14 +43,14 @@ namespace FamnancesServices.Business
             return _context.SavingRecord.Include(e => e.SavingsPocket).FirstOrDefault(x => x.Id == id);
         }
 
-        public decimal GetSavingsExpensesByPeriod(DateTime startDate, DateTime endDate)
+        public decimal GetSavingsExpensesByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
-            return _context.SavingRecord.Where(e => e.TimeStamp >= startDate && e.TimeStamp <= endDate && e.IsExpense == true).Sum(e => e.Value);
+            return _context.SavingRecord.Where(e => e.TimeStamp >= startDate && e.TimeStamp <= endDate && e.IsExpense == true && e.SavingsPocket.UserId == userId).Sum(e => e.Value);
         }
 
-        public decimal GetSavingsIncomeByPeriod(DateTime startDate, DateTime endDate)
+        public decimal GetSavingsIncomeByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
-            return _context.SavingRecord.Where(e => e.TimeStamp >= startDate && e.TimeStamp <= endDate && e.IsExpense == false).Sum(e => e.Value);
+            return _context.SavingRecord.Where(e => e.TimeStamp >= startDate && e.TimeStamp <= endDate && e.IsExpense == false && e.SavingsPocket.UserId == userId).Sum(e => e.Value);
         }
 
         public bool Update(SavingRecord savingsRecord)

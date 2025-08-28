@@ -4,7 +4,8 @@ namespace FamnancesServices.Business.Interfaces
 {
     public interface ISavingsPocketManager
     {
-        IEnumerable<SavingsPocket> GetAll(Guid userId);
+        IEnumerable<SavingsPocket> GetAllByUserId(Guid userId);
+        IEnumerable<SavingsPocket> GetAllByHome(Guid homeId);
         SavingsPocket GetById(Guid id);
         SavingsPocket Add(SavingsPocket savingsPocket);
         bool Update(SavingsPocket savingsPocket);

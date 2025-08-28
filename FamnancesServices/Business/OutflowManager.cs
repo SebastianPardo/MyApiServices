@@ -43,9 +43,9 @@ namespace FamnancesServices.Business
             return _context.Outflow.FirstOrDefault(x => x.Id == id);
         }
 
-        public decimal GetByPeriod(DateTime startDate, DateTime endDate)
+        public decimal GetByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
-            return _context.Outflow.Where(e => e.DateTimeStamp >= startDate && e.DateTimeStamp <= endDate).Sum(e => e.Value);
+            return _context.Outflow.Where(e => e.DateTimeStamp >= startDate && e.DateTimeStamp <= endDate && e.ExpensesBudget.UserId == userId).Sum(e => e.Value);
         }
     }
 }

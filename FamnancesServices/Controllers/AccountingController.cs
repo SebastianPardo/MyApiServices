@@ -1,7 +1,6 @@
 ﻿using Famnances.AuthMiddleware;
 using Famnances.DataCore.Entities;
 using Famnances.DataCore.ServicesModels;
-using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +19,7 @@ namespace FamnancesServices.Controllers
         ISavingRecordManager _savingRecordManager;
         ISavingsPocketManager _savingPocketManager;
         IExpensesBudgetManager _expensesBudgetManager;
+        IHomeManager _homeManager;
 
 
         public AccountingController(
@@ -30,7 +30,8 @@ namespace FamnancesServices.Controllers
             IInflowManager inflowManager,
             ISavingRecordManager savingRecordManager,
             ISavingsPocketManager savingPocketManager,
-        IExpensesBudgetManager expensesBudgetManager
+            IExpensesBudgetManager expensesBudgetManager,
+            IHomeManager homeManager
             )
         {
             _totalsByPeriodManager = totalsByPeriodManager;
@@ -41,6 +42,7 @@ namespace FamnancesServices.Controllers
             _savingRecordManager = savingRecordManager;
             _savingPocketManager = savingPocketManager;
             _expensesBudgetManager = expensesBudgetManager;
+            _homeManager = homeManager;
         }
 
         [HttpGet("CalculatePeriod")]
@@ -60,10 +62,10 @@ namespace FamnancesServices.Controllers
                     PeriodDateStart = periodDates.Item1,
                     PeriodDateEnd = periodDates.Item2,
                     PeriodActive = true,
-                    TotalExpenses = _outflowManager.GetByPeriod(periodDates.Item1, periodDates.Item2),
+                    TotalExpenses = _outflowManager.GetByPeriod(periodDates.Item1, periodDates.Item2, user.Id),
                     TotalIncomes = _inflowManager.GetTotalByPeriod(periodDates.Item1, periodDates.Item2, user.Id),
-                    TotalSavings = _savingRecordManager.GetSavingsIncomeByPeriod(periodDates.Item1, periodDates.Item2),
-                    TotalSavingsExpenses = _savingRecordManager.GetSavingsExpensesByPeriod(periodDates.Item1, periodDates.Item2),
+                    TotalSavings = _savingRecordManager.GetSavingsIncomeByPeriod(periodDates.Item1, periodDates.Item2, user.Id),
+                    TotalSavingsExpenses = _savingRecordManager.GetSavingsExpensesByPeriod(periodDates.Item1, periodDates.Item2, user.Id),
                     UserId = user.Id
                 };
                 _totalsByPeriodManager.Save(totalsByPeriod);
@@ -76,6 +78,7 @@ namespace FamnancesServices.Controllers
         {
             HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
+            User user = _userManager.GetById(userId);
 
             TotalsByPeriod? totalsByPeriod = _totalsByPeriodManager.GetByCurrentPeriod(userId);
             if (totalsByPeriod != null)
@@ -98,13 +101,31 @@ namespace FamnancesServices.Controllers
                         Value = e.Value,
                         Spent = e.Outflow.Where(e => e.DateTimeStamp >= totalsByPeriod.PeriodDateStart || e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
                     }).ToList(),
-                    SummaryPockets = _savingPocketManager.GetAll(userId).Select( e=> new SummaryPocketModel
+                    SummaryPockets = _savingPocketManager.GetAllByUserId(userId).Select(e => new SummaryPocketModel
                     {
                         Name = e.Name,
                         Value = e.Total,
                         Spent = e.SavingsRecords.Where(e => e.IsExpense = true && e.TimeStamp >= totalsByPeriod.PeriodDateStart || e.TimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
                     }).ToList()
                 };
+
+                if (user.HomeId != null)
+                {
+                    Home home = _homeManager.GetById(user.HomeId.Value);
+                    summaryModel.HomeSavings = _savingRecordManager.GetHomeSavings(home.Id);
+                    summaryModel.SummaryBudgets = _expensesBudgetManager.GetAllByHomeId(home.Id).Select(e => new SummaryBudgetModel
+                    {
+                        Name = e.Name,
+                        Value = e.Value,
+                        Spent = e.Outflow.Where(e => e.DateTimeStamp >= totalsByPeriod.PeriodDateStart || e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
+                    }).ToList();
+                    summaryModel.SummaryPockets = _savingPocketManager.GetAllByUserId(home.Id).Select(e => new SummaryPocketModel
+                    {
+                        Name = e.Name,
+                        Value = e.Total,
+                        Spent = e.SavingsRecords.Where(e => e.IsExpense = true && e.TimeStamp >= totalsByPeriod.PeriodDateStart || e.TimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
+                    }).ToList();
+                }
                 return Ok(summaryModel);
             }
             return Ok(new SummaryModel());

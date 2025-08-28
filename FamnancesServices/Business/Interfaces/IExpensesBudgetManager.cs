@@ -4,7 +4,8 @@ namespace FamnancesServices.Business.Interfaces
 {
     public interface IExpensesBudgetManager
     {
-        IEnumerable<ExpensesBudget> GetAllByUserId(Guid userId);
+        List<ExpensesBudget> GetAllByUserId(Guid userId);
+        List<ExpensesBudget> GetAllByHomeId(Guid homeId);
         ExpensesBudget GetById(Guid id);
         ExpensesBudget Add(ExpensesBudget expensesBudget);
         bool Update(ExpensesBudget expensesBudget);

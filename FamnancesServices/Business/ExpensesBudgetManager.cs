@@ -26,21 +26,25 @@ namespace FamnancesServices.Business
             return context.SaveChanges() > 0;
         }
 
+        public List<ExpensesBudget> GetAllByHomeId(Guid homeId)
+        {
+            return context.ExpensesBudget.Include(e => e.Outflow).Where(fe => fe.User.HomeId == homeId).ToList();
+        }
+
+        public List<ExpensesBudget> GetAllByUserId(Guid userId)
+        {
+            return context.ExpensesBudget.Include(e => e.Outflow).Where(fe => fe.UserId == userId).ToList();
+        }
+
+        public ExpensesBudget GetById(Guid id)
+        {
+            return context.ExpensesBudget.FirstOrDefault(x => x.Id == id);
+        }
 
         public bool Update(ExpensesBudget expensesBudget)
         {
             context.ExpensesBudget.Update(expensesBudget);
             return context.SaveChanges() > 0;
-        }
-
-        IEnumerable<ExpensesBudget> IExpensesBudgetManager.GetAllByUserId(Guid userId)
-        {
-            return context.ExpensesBudget.Include(e => e.Outflow).Where(fe => fe.UserId == userId);
-        }
-
-        ExpensesBudget IExpensesBudgetManager.GetById(Guid id)
-        {
-            return context.ExpensesBudget.FirstOrDefault(x => x.Id == id);
         }
     }
 }
