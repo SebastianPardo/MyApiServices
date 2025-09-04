@@ -46,7 +46,7 @@ namespace FamnancesServices.Controllers
         }
 
         [HttpGet("CalculatePeriod")]
-        public IActionResult CalculatePeriod()
+        public async Task<ActionResult<TotalsByPeriod>> CalculatePeriod()
         {
             HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
 
@@ -74,7 +74,7 @@ namespace FamnancesServices.Controllers
         }
 
         [HttpGet("CurentTotals")]
-        public async Task<IActionResult> CurentTotals()
+        public async Task<ActionResult<SummaryModel>> CurentTotals()
         {
             HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
             var userId = Guid.Parse(accountId.ToString());

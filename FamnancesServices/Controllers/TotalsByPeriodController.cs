@@ -1,24 +1,24 @@
 ﻿using Famnances.AuthMiddleware;
 using Famnances.DataCore.Entities;
-using FamnancesServices.Business;
-using Microsoft.AspNetCore.Http;
+using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamnancesServices.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize]
+    [Route("Api/[controller]")]
     [ApiController]
     public class TotalsByPeriodController : ControllerBase
     {
-        TotalsByPeriodManager _totalsByPeriodManager;
+        ITotalsByPeriodManager _totalsByPeriodManager;
 
-        public TotalsByPeriodController(TotalsByPeriodManager totalsByPeriodManager)
+        public TotalsByPeriodController(ITotalsByPeriodManager totalsByPeriodManager)
         {
             _totalsByPeriodManager = totalsByPeriodManager;
         }
 
         [HttpGet("GetCurrentPeriod")]
-        public async Task<IActionResult> GetCurrentPeriod()
+        public async Task<ActionResult<TotalsByPeriod?>> GetCurrentPeriod()
         {
             HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
             TotalsByPeriod? totalsByPeriod = _totalsByPeriodManager.GetByCurrentPeriod(Guid.Parse(accountId.ToString()));

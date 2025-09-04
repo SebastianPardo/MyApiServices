@@ -22,7 +22,7 @@ namespace FamnancesServices.Controllers
         {
             HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
-            return Ok(_savingsPocketManager.GetAll(userId));
+            return Ok(_savingsPocketManager.GetAllByUserId(userId));
         }
 
         // GET: api/Users/5
