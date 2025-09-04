@@ -1,18 +1,20 @@
 ﻿namespace AccountServices.Controllers;
 
-using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Oauth2.v2;
-using Google.Apis.Services;
-using Famnances.AuthMiddleware.Entities;
-using Famnances.AuthMiddleware;
-using AuthorizeAttribute = Famnances.AuthMiddleware.AuthorizeAttribute;
-using AccountServices.Models.ApiModels;
 using AccountServices.Business;
 using AccountServices.Business.Interfaces;
-using Famnances.DataCore.Entities;
+using AccountServices.Models.ApiModels;
+using AuthServices.Models.ExternalModels;
+using AutoMapper;
+using Famnances.AuthMiddleware;
+using Famnances.AuthMiddleware.Entities;
 using Famnances.AuthMiddleware.Interfaces;
+using Famnances.DataCore.Entities;
+using Google.Apis.Auth;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using AuthorizeAttribute = Famnances.AuthMiddleware.AuthorizeAttribute;
 
 [Authorize]
 [ApiController]
@@ -34,6 +36,168 @@ public class AuthController : ControllerBase
         _googleReCaptcha = new GoogleReCaptcha(configuration);
 
     }
+
+    [HttpPost("ExternalAuthenticate")]
+    public async Task<IActionResult> ExternalAuthenticate([FromBody] AuthenticateRequest model)
+    {
+        var provider = model.Param_1;
+        var accessToken = model.Param_2;
+        var idToken = model.Param_3;
+        bool firstLogin = false;
+
+        UserInfo? userInfo = null;
+
+
+        if (provider.Equals(GoogleDefaults.AuthenticationScheme, StringComparison.OrdinalIgnoreCase))
+        {
+            userInfo = await ValidateGoogleToken(accessToken);
+        }
+        else if (provider.Equals(FacebookDefaults.AuthenticationScheme, StringComparison.OrdinalIgnoreCase))
+        {
+            userInfo = await ValidateFacebookToken(accessToken);
+        }
+
+        if (userInfo != null)
+        {
+
+            var account = _accountService.getByUserNameOrEmail(userInfo.Email);
+            if (account == null)
+            {
+                account = new Account
+                {
+                    Email = userInfo.Email,
+                    UserName = userInfo.Email,
+                    IsActive = true,
+                    Password = _utilityService.GeneratePassword(),
+                    AccounTypeId = Guid.Parse("db727d49-2de5-4029-9556-055872cdea55"),
+                    LinkedSocialMedias = new List<LinkedSocialMedia>
+                    {
+                        new LinkedSocialMedia {
+                            SocialMediaId = Guid.Parse("8CA31668-B21C-4D41-A635-DDAD787EFA59"),
+                            ToLogin = true,
+                            UserName = userInfo.Id,
+                        }
+                    }
+                };
+                account = _accountService.Add(account);
+                firstLogin = true;
+            }
+
+            firstLogin = account.User == null;
+
+
+            TokenContent tokenContent = new TokenContent
+            {
+                UserId = account.Id,
+                Email = account.Email,
+                User = account.UserName
+            };
+
+            AuthenticateResponse response = new AuthenticateResponse
+            {
+                AccountId = account.Id,
+                FirstName = userInfo.GivenName,
+                LastName = userInfo.FamilyName,
+                UserName = account.UserName,
+                Email = account.Email,
+                Token = _tokenHandler.GetToken(tokenContent),
+                IsFirstLogin = firstLogin
+            };
+
+            return Ok(response);
+        }
+        return Unauthorized();
+    }
+
+    private async Task<UserInfo?> ValidateGoogleToken(string idToken)
+    {
+        try
+        {
+            var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
+            return new UserInfo (payload);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private async Task<UserInfo?> ValidateFacebookToken(string accessToken)
+    {
+        using var client = new HttpClient();
+        var payload = await client.GetFromJsonAsync<FacebookUser>($"https://graph.facebook.com/me?fields=id,email,first_name,middle_name,last_name,picture&access_token={accessToken}");
+        if (payload == null || string.IsNullOrEmpty(payload.Email))
+            return null;        
+        return new UserInfo(payload);
+    }
+
+
+    //[AllowAnonymous]
+    //[HttpPost("GoogleAuthenticate")]
+    //public async Task<IActionResult> GoogleAuthenticate(AuthenticateRequest model)
+    //{
+    //    try
+    //    {
+    //        var email = model.Param_1;
+    //        var token = model.Param_2;
+
+    //        bool firstLogin = false;
+
+    //        GoogleCredential cred2 = GoogleCredential.FromAccessToken(token);
+    //        var oauthSerivce = new Oauth2Service(new BaseClientService.Initializer { HttpClientInitializer = cred2 });
+    //        var userGet = oauthSerivce.Userinfo.V2.Me.Get();
+    //        var userinfo = userGet.Execute();
+
+    //        var account = _accountService.getByUserNameOrEmail(userinfo.Email);
+    //        if (account == null)
+    //        {
+    //            account = new Account
+    //            {
+    //                Email = email,
+    //                UserName = email,
+    //                IsActive = true,
+    //                Password = _utilityService.GeneratePassword(),
+    //                AccounTypeId = Guid.Parse("db727d49-2de5-4029-9556-055872cdea55"),
+    //                LinkedSocialMedias = new List<LinkedSocialMedia>
+    //                {
+    //                    new LinkedSocialMedia {
+    //                        SocialMediaId = Guid.Parse("8CA31668-B21C-4D41-A635-DDAD787EFA59"),
+    //                        ToLogin = true,
+    //                        UserName = userinfo.Id,
+    //                    }
+    //                }
+    //            };
+    //            account = _accountService.Add(account);
+    //            firstLogin = true;
+    //        }
+
+    //        firstLogin = account.User == null;
+
+    //        TokenContent tokenContent = new TokenContent
+    //        {
+    //            UserId = account.Id,
+    //            Email = account.Email,
+    //            User = account.UserName
+    //        };
+
+    //        AuthenticateResponse response = new AuthenticateResponse
+    //        {
+    //            AccountId = account.Id,
+    //            FirstName = userinfo.GivenName,
+    //            LastName = userinfo.FamilyName,
+    //            UserName = account.UserName,
+    //            Email = account.Email,
+    //            Token = _tokenHandler.GetToken(tokenContent),
+    //            IsFirstLogin = firstLogin
+    //        };
+
+    //        return Ok(response);
+    //    }
+    //    catch
+    //    {
+    //        return BadRequest();
+    //    }
+    //}
 
     [AllowAnonymous]
     [HttpPost("Authenticate")]
@@ -83,70 +247,5 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
-    [AllowAnonymous]
-    [HttpPost("GoogleAuthenticate")]
-    public async Task<IActionResult> GoogleAuthenticate(AuthenticateRequest model)
-    {
-        try
-        {
-            var email = model.Param_1;
-            var token = model.Param_2;
-
-            bool firstLogin = false;
-
-            GoogleCredential cred2 = GoogleCredential.FromAccessToken(token);
-            var oauthSerivce = new Oauth2Service(new BaseClientService.Initializer { HttpClientInitializer = cred2 });
-            var userGet = oauthSerivce.Userinfo.V2.Me.Get();
-            var userinfo = userGet.Execute();
-
-            var account = _accountService.getByUserNameOrEmail(userinfo.Email);
-            if (account == null)
-            {
-                account = new Account
-                {
-                    Email = email,
-                    UserName = email,
-                    IsActive = true,
-                    Password = _utilityService.GeneratePassword(),
-                    AccounTypeId = Guid.Parse("db727d49-2de5-4029-9556-055872cdea55"),
-                    LinkedSocialMedias = new List<LinkedSocialMedia>
-                    {
-                        new LinkedSocialMedia {
-                            SocialMediaId = Guid.Parse("8CA31668-B21C-4D41-A635-DDAD787EFA59"),
-                            ToLogin = true,
-                            UserName = userinfo.Id,
-                        }
-                    }
-                };
-                account = _accountService.Add(account);
-                firstLogin = true;
-            }
-
-            firstLogin = account.User == null;
-
-            TokenContent tokenContent = new TokenContent
-            {
-                UserId = account.Id,
-                Email = account.Email,
-                User = account.UserName
-            };
-
-            AuthenticateResponse response = new AuthenticateResponse
-            {
-                AccountId = account.Id,
-                FirstName = userinfo.GivenName,
-                LastName = userinfo.FamilyName,
-                UserName = account.UserName,
-                Email = account.Email,
-                Token = _tokenHandler.GetToken(tokenContent),
-                IsFirstLogin = firstLogin
-            };
-
-            return Ok(response);
-        }
-        catch
-        {
-            return BadRequest();
-        }
-    }
+    
 }

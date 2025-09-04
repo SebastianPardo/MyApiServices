@@ -29,18 +29,18 @@ builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(b
 
 builder.Services.AddAutoMapper(typeof(Program));
 
-builder.Services.AddAuthentication(o =>
-{
-    o.DefaultChallengeScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
-    o.DefaultForbidScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
-    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-})
-    .AddCookie()
-    .AddGoogleOpenIdConnect(options =>
-    {
-        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    });
+//builder.Services.AddAuthentication(o =>
+//{
+//    o.DefaultChallengeScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+//    o.DefaultForbidScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+//    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//})
+//    .AddCookie()
+//    .AddGoogleOpenIdConnect(options =>
+//    {
+//        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+//        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+//    });
 //builder.Services.AddCustomJwtAuthentication();
 
 builder.Services.AddEndpointsApiExplorer();
