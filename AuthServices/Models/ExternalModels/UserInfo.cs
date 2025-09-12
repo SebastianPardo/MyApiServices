@@ -1,17 +1,17 @@
-﻿using Google.Apis.Auth;
+﻿using Google.Apis.Oauth2.v2.Data;
 
 namespace AuthServices.Models.ExternalModels
 {
     public class UserInfo
     {
 
-        public UserInfo(GoogleJsonWebSignature.Payload payload)
+        public UserInfo(Userinfo userinfo)
         {
-            Id = payload.Subject;
-            Email = payload.Email;
-            GivenName = payload.GivenName;
-            FamilyName = payload.FamilyName;
-            Picture = payload.Picture;
+            Id = userinfo.Id;
+            Email = userinfo.Email;
+            GivenName = userinfo.GivenName;
+            FamilyName = userinfo.FamilyName;
+            Picture = userinfo.Picture;
         }
 
         public UserInfo(FacebookUser payload)

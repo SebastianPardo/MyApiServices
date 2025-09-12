@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Net;
 
-namespace AccountServices.Business
+namespace AuthServices.Business
 {
     public class GoogleReCaptcha
     {

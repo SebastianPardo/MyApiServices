@@ -1,4 +1,4 @@
-namespace AccountServices.Models.ApiModels;
+namespace FamnancesServices.Models;
 
 using System.ComponentModel.DataAnnotations;
 
