@@ -9,10 +9,11 @@ using Famnances.AuthMiddleware;
 using Famnances.AuthMiddleware.Entities;
 using Famnances.AuthMiddleware.Interfaces;
 using Famnances.DataCore.Entities;
-using Google.Apis.Auth;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Oauth2.v2;
+using Google.Apis.Services;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using AuthorizeAttribute = Famnances.AuthMiddleware.AuthorizeAttribute;
 
@@ -22,17 +23,15 @@ using AuthorizeAttribute = Famnances.AuthMiddleware.AuthorizeAttribute;
 public class AuthController : ControllerBase
 {
     IAccountService _accountService;
-    IMapper Mapper;
     IUtilityService _utilityService;
     GoogleReCaptcha _googleReCaptcha;
     ITokenHandler _tokenHandler;
 
-    public AuthController(IMapper mapper, IConfiguration configuration, IAccountService accountService, IUtilityService utilityService, ITokenHandler tokenHandler)
+    public AuthController(IConfiguration configuration, IAccountService accountService, IUtilityService utilityService, ITokenHandler tokenHandler)
     {
         _accountService = accountService;
         _utilityService = utilityService;
         _tokenHandler = tokenHandler;
-        Mapper = mapper;
         _googleReCaptcha = new GoogleReCaptcha(configuration);
 
     }
@@ -113,8 +112,14 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
-            return new UserInfo (payload);
+
+            GoogleCredential credentials = GoogleCredential.FromAccessToken(idToken);
+            var oauthSerivce = new Oauth2Service(new BaseClientService.Initializer { HttpClientInitializer = credentials });
+            var userGet = oauthSerivce.Userinfo.V2.Me.Get();
+            var userinfo = userGet.Execute();
+
+            //var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
+            return new UserInfo (userinfo);
         }
         catch
         {

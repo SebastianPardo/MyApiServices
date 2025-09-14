@@ -3,8 +3,6 @@ using Famnances.DataCore.Data;
 using Microsoft.OpenApi.Models;
 using Famnances.AuthMiddleware.Entities;
 using Famnances.AuthMiddleware;
-using Google.Apis.Auth.AspNetCore3;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using JwtMiddleware = AccountServices.Business.JwtMiddleware;
 using AccountServices.Business.Interfaces;
 using AccountServices.Business;

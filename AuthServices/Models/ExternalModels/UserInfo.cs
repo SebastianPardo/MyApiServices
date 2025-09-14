@@ -1,4 +1,5 @@
 ﻿using Google.Apis.Auth;
+using Google.Apis.Oauth2.v2.Data;
 
 namespace AuthServices.Models.ExternalModels
 {
@@ -20,6 +21,15 @@ namespace AuthServices.Models.ExternalModels
             Email = payload.Email;
             GivenName = $"{payload.FirstName} {payload.MiddleName}" ;
             FamilyName = payload.LastName;
+            Picture = payload.Picture;
+        }
+
+        public UserInfo(Userinfo payload)
+        {
+            Id = payload.Id;
+            Email = payload.Email;
+            GivenName = payload.GivenName;
+            FamilyName = payload.FamilyName;
             Picture = payload.Picture;
         }
 
