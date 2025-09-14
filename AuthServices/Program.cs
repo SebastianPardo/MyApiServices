@@ -1,5 +1,6 @@
 using AuthServices.Business;
 using AuthServices.Business.Interfaces;
+using AuthServices.Security;
 using Famnances.Core.Entities;
 using Famnances.Core.Errors;
 using Famnances.Core.Security.Services;
@@ -81,6 +82,7 @@ if (app.Environment.IsDevelopment())
 
 // global error handler
 app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseMiddleware<JwtMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
