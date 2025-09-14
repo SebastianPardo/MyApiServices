@@ -26,7 +26,13 @@ namespace AuthServices.Security
                 {
                     var token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
                     TokenContent? tokenContent = _tokenHandler.ValidateToken(token);
-                    if (tokenContent != null && (context.Request.Host.Port == 7246 || context.Request.Host.Port == 7239 || context.Request.Host.Port == 7238 || context.Request.Host.Value.Contains("Famnances")))
+                    if (tokenContent != null && 
+                        (context.Request.Host.Port == 7246 
+                        || context.Request.Host.Port == 7239 
+                        || context.Request.Host.Port == 7238 
+                        || context.Request.Host.Value.Contains("famnances")
+                        || context.Request.Host.Value.Contains("famnancesservices")
+                        || context.Request.Host.Value.Contains("sp-authservices")))
                     {
                         var accountManager = context.RequestServices.GetRequiredService<IAccountService>();
                         var account = accountManager.GetById(tokenContent.UserId);
