@@ -1,4 +1,5 @@
-﻿using Famnances.AuthMiddleware;
+﻿using Famnances.Core.Security;
+using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
 using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business.Interfaces;
@@ -48,7 +49,7 @@ namespace FamnancesServices.Controllers
         [HttpGet("CalculatePeriod")]
         public async Task<ActionResult<TotalsByPeriod>> CalculatePeriod()
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
 
             User user = _userManager.GetById(Guid.Parse(accountId.ToString()));
             TotalsByPeriod totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(user.Id);
@@ -76,7 +77,7 @@ namespace FamnancesServices.Controllers
         [HttpGet("CurentTotals")]
         public async Task<ActionResult<SummaryModel>> CurentTotals()
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             User user = _userManager.GetById(userId);
 

@@ -1,8 +1,9 @@
-﻿using Famnances.AuthMiddleware;
+﻿using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Famnances.Core.Security;
 
 namespace FamnancesServices.Controllers
 {
@@ -23,7 +24,7 @@ namespace FamnancesServices.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Inflow>>> GetInflows(DateTime? startDate = null, DateTime? endDate = null)
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             userId = Guid.Parse(accountId.ToString());
             startDate = startDate ?? DateTime.Now.AddDays(-15);
             endDate = endDate ?? DateTime.Now;
@@ -64,7 +65,7 @@ namespace FamnancesServices.Controllers
         [HttpPost]
         public async Task<ActionResult<Inflow>> Create(Inflow inflow)
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             inflow.UserId = Guid.Parse(accountId.ToString());
             _inflowManager.Add(inflow);
             return CreatedAtAction("GetInflow", new { id = inflow.Id }, inflow);

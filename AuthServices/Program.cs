@@ -1,12 +1,14 @@
-using Microsoft.EntityFrameworkCore;
+using AuthServices.Business;
+using AuthServices.Business.Interfaces;
+using Famnances.Core.Entities;
+using Famnances.Core.Errors;
+using Famnances.Core.Security.Services;
+using Famnances.Core.Security.Services.Interfaces;
+using Famnances.Core.Utils.Services;
+using Famnances.Core.Utils.Services.Interface;
 using Famnances.DataCore.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Famnances.AuthMiddleware.Entities;
-using Famnances.AuthMiddleware;
-using JwtMiddleware = AccountServices.Business.JwtMiddleware;
-using AccountServices.Business.Interfaces;
-using AccountServices.Business;
-using Famnances.AuthMiddleware.Interfaces;
 
 
 //AppContext.SetSwitch("Switch.Microsoft.Data.SqlClient.UseManagedNetworkingOnWindows", true);
@@ -26,20 +28,6 @@ builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(b
 #endif
 
 builder.Services.AddAutoMapper(typeof(Program));
-
-//builder.Services.AddAuthentication(o =>
-//{
-//    o.DefaultChallengeScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
-//    o.DefaultForbidScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
-//    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//})
-//    .AddCookie()
-//    .AddGoogleOpenIdConnect(options =>
-//    {
-//        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-//        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-//    });
-//builder.Services.AddCustomJwtAuthentication();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(swagger =>
@@ -81,7 +69,7 @@ builder.Services.AddSwaggerGen(swagger =>
 builder.Services.AddSingleton<ITokenHandler, TokenHandler>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IUtilityService, UtilityService>();
+builder.Services.AddScoped<IPasswordService, PasswordService>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
@@ -93,8 +81,6 @@ if (app.Environment.IsDevelopment())
 
 // global error handler
 app.UseMiddleware<ErrorHandlerMiddleware>();
-
-app.UseMiddleware<JwtMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

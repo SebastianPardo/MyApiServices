@@ -1,6 +1,6 @@
-﻿using Famnances.AuthMiddleware;
+﻿using Famnances.Core.Security;
+using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
-using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +21,7 @@ namespace FamnancesServices.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SavingRecord>>> GetRecords()
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             return Ok(_savingRecordManager.GetAll(userId));
         }

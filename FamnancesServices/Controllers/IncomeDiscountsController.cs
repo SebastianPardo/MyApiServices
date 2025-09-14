@@ -1,6 +1,6 @@
-﻿using Famnances.AuthMiddleware;
+﻿using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
-using FamnancesServices.Business;
+using Famnances.Core.Security;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +23,7 @@ namespace FamnancesServices.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<IncomeDiscount>> Get()
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             var discounts = _incomeDiscountManager.GetAllByUser(userId);
             return Ok(discounts);
@@ -41,7 +41,7 @@ namespace FamnancesServices.Controllers
         [HttpPost]
         public IActionResult Create(IncomeDiscount discount)
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             discount.UserId = Guid.Parse(accountId.ToString());
             _incomeDiscountManager.Add(discount);
             return CreatedAtAction("GetBudget", new { id = discount.Id }, discount);

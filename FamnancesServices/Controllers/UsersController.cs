@@ -1,8 +1,9 @@
-﻿using Famnances.AuthMiddleware;
+﻿using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Famnances.Core.Security;
 
 namespace FamnancesServices.Controllers
 {
@@ -35,7 +36,7 @@ namespace FamnancesServices.Controllers
         [HttpGet("Search/{name}")]
         public async Task<ActionResult<IEnumerable<User>>> Search(string name)
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             var user = _userManager.GetById(userId);
             return Ok(_userManager.Search(name, user.HomeAdministrator));

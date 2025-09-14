@@ -1,4 +1,4 @@
-namespace AccountServices.Models.ApiModels;
+namespace AuthServices.Models.ApiModels;
 
 using System.ComponentModel.DataAnnotations;
 

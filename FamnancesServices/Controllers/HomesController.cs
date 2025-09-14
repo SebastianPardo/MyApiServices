@@ -1,6 +1,6 @@
-﻿using Famnances.AuthMiddleware;
+﻿using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
-using FamnancesServices.Business;
+using Famnances.Core.Security;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +46,7 @@ namespace FamnancesServices.Controllers
         [HttpGet("GetInvitations")]
         public async Task<ActionResult<HomeInvitation>> GetInvitations()
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             var account = _accountManager.GetById(userId);
             return Ok(_homeInvitationManager.GetInvitations(account.Email));
@@ -55,7 +55,7 @@ namespace FamnancesServices.Controllers
         [HttpGet("AcceptInvitation/{invitationId}")]
         public async Task<ActionResult<HomeInvitation>> AcceptInvitation(Guid invitationId)
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             var account = _accountManager.GetById(userId);
 
@@ -73,7 +73,7 @@ namespace FamnancesServices.Controllers
         [HttpPost("Invite")]
         public async Task<ActionResult<List<HomeInvitation>>> Invite(HomeInvitation homeInvitation)
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             var account = _accountManager.GetById(userId);
 

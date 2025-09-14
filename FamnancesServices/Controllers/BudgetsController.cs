@@ -1,4 +1,5 @@
-﻿using Famnances.AuthMiddleware;
+﻿using Famnances.Core.Security;
+using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,7 @@ namespace FamnancesServices.Controllers
 
         public async Task<ActionResult<IEnumerable<ExpensesBudget>>> GetBudgets()
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             return Ok(_expensesBudgetManager.GetAllByUserId(userId));
         }
@@ -60,7 +61,7 @@ namespace FamnancesServices.Controllers
         [HttpPost]
         public async Task<ActionResult<ExpensesBudget>> Create(ExpensesBudget budget)
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             budget.UserId = Guid.Parse(accountId.ToString());
             _expensesBudgetManager.Add(budget);
             return CreatedAtAction("GetBudget", new { id = budget.Id }, budget);

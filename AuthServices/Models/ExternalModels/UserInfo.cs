@@ -5,7 +5,6 @@ namespace AuthServices.Models.ExternalModels
 {
     public class UserInfo
     {
-
         public UserInfo(GoogleJsonWebSignature.Payload payload)
         {
             Id = payload.Subject;
@@ -14,7 +13,6 @@ namespace AuthServices.Models.ExternalModels
             FamilyName = payload.FamilyName;
             Picture = payload.Picture;
         }
-
         public UserInfo(FacebookUser payload)
         {
             Id = payload.Id;

@@ -1,6 +1,6 @@
-﻿using Famnances.AuthMiddleware;
+﻿using Famnances.Core.Security;
+using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
-using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +23,7 @@ namespace FamnancesServices.Controllers
 
         public async Task<ActionResult<IEnumerable<FixedExpense>>> GetFixedExpenses()
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             return Ok(_fixedExpenseManager.GetAllByUserId(userId));
         }
@@ -47,7 +47,7 @@ namespace FamnancesServices.Controllers
 
             try
             {
-                HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+                HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
                 fixedExpense.UserId = Guid.Parse(accountId.ToString());
                 _fixedExpenseManager.Update(fixedExpense);
             }
@@ -64,7 +64,7 @@ namespace FamnancesServices.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> Create(FixedExpense fixedExpense)
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             fixedExpense.UserId = Guid.Parse(accountId.ToString());
             _fixedExpenseManager.Add(fixedExpense);
             return CreatedAtAction("GetBudget", new { id = fixedExpense.Id }, fixedExpense);

@@ -1,8 +1,9 @@
-﻿using Famnances.AuthMiddleware;
+﻿using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Famnances.Core.Security;
 
 namespace FamnancesServices.Controllers
 {
@@ -20,7 +21,7 @@ namespace FamnancesServices.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SavingsPocket>>> GetPockets()
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             return Ok(_savingsPocketManager.GetAllByUserId(userId));
         }
@@ -37,7 +38,7 @@ namespace FamnancesServices.Controllers
         [HttpPost]
         public async Task<ActionResult<SavingsPocket>> Create(SavingsPocket pocket)
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             pocket.UserId = Guid.Parse(accountId.ToString());
             _savingsPocketManager.Add(pocket);
             return CreatedAtAction("GetPocket", new { id = pocket.Id }, pocket);

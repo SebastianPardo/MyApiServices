@@ -1,10 +1,9 @@
-﻿using AccountServices.Business.Interfaces;
-using Microsoft.Extensions.Options;
-using Famnances.AuthMiddleware.Entities;
-using Famnances.AuthMiddleware;
-using Famnances.AuthMiddleware.Interfaces;
+﻿using AuthServices.Business.Interfaces;
+using Famnances.Core.Entities;
+using Famnances.Core.Security;
+using Famnances.Core.Security.Services.Interfaces;
 
-namespace AccountServices.Business
+namespace AuthServices.Security
 {
     public class JwtMiddleware
     {
@@ -27,11 +26,11 @@ namespace AccountServices.Business
                 {
                     var token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
                     TokenContent? tokenContent = _tokenHandler.ValidateToken(token);
-                    if (tokenContent != null)
+                    if (tokenContent != null && (context.Request.Host.Port == 7246 || context.Request.Host.Port == 7239 || context.Request.Host.Value.Contains("Famnances")))
                     {
                         var accountManager = context.RequestServices.GetRequiredService<IAccountService>();
                         var account = accountManager.GetById(tokenContent.UserId);
-                        context.Items[Constants.USER] = account.Id;
+                        context.Items[Constants.ACCOUNT_ID] = account.Id;
                         await _next(context);
                     }
                     else

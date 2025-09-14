@@ -1,29 +1,25 @@
-﻿namespace AccountServices.Controllers;
+﻿namespace FamnancesServices.Controllers;
 
-using AccountServices.Business.Interfaces;
-using AccountServices.Models.ApiModels;
-using AutoMapper;
-using Famnances.AuthMiddleware;
-using Famnances.AuthMiddleware.Interfaces;
-using Famnances.DataCore.Entities;
+using Famnances.Core.Errors;
+using Famnances.Core.Security.Authorization;
+using Famnances.Core.Security.Services.Interfaces;
+using Famnances.Core.Utils.Services.Interface;
+using FamnancesServices.Business.Interfaces;
+using FamnancesServices.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
-using AuthorizeAttribute = Famnances.AuthMiddleware.AuthorizeAttribute;
 
 [Authorize]
 [ApiController]
 [Route("Api/[controller]")]
 public class AccountController : ControllerBase
 {
-    IMapper Mapper;
-    IAccountService _accountService;
-    IUtilityService _utilityService;
+    IAccountManager _accountService;
+    IPasswordService _passwordService;
 
-    public AccountController(IMapper mapper, IConfiguration configuration, IAccountService accountService, IUtilityService utilityService, ITokenHandler tokenHandler)
+    public AccountController(IConfiguration configuration, IAccountManager accountService, IPasswordService passwordService, ITokenHandler tokenHandler)
     {
         _accountService = accountService;
-        _utilityService = utilityService;
-        Mapper = mapper;
+        _passwordService = passwordService;
     }    
 
     [HttpGet("{accountId}")]
@@ -35,7 +31,7 @@ public class AccountController : ControllerBase
     [HttpGet("Type/{accountId}")]
     public IActionResult GetAccountType(Guid accountId)
     {
-        var account = _accountService.GetType(accountId);
+        var account = _accountService.GetType();
         return Ok(account);
     }
 
@@ -46,8 +42,8 @@ public class AccountController : ControllerBase
         var user = _accountService.getByUserNameOrEmail(model.Username);
         if (user != null)
             throw new AppException("Username '" + model.Username + "' is already taken");
-        user = Mapper.Map<Account>(model);
-        user.Password = _utilityService.ValidatePassword(model.Password);
+        //user = model;
+        user.Password = _passwordService.Validate(model.Password);
         if (user.Password == null)
             throw new AppException("Minimum of different classes of characters in password is 3. Classes of characters: Lower Case, Upper Case, Digits, Special Characters.");
         _accountService.Add(user);
@@ -58,11 +54,11 @@ public class AccountController : ControllerBase
     public IActionResult Update(UpdateRequest model)
     {
         var user = _accountService.getByUserNameOrEmail(model.Username);
-        if (user == null || !_utilityService.ComparePassword(model.Password, user.Password))
+        if (user == null || !_passwordService.Compare(model.Password, user.Password))
             throw new AppException("Username or password is incorrect");
 
-        Mapper.Map(model, user);
-        user.Password = _utilityService.ValidatePassword(model.Password);
+        //Mapper.Map(model, user);
+        user.Password = _passwordService.Validate(model.Password);
         if (user.Password == null)
             throw new AppException("Minimum of different classes of characters in password is 3. Classes of characters: Lower Case, Upper Case, Digits, Special Characters.");
 

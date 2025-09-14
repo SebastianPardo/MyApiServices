@@ -1,9 +1,8 @@
-﻿using Famnances.AuthMiddleware;
+﻿using Famnances.Core.Security;
+using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
-using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
 
 namespace FamnancesServices.Controllers
 {
@@ -22,7 +21,7 @@ namespace FamnancesServices.Controllers
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             var fixedIncomes = _fixedIncomeManager.GetAllByUserId(userId);
             return Ok(fixedIncomes);
@@ -31,7 +30,7 @@ namespace FamnancesServices.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(Guid id)
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             var fixedIncomes = _fixedIncomeManager.GetById(userId, id);
             return Ok(fixedIncomes);
@@ -40,7 +39,7 @@ namespace FamnancesServices.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(FixedIncome entity)
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             entity.UserId = Guid.Parse(accountId.ToString());
             entity = _fixedIncomeManager.Add(entity);
             return Ok(entity);
@@ -49,7 +48,7 @@ namespace FamnancesServices.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            HttpContext.Items.TryGetValue(Constants.USER, out var accountId);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             var fixedIncomes = _fixedIncomeManager.GetById(userId, id);
             if (fixedIncomes == null)

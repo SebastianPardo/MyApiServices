@@ -1,6 +1,7 @@
-using Famnances.AuthMiddleware;
-using Famnances.AuthMiddleware.Entities;
-using Famnances.AuthMiddleware.Interfaces;
+using Famnances.Core.Entities;
+using Famnances.Core.Security.Jwt;
+using Famnances.Core.Security.Services;
+using Famnances.Core.Security.Services.Interfaces;
 using Famnances.DataCore.Data;
 using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
