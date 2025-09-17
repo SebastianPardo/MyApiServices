@@ -2,6 +2,7 @@
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace FamnancesServices.Business
 {
@@ -45,7 +46,7 @@ namespace FamnancesServices.Business
 
         public List<Inflow> GetAllByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
-            return _context.Inflow.Where(e => e.DateTimeStamp >= startDate && e.DateTimeStamp <= endDate && e.UserId == userId).ToList();
+            return _context.Inflow.Where(e => e.DateTimeStamp >= startDate && e.DateTimeStamp <= endDate && e.UserId == userId).OrderByDescending(e => e.TransactionDate).ToList();
         }
     }
 }

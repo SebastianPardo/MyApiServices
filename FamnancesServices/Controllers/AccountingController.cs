@@ -106,7 +106,7 @@ namespace FamnancesServices.Controllers
                     {
                         Name = e.Name,
                         Value = e.Total,
-                        Spent = e.SavingsRecords.Where(e => e.IsExpense = true && e.TimeStamp >= totalsByPeriod.PeriodDateStart || e.TimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
+                        Spent = e.SavingsRecords.Where(e => e.IsExpense = true && e.DateTimeStamp >= totalsByPeriod.PeriodDateStart || e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
                     }).ToList()
                 };
 
@@ -124,7 +124,7 @@ namespace FamnancesServices.Controllers
                     {
                         Name = e.Name,
                         Value = e.Total,
-                        Spent = e.SavingsRecords.Where(e => e.IsExpense = true && e.TimeStamp >= totalsByPeriod.PeriodDateStart || e.TimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
+                        Spent = e.SavingsRecords.Where(e => e.IsExpense = true && e.DateTimeStamp >= totalsByPeriod.PeriodDateStart || e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
                     }).ToList();
                 }
                 return Ok(summaryModel);

@@ -1,6 +1,7 @@
 ﻿using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Business
 {
@@ -35,7 +36,7 @@ namespace FamnancesServices.Business
 
         public IEnumerable<Outflow> GetAllByUserId(Guid userId)
         {
-            return _context.Outflow.Where(fe => fe.ExpensesBudget.UserId == userId);
+            return _context.Outflow.Include(e=>e.ExpensesBudget).Where(fe => fe.ExpensesBudget.UserId == userId).OrderByDescending(e => e.TransactionDate);
         }
 
         public Outflow GetById(Guid id)
