@@ -29,7 +29,6 @@ namespace FamnancesServices.Controllers
         }
 
         [HttpGet("{id}")]
-
         public async Task<ActionResult<FixedExpense>> GetFixedExpense(Guid id)
         {
             return Ok(_fixedExpenseManager.GetById(id));

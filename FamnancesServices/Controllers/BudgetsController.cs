@@ -1,6 +1,7 @@
 ﻿using Famnances.Core.Security;
 using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
+using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,15 @@ namespace FamnancesServices.Controllers
         public async Task<ActionResult<ExpensesBudget>> GetBudget(Guid id)
         {
             return Ok(_expensesBudgetManager.GetById(id));
+        }
+
+
+        [HttpGet("GetByType/{type}")]
+        public async Task<ActionResult<FixedExpense>> GetByType(string type)
+        {
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+            var userId = Guid.Parse(accountId.ToString());
+            return Ok(_expensesBudgetManager.GetByType(type, userId));
         }
 
         // PUT: api/Users/5

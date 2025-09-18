@@ -2,6 +2,7 @@
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace FamnancesServices.Business
 {
@@ -34,6 +35,11 @@ namespace FamnancesServices.Business
         public List<ExpensesBudget> GetAllByUserId(Guid userId)
         {
             return context.ExpensesBudget.Include(e => e.Outflow).Where(fe => fe.UserId == userId).ToList();
+        }
+
+        public List<ExpensesBudget> GetByType(string typeCode, Guid userId)
+        {
+            return context.ExpensesBudget.Where(e => e.BudgetType.Code == typeCode && e.UserId == userId).ToList();
         }
 
         public ExpensesBudget GetById(Guid id)
