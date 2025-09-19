@@ -9,5 +9,6 @@ namespace FamnancesServices.Business.Interfaces
         FixedExpense Add(FixedExpense fixedExpense);
         bool Update(FixedExpense fixedExpense);
         bool Delete(FixedExpense fixedExpense);
+        IEnumerable<FixedExpense> GetAllByHome(Guid id);
     }
 }

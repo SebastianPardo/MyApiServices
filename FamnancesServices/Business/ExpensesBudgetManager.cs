@@ -29,12 +29,18 @@ namespace FamnancesServices.Business
 
         public List<ExpensesBudget> GetAllByHomeId(Guid homeId)
         {
-            return context.ExpensesBudget.Include(e => e.Outflow).Where(fe => fe.User.HomeId == homeId).ToList();
+            return context.ExpensesBudget
+                .Include(e=>e.BudgetType)
+                .Include(e => e.Outflow)
+                .Where(e => e.User.HomeId == homeId && e.BudgetType.Code == "PER").ToList();
         }
 
         public List<ExpensesBudget> GetAllByUserId(Guid userId)
         {
-            return context.ExpensesBudget.Include(e => e.Outflow).Where(fe => fe.UserId == userId).ToList();
+            return context.ExpensesBudget
+                .Include(e => e.BudgetType)
+                .Include(e => e.Outflow)
+                .Where(e => e.UserId == userId && e.BudgetType.Code == "PER").ToList();
         }
 
         public List<ExpensesBudget> GetByType(string typeCode, Guid userId)

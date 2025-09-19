@@ -21,6 +21,7 @@ namespace FamnancesServices.Controllers
         ISavingsPocketManager _savingPocketManager;
         IExpensesBudgetManager _expensesBudgetManager;
         IHomeManager _homeManager;
+        IFixedExpenseManager _fixedExpenseManager;
 
 
         public AccountingController(
@@ -32,7 +33,8 @@ namespace FamnancesServices.Controllers
             ISavingRecordManager savingRecordManager,
             ISavingsPocketManager savingPocketManager,
             IExpensesBudgetManager expensesBudgetManager,
-            IHomeManager homeManager
+            IHomeManager homeManager,
+            IFixedExpenseManager fixedExpenseManager
             )
         {
             _totalsByPeriodManager = totalsByPeriodManager;
@@ -44,6 +46,7 @@ namespace FamnancesServices.Controllers
             _savingPocketManager = savingPocketManager;
             _expensesBudgetManager = expensesBudgetManager;
             _homeManager = homeManager;
+            _fixedExpenseManager = fixedExpenseManager;
         }
 
         [HttpGet("CalculatePeriod")]
@@ -100,13 +103,21 @@ namespace FamnancesServices.Controllers
                     {
                         Name = e.Name,
                         Value = e.Value,
-                        Spent = e.Outflow.Where(e => e.DateTimeStamp >= totalsByPeriod.PeriodDateStart || e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
+                        Spent = e.Outflow.Where(e => e.DateTimeStamp >= totalsByPeriod.PeriodDateStart && e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
                     }).ToList(),
+                    SummaryFixedExpenses = _fixedExpenseManager.GetAllByUserId(userId)
+                        .Where(e => !(e.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && e.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd))
+                        .Select(e => new SummaryFixedExpensesModel
+                        {
+                            Id = !(e.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && e.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd) ? e.Id : Guid.Empty,
+                            Name = e.Name,
+                            Value = e.Value
+                        }).ToList(),
                     SummaryPockets = _savingPocketManager.GetAllByUserId(userId).Select(e => new SummaryPocketModel
                     {
                         Name = e.Name,
                         Value = e.Total,
-                        Spent = e.SavingsRecords.Where(e => e.IsExpense = true && e.DateTimeStamp >= totalsByPeriod.PeriodDateStart || e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
+                        Spent = e.SavingsRecords.Where(e => e.IsExpense == true && e.DateTimeStamp >= totalsByPeriod.PeriodDateStart && e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
                     }).ToList()
                 };
 
@@ -118,13 +129,23 @@ namespace FamnancesServices.Controllers
                     {
                         Name = e.Name,
                         Value = e.Value,
-                        Spent = e.Outflow.Where(e => e.DateTimeStamp >= totalsByPeriod.PeriodDateStart || e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
+                        Spent = e.Outflow.Where(e => e.DateTimeStamp >= totalsByPeriod.PeriodDateStart && e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
                     }).ToList();
-                    summaryModel.SummaryPockets = _savingPocketManager.GetAllByUserId(home.Id).Select(e => new SummaryPocketModel
+                    summaryModel.SummaryFixedExpenses = _fixedExpenseManager.GetAllByHome(home.Id)
+                        .Where(e => !(e.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && e.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd))
+                        .Select(e => new SummaryFixedExpensesModel
+                        {
+                            Name = e.Name,
+                            Value = e.Value,
+                            Id = !(e.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && e.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd)? e.Id : Guid.Empty
+                        }).ToList();
+                    summaryModel.SummaryPockets = _savingPocketManager.GetAllByHome(home.Id).Select(e => new SummaryPocketModel
                     {
                         Name = e.Name,
                         Value = e.Total,
-                        Spent = e.SavingsRecords.Where(e => e.IsExpense = true && e.DateTimeStamp >= totalsByPeriod.PeriodDateStart || e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
+                        Spent = e.SavingsRecords
+                        .Where(e => e.IsExpense == true && e.DateTimeStamp >= totalsByPeriod.PeriodDateStart && e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd)
+                        .Sum(e => e.Value)
                     }).ToList();
                 }
                 return Ok(summaryModel);

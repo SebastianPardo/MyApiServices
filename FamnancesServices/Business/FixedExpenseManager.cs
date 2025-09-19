@@ -25,6 +25,11 @@ namespace FamnancesServices.Business
             return context.SaveChanges() > 0;
         }
 
+        public IEnumerable<FixedExpense> GetAllByHome(Guid id)
+        {
+           return context.FixedExpense.Where(e => e.User.HomeId == id);
+        }
+
         public IEnumerable<FixedExpense> GetAllByUserId(Guid userId)
         {
             return context.FixedExpense.Where(fe => fe.UserId == userId);
