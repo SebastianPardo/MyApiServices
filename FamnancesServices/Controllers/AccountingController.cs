@@ -88,6 +88,7 @@ namespace FamnancesServices.Controllers
             if (totalsByPeriod != null)
             {
                 decimal balance = totalsByPeriod.User.BudgetByPeriod - totalsByPeriod.TotalExpenses;
+
                 SummaryModel summaryModel = new SummaryModel
                 {
                     PeriodStartDate = totalsByPeriod.PeriodDateStart,
@@ -106,7 +107,6 @@ namespace FamnancesServices.Controllers
                         Spent = e.Outflow.Where(e => e.DateTimeStamp >= totalsByPeriod.PeriodDateStart && e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
                     }).ToList(),
                     SummaryFixedExpenses = _fixedExpenseManager.GetAllByUserId(userId)
-                        .Where(e => !(e.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && e.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd))
                         .Select(e => new SummaryFixedExpensesModel
                         {
                             Id = !(e.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && e.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd) ? e.Id : Guid.Empty,
@@ -132,7 +132,6 @@ namespace FamnancesServices.Controllers
                         Spent = e.Outflow.Where(e => e.DateTimeStamp >= totalsByPeriod.PeriodDateStart && e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
                     }).ToList();
                     summaryModel.SummaryFixedExpenses = _fixedExpenseManager.GetAllByHome(home.Id)
-                        .Where(e => !(e.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && e.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd))
                         .Select(e => new SummaryFixedExpensesModel
                         {
                             Name = e.Name,

@@ -13,10 +13,21 @@ namespace FamnancesServices.Controllers
     public class FixedExpensesController : ControllerBase
     {
         IFixedExpenseManager _fixedExpenseManager;
+        IExpensesBudgetManager _expensesBudgetManager;
+        IOutflowManager _outflowManager;
+        ITotalsByPeriodManager _totalsByPeriodManager;
 
-        public FixedExpensesController(IFixedExpenseManager fixedExpenseManager)
+        public FixedExpensesController(
+            IFixedExpenseManager fixedExpenseManager,
+            IExpensesBudgetManager expensesBudgetManager,
+            IOutflowManager outflowManager,
+            ITotalsByPeriodManager totalsByPeriodManager
+            )
         {
             _fixedExpenseManager = fixedExpenseManager;
+            _expensesBudgetManager = expensesBudgetManager;
+            _outflowManager = outflowManager;
+            _totalsByPeriodManager = totalsByPeriodManager;
         }
 
         [HttpGet]
@@ -25,7 +36,18 @@ namespace FamnancesServices.Controllers
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
-            return Ok(_fixedExpenseManager.GetAllByUserId(userId));
+            var expeneses = _fixedExpenseManager.GetAllByUserId(userId);
+            var totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(userId);
+
+            foreach(var expense in expeneses)
+            {
+                if (!(expense.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && expense.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd))
+                {
+                    expense.LastAutomaticDateStamp = null;
+                }
+            }
+
+            return Ok(expeneses);
         }
 
         [HttpGet("{id}")]
@@ -81,6 +103,30 @@ namespace FamnancesServices.Controllers
 
             _fixedExpenseManager.Delete(budget);
             return NoContent();
+        }
+
+        [HttpPost("Pay")]
+        public async Task<IActionResult> Pay(Guid id)
+        {
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+            var userId = Guid.Parse(accountId.ToString());
+            var expense = _fixedExpenseManager.GetById(id);
+            var totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(userId);
+            if (expense.LastAutomaticDateStamp == null || expense.LastAutomaticDateStamp < totalsByPeriod.PeriodDateStart)
+            {
+                var budget = _expensesBudgetManager.GetByType("FIX", userId);
+                Outflow outflow = new Outflow
+                {
+                    Description = expense.Name,
+                    ExpenseBudgetId = budget.First().Id,
+                    TransactionDate = DateTime.Now,
+                    Value = expense.Value,
+                };
+                _outflowManager.Add(outflow);
+                expense.LastAutomaticDateStamp = DateTime.Now;
+                _outflowManager.Update(outflow);
+            }
+            return Ok();
         }
     }
 }

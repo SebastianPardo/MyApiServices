@@ -1,6 +1,7 @@
 ﻿using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Business
 {
@@ -27,12 +28,12 @@ namespace FamnancesServices.Business
 
         public IEnumerable<FixedExpense> GetAllByHome(Guid id)
         {
-           return context.FixedExpense.Where(e => e.User.HomeId == id);
+            return context.FixedExpense.Where(e => e.User.HomeId == id);
         }
 
         public IEnumerable<FixedExpense> GetAllByUserId(Guid userId)
         {
-            return context.FixedExpense.Where(fe => fe.UserId == userId);
+            return context.FixedExpense.Include(e => e.Period).Where(fe => fe.UserId == userId);
         }
 
         public FixedExpense GetById(Guid id)
