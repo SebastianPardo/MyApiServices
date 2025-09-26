@@ -32,6 +32,7 @@ namespace FamnancesServices.Business
             return context.ExpensesBudget
                 .Include(e=>e.BudgetType)
                 .Include(e => e.Outflow)
+                .Include(e => e.User)
                 .Where(e => e.User.HomeId == homeId && e.BudgetType.Code == "PER").ToList();
         }
 
@@ -40,6 +41,7 @@ namespace FamnancesServices.Business
             return context.ExpensesBudget
                 .Include(e => e.BudgetType)
                 .Include(e => e.Outflow)
+                .Include(e => e.User)
                 .Where(e => e.UserId == userId && e.BudgetType.Code == "PER").ToList();
         }
 

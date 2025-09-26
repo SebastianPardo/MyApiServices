@@ -6,6 +6,7 @@ namespace FamnancesServices.Business.Interfaces
     {
         Home? GetByUser(Guid userId);
         Home GetById(Guid id);
+        Home GetComplete(Guid userId);
         bool Add(Home home);
         Home Update(Home home);
         bool Delete(Home home);

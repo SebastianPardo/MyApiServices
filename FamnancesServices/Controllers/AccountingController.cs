@@ -83,6 +83,7 @@ namespace FamnancesServices.Controllers
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             User user = _userManager.GetById(userId);
+            Home home = _homeManager.GetComplete(userId);
 
             TotalsByPeriod? totalsByPeriod = _totalsByPeriodManager.GetByCurrentPeriod(userId);
             if (totalsByPeriod != null)
@@ -100,53 +101,8 @@ namespace FamnancesServices.Controllers
                     Chequing = totalsByPeriod.User.TotalBudget,
                     Savings = totalsByPeriod.User.TotalSavings,
                     PeriodSavingsExpeses = totalsByPeriod.TotalSavingsExpenses,
-                    SummaryBudgets = _expensesBudgetManager.GetAllByUserId(userId).Select(e => new SummaryBudgetModel
-                    {
-                        Name = e.Name,
-                        Value = e.Value,
-                        Spent = e.Outflow.Where(e => e.DateTimeStamp >= totalsByPeriod.PeriodDateStart && e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
-                    }).ToList(),
-                    SummaryFixedExpenses = _fixedExpenseManager.GetAllByUserId(userId)
-                        .Select(e => new SummaryFixedExpensesModel
-                        {
-                            Id = !(e.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && e.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd) ? e.Id : Guid.Empty,
-                            Name = e.Name,
-                            Value = e.Value
-                        }).ToList(),
-                    SummaryPockets = _savingPocketManager.GetAllByUserId(userId).Select(e => new SummaryPocketModel
-                    {
-                        Name = e.Name,
-                        Value = e.Total,
-                        Spent = e.SavingsRecords.Where(e => e.IsExpense == true && e.DateTimeStamp >= totalsByPeriod.PeriodDateStart && e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
-                    }).ToList()
-                };
-
-                if (user.HomeId != null)
-                {
-                    Home home = _homeManager.GetById(user.HomeId.Value);
-                    summaryModel.HomeSavings = _savingRecordManager.GetHomeSavings(home.Id);
-                    summaryModel.SummaryBudgets = _expensesBudgetManager.GetAllByHomeId(home.Id).Select(e => new SummaryBudgetModel
-                    {
-                        Name = e.Name,
-                        Value = e.Value,
-                        Spent = e.Outflow.Where(e => e.DateTimeStamp >= totalsByPeriod.PeriodDateStart && e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd).Sum(e => e.Value)
-                    }).ToList();
-                    summaryModel.SummaryFixedExpenses = _fixedExpenseManager.GetAllByHome(home.Id)
-                        .Select(e => new SummaryFixedExpensesModel
-                        {
-                            Name = e.Name,
-                            Value = e.Value,
-                            Id = !(e.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && e.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd)? e.Id : Guid.Empty
-                        }).ToList();
-                    summaryModel.SummaryPockets = _savingPocketManager.GetAllByHome(home.Id).Select(e => new SummaryPocketModel
-                    {
-                        Name = e.Name,
-                        Value = e.Total,
-                        Spent = e.SavingsRecords
-                        .Where(e => e.IsExpense == true && e.DateTimeStamp >= totalsByPeriod.PeriodDateStart && e.DateTimeStamp <= totalsByPeriod.PeriodDateEnd)
-                        .Sum(e => e.Value)
-                    }).ToList();
-                }
+                    Roommates = _homeManager.GetComplete(userId).Users.Select(e => new RoommateModel(e)).ToList(),
+                };               
                 return Ok(summaryModel);
             }
             return Ok(new SummaryModel());
