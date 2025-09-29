@@ -97,7 +97,7 @@ namespace FamnancesServices.Controllers
                     PeriodBudget = totalsByPeriod.User.BudgetByPeriod,
                     PeriodBalance = balance,
                     PeriodExpenses = totalsByPeriod.TotalExpenses,
-                    HomeSavings = 0,
+                    HomeSavings = _savingRecordManager.GetHomeSavings(home.Id),
                     Chequing = totalsByPeriod.User.TotalBudget,
                     Savings = totalsByPeriod.User.TotalSavings,
                     PeriodSavingsExpeses = totalsByPeriod.TotalSavingsExpenses,
