@@ -54,17 +54,18 @@ namespace FamnancesServices.Business
                         : context.SavingsPocket.Include(ee => ee.SavingsRecords).Where(ee => ee.UserId == userId).ToList(),
                     FixedExpense = e.Id != userId ?
                         home.ShareExpenses ?
-                            context.FixedExpense.Where(ee => ee.UserId == e.Id).ToList().Select(e => new FixedExpense
+                            context.FixedExpense.Where(ee => ee.UserId == e.Id).ToList().Select(eee => new FixedExpense
                             {
-                                Id = !(e.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && e.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd) ? e.Id : Guid.Empty,
-                                Name = e.Name,
-                                Value = e.Value,
+                                Id = eee.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && eee.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd ? Guid.Empty : eee.Id,
+                                Name = eee.Name,
+                                Value = eee.Value
                             }).ToList() : null
-                            : context.FixedExpense.Where(ee => ee.UserId == userId).Select(e => new FixedExpense
+                            : context.FixedExpense.Where(ee => ee.UserId == userId).Select(eee => new FixedExpense
                             {
-                                Id = !(e.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && e.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd) ? e.Id : Guid.Empty,
-                                Name = e.Name,
-                                Value = e.Value,
+                                Id = eee.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && eee.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd ? Guid.Empty : eee.Id,
+                                Name = eee.Name,
+                                Value = eee.Value,
+                                UserId = eee.UserId
                             }).ToList(),
                 }).ToList();
                 return home;
@@ -92,44 +93,3 @@ namespace FamnancesServices.Business
         }
     }
 }
-
-
-
-//Home home = context.Home.Include(e => e.Users).First(e => e.Id == user.HomeId);
-//home.Users.Select(e => new User
-//{
-//    Id = e.Id,
-//    FirstName = e.FirstName,
-//    LastName = e.LastName,
-//    HomeId = e.HomeId,
-//    ExpensesBudget = e.Id != userId ?
-//        home.ShareExpenses ? context.ExpensesBudget.Include(ee => ee.Outflow)
-//                                .Where(ee => ee.UserId == e.Id
-//                                        && ee.Outflow.Any(
-//                                            eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart
-//                                            && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd
-//                                )).ToList() : null
-//        : context.ExpensesBudget.Include(ee => ee.Outflow).Where(ee => ee.UserId == userId).ToList(),
-//    SavingsPockets = e.Id != userId ?
-//        home.ShareSavings ? context.SavingsPocket.Include(ee => ee.SavingsRecords)
-//                                .Where(ee => ee.UserId == e.Id
-//                                    && ee.SavingsRecords.Any(
-//                                            eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart
-//                                            && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd
-//                                )).ToList() : null
-//        : context.SavingsPocket.Include(ee => ee.SavingsRecords).Where(ee => ee.UserId == userId).ToList(),
-//    FixedExpense = e.Id != userId ?
-//        home.ShareExpenses ?
-//            context.FixedExpense.Where(ee => ee.UserId == e.Id).ToList().Select(e => new FixedExpense
-//            {
-//                Id = !(e.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && e.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd) ? e.Id : Guid.Empty,
-//                Name = e.Name,
-//                Value = e.Value,
-//            }).ToList() : null
-//            : context.FixedExpense.Where(ee => ee.UserId == userId).Select(e => new FixedExpense
-//            {
-//                Id = !(e.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && e.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd) ? e.Id : Guid.Empty,
-//                Name = e.Name,
-//                Value = e.Value,
-//            }).ToList(),
-//});
