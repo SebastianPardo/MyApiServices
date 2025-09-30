@@ -1,6 +1,7 @@
 ﻿using Famnances.Core.Security;
 using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
+using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,18 +17,21 @@ namespace FamnancesServices.Controllers
         IExpensesBudgetManager _expensesBudgetManager;
         IOutflowManager _outflowManager;
         ITotalsByPeriodManager _totalsByPeriodManager;
+        IUtilitiesManager _utilitiesManager;
 
         public FixedExpensesController(
             IFixedExpenseManager fixedExpenseManager,
             IExpensesBudgetManager expensesBudgetManager,
             IOutflowManager outflowManager,
-            ITotalsByPeriodManager totalsByPeriodManager
+            ITotalsByPeriodManager totalsByPeriodManager,
+            IUtilitiesManager utilitiesManager
             )
         {
             _fixedExpenseManager = fixedExpenseManager;
             _expensesBudgetManager = expensesBudgetManager;
             _outflowManager = outflowManager;
             _totalsByPeriodManager = totalsByPeriodManager;
+            _utilitiesManager = utilitiesManager;
         }
 
         [HttpGet]
@@ -111,8 +115,8 @@ namespace FamnancesServices.Controllers
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             var expense = _fixedExpenseManager.GetById(id);
-            var totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(userId);
-            if (expense.LastAutomaticDateStamp == null || expense.LastAutomaticDateStamp < totalsByPeriod.PeriodDateStart)
+            var dates = _utilitiesManager.GetPeriodDates(expense.PeriodId, expense.StartDate.Day);
+            if (expense.LastAutomaticDateStamp == null || expense.LastAutomaticDateStamp < dates.Item1)
             {
                 var budget = _expensesBudgetManager.GetByType("FIX", userId);
                 Outflow outflow = new Outflow
@@ -124,7 +128,7 @@ namespace FamnancesServices.Controllers
                 };
                 _outflowManager.Add(outflow);
                 expense.LastAutomaticDateStamp = DateTime.Now;
-                _outflowManager.Update(outflow);
+                _fixedExpenseManager.Update(expense);
             }
             return Ok();
         }
