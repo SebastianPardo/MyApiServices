@@ -28,6 +28,14 @@ namespace FamnancesServices.Controllers
             return Ok(_expensesBudgetManager.GetAllByUserId(userId));
         }
 
+        [HttpGet("GetEditables")]
+        public async Task<ActionResult<IEnumerable<ExpensesBudget>>> GetEditables()
+        {
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+            var userId = Guid.Parse(accountId.ToString());
+            return Ok(_expensesBudgetManager.GetAllByUserIdToEdit(userId));
+        }
+
         [HttpGet("{id}")]
 
         public async Task<ActionResult<ExpensesBudget>> GetBudget(Guid id)
