@@ -4,6 +4,7 @@ namespace FamnancesServices.Business.Interfaces
 {
     public interface IExpensesBudgetManager
     {
+        List<ExpensesBudget> GetAllByUserIdToEdit(Guid userId);
         List<ExpensesBudget> GetAllByUserId(Guid userId);
         List<ExpensesBudget> GetAllByHomeId(Guid homeId);
         ExpensesBudget GetById(Guid id);

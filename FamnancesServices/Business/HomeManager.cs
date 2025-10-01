@@ -37,21 +37,24 @@ namespace FamnancesServices.Business
                     LastName = e.LastName,
                     HomeId = e.HomeId,
                     ExpensesBudget = e.Id != userId ?
-                            home.ShareExpenses ? context.ExpensesBudget.Include(ee => ee.Outflow)
-                                                    .Where(ee => ee.UserId == e.Id
-                                                            && ee.Outflow.Any(
-                                                                eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart
-                                                                && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd
-                                                    )).ToList() : null
-                            : context.ExpensesBudget.Include(ee => ee.Outflow).Where(ee => ee.UserId == userId).ToList(),
+                            home.ShareExpenses ? 
+                                context.ExpensesBudget.Where(ee => ee.UserId == e.Id)
+                                    .Include(ee => ee.Outflow
+                                                .Where(eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd)
+                                    ).ToList() : null
+                            : context.ExpensesBudget.Where(ee => ee.UserId == userId)
+                                    .Include(ee => ee.Outflow
+                                                .Where(eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd)
+                                    ).ToList(),
                     SavingsPockets = e.Id != userId ?
-                        home.ShareSavings ? context.SavingsPocket.Include(ee => ee.SavingsRecords)
-                                                .Where(ee => ee.UserId == e.Id
-                                                    && ee.SavingsRecords.Any(
-                                                            eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart
-                                                            && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd
-                                                )).ToList() : null
-                        : context.SavingsPocket.Include(ee => ee.SavingsRecords).Where(ee => ee.UserId == userId).ToList(),
+                        home.ShareSavings ? context.SavingsPocket.Where(ee => ee.UserId == e.Id)
+                                    .Include(ee => ee.SavingsRecords
+                                                .Where(eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd)
+                                    ).ToList() : null
+                        : context.SavingsPocket.Where(ee => ee.UserId == userId)
+                                    .Include(ee => ee.SavingsRecords
+                                                .Where(eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd)
+                                    ).ToList(),
                     FixedExpense = e.Id != userId ?
                         home.ShareExpenses ?
                             context.FixedExpense.Where(ee => ee.UserId == e.Id).ToList().Select(eee => new FixedExpense

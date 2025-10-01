@@ -62,7 +62,7 @@ builder.Services.AddSingleton<ITokenHandler, TokenHandler>();
 
 builder.Services.AddScoped<IAccountManager, AccountManager>();
 builder.Services.AddScoped<IAccountTypeManager, AccountTypeManager>();
-builder.Services.AddScoped<IAutomaticDiscountManager, AutomaticDiscountManager>();
+builder.Services.AddScoped<IFixedIncomeByDiscountManager, FixedIncomeByDiscountManager>();
 builder.Services.AddScoped<ICityManager, CityManager>();
 builder.Services.AddScoped<ICountryManager, CountryManager>();
 builder.Services.AddScoped<IBudgetTypeManager, BudgetTypeManager>();

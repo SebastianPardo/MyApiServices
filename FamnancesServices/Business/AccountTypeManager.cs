@@ -4,35 +4,35 @@ using FamnancesServices.Business.Interfaces;
 
 namespace FamnancesServices.Business
 {
-    public class AutomaticDiscountManager : IAutomaticDiscountManager
+    public class AccountTypeManager : IAccountTypeManager
     {
         DatabaseContext context;
-        public AutomaticDiscountManager(DatabaseContext context)
+        public AccountTypeManager(DatabaseContext context)
         {
             this.context = context;
         }
 
-        public bool Add(AutomaticDiscounts entity)
+        public bool Add(AccountType entity)
         {
             throw new NotImplementedException();
         }
 
-        public bool Delete(AutomaticDiscounts entity)
+        public bool Delete(AccountType entity)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<AutomaticDiscounts> GetAll()
+        public IEnumerable<AccountType> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public AutomaticDiscounts GetById(Guid id)
+        public AccountType GetById(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public AutomaticDiscounts Update(AutomaticDiscounts entity)
+        public AccountType Update(AccountType entity)
         {
             throw new NotImplementedException();
         }

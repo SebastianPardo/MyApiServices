@@ -36,13 +36,18 @@ namespace FamnancesServices.Business
                 .Where(e => e.User.HomeId == homeId && e.BudgetType.Code == "PER").ToList();
         }
 
-        public List<ExpensesBudget> GetAllByUserId(Guid userId)
+        public List<ExpensesBudget> GetAllByUserIdToEdit(Guid userId)
         {
             return context.ExpensesBudget
                 .Include(e => e.BudgetType)
                 .Include(e => e.Outflow)
                 .Include(e => e.User)
                 .Where(e => e.UserId == userId && e.BudgetType.Code == "PER").ToList();
+        }
+
+        public List<ExpensesBudget> GetAllByUserId(Guid userId)
+        {
+            return context.ExpensesBudget.Where(e => e.UserId == userId).ToList();
         }
 
         public List<ExpensesBudget> GetByType(string typeCode, Guid userId)
