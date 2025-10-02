@@ -45,7 +45,6 @@ namespace FamnancesServices.Business
         public bool Update(SavingsPocket savingsPocket)
         {
             context.SavingsPocket.Update(savingsPocket);
-            context.SaveChanges();
             return context.SaveChanges() > 0;
         }
 

@@ -31,7 +31,6 @@ namespace FamnancesServices.Business
         public bool Update(Inflow inflow)
         {
             _context.Inflow.Update(inflow);
-            _context.SaveChanges();
             return _context.SaveChanges() > 0;
         }
         public decimal GetTotalByPeriod(DateTime startDate, DateTime endDate, Guid userId)

@@ -55,10 +55,16 @@ namespace FamnancesServices.Business
 
         public bool Update(SavingRecord savingsRecord)
         {
-            savingsRecord.DateTimeStamp = DateTime.Now;
-            _context.SavingRecord.Update(savingsRecord);
-            _context.SaveChanges();
-            return _context.SaveChanges() > 0;
+            try
+            {
+                savingsRecord.DateTimeStamp = DateTime.Now;
+                _context.SavingRecord.Update(savingsRecord);
+                return _context.SaveChanges() > 0;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
     }
 }

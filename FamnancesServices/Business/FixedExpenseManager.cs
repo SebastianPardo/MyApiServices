@@ -44,7 +44,6 @@ namespace FamnancesServices.Business
         public bool Update(FixedExpense fixedExpense)
         {
             context.FixedExpense.Update(fixedExpense);
-            context.SaveChanges();
             return context.SaveChanges() > 0;
         }
     }

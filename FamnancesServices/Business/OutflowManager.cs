@@ -30,7 +30,6 @@ namespace FamnancesServices.Business
         public bool Update(Outflow outflow)
         {
             _context.Outflow.Update(outflow);
-            _context.SaveChanges();
             return _context.SaveChanges() > 0;
         }
 
