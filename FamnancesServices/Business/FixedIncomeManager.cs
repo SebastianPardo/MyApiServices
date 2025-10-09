@@ -33,7 +33,7 @@ namespace FamnancesServices.Business
 
         public FixedIncome GetById(Guid userId, Guid id)
         {
-            return context.FixedIncome.FirstOrDefault(x => x.Id == id && x.UserId == userId);
+            return context.FixedIncome.Include(e => e.FixedIncomeByDiscount).FirstOrDefault(x => x.Id == id && x.UserId == userId);
         }
 
         public bool Update(FixedIncome fixedIncome)

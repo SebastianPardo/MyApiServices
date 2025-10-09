@@ -47,5 +47,9 @@ namespace FamnancesServices.Business
         {
             return _context.Inflow.Where(e => e.DateTimeStamp >= startDate && e.DateTimeStamp <= endDate && e.UserId == userId).OrderByDescending(e => e.TransactionDate).ToList();
         }
+        public List<InflowByDiscount> GetDiscountsByInflow(Guid inflowId)
+        {
+            return _context.InflowByDiscount.Include(e => e.Inflow).Where(e => e.InflowId == inflowId).ToList();
+        }
     }
 }

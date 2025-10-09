@@ -10,5 +10,6 @@ namespace FamnancesServices.Business.Interfaces
         bool Delete(Inflow inflow);
         bool Update(Inflow inflow);
         decimal GetTotalByPeriod(DateTime startDate, DateTime endDate, Guid userId);
+        List<InflowByDiscount> GetDiscountsByInflow(Guid inflowId);
     }
 }

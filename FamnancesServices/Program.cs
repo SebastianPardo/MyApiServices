@@ -69,6 +69,7 @@ builder.Services.AddScoped<IBudgetTypeManager, BudgetTypeManager>();
 builder.Services.AddScoped<IExpensesBudgetManager, ExpensesBudgetManager>();
 builder.Services.AddScoped<IFixedExpenseManager, FixedExpenseManager>();
 builder.Services.AddScoped<IFixedIncomeManager, FixedIncomeManager>();
+builder.Services.AddScoped<IInflowByDiscountManager, InflowByDiscountManager>();
 builder.Services.AddScoped<IIncomeDiscountManager, IncomeDiscountManager>();
 builder.Services.AddScoped<IInflowManager, InflowManager>();
 builder.Services.AddScoped<ILinkedSocialMediaManager, LinkedSocialMediaManager>();

@@ -1,9 +1,11 @@
-﻿using Famnances.Core.Security.Authorization;
+﻿using Famnances.Core.Security;
+using Famnances.Core.Security.Authorization;
+using Famnances.Core.Utils.Helpers;
 using Famnances.DataCore.Entities;
+using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Famnances.Core.Security;
 
 namespace FamnancesServices.Controllers
 {
@@ -13,11 +15,23 @@ namespace FamnancesServices.Controllers
     public class InflowsController : ControllerBase
     {
         IInflowManager _inflowManager;
-        Guid userId;
+        IIncomeDiscountManager _incomeDiscountManager;
+        IExpensesBudgetManager _expensesBudgetManager;
+        IOutflowManager _outflowManager;
+        IInflowByDiscountManager _inflowByDiscountManager;
 
-        public InflowsController(IInflowManager inflowManager,  IUserManager userManager)
+        public InflowsController(
+            IInflowManager inflowManager,
+            IIncomeDiscountManager incomeDiscountManager,
+            IExpensesBudgetManager expensesBudgetManager,
+            IOutflowManager outflowManager,
+            IInflowByDiscountManager inflowByDiscountManager)
         {
             _inflowManager = inflowManager;
+            _incomeDiscountManager = incomeDiscountManager;
+            _expensesBudgetManager = expensesBudgetManager;
+            _outflowManager = outflowManager;
+            _inflowByDiscountManager = inflowByDiscountManager;
         }
 
         // GET: api/Users
@@ -25,7 +39,7 @@ namespace FamnancesServices.Controllers
         public async Task<ActionResult<IEnumerable<Inflow>>> GetInflows(DateTime? startDate = null, DateTime? endDate = null)
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-            userId = Guid.Parse(accountId.ToString());
+            Guid userId = Guid.Parse(accountId.ToString());
             startDate = startDate ?? DateTime.Now.AddDays(-15);
             endDate = endDate ?? DateTime.Now;
             return Ok(_inflowManager.GetAllByPeriod(startDate.Value, endDate.Value, userId));
@@ -41,16 +55,66 @@ namespace FamnancesServices.Controllers
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, Inflow inflow)
+        public async Task<IActionResult> Update(Guid id, IncomeTransactionModel inflow)
         {
-            if (id != inflow.Id)
+            if (id != inflow.Income.Id)
             {
                 return BadRequest();
             }
 
             try
             {
-                _inflowManager.Update(inflow);
+                var oldDiscounts = _inflowManager.GetDiscountsByInflow(id);
+                var oldInflow = _inflowManager.GetById(id);
+                foreach (var oldDiscount in oldDiscounts)
+                {
+                    decimal discountValue = oldDiscount.IncomeDiscount.IsPercentage ? oldInflow.Value * oldDiscount.IncomeDiscount.Value / 100 : oldDiscount.IncomeDiscount.Value;
+
+                    if (!oldDiscount.IncomeDiscount.IsPrediscount)                    
+                    {
+                        Inflow discountRolledBack = new Inflow
+                        {
+                            Id = Guid.NewGuid(),
+                            Value = discountValue,
+                            DateTimeStamp = DateTimeEast.Now,
+                            Description = $"{oldDiscount.IncomeDiscount.Description} - Discount Rolled back",
+                            TransactionDate = inflow.Income.TransactionDate,
+                        };
+                        _inflowManager.Add(discountRolledBack);
+                        _inflowByDiscountManager.Delete(oldDiscount);
+                    }
+                }
+
+                Inflow entity = inflow.Income;
+                entity.InflowByDiscount = new List<InflowByDiscount>();
+                if (inflow.SelectedIncomeDiscountIds != null || inflow.SelectedIncomeDiscountIds.Count > 0)
+                {
+                    foreach (var discountId in inflow.SelectedIncomeDiscountIds)
+                    {
+                        entity.InflowByDiscount.Add(new InflowByDiscount { IncomeDiscountId = discountId });
+                        IncomeDiscount discount = _incomeDiscountManager.GetById(discountId);
+                        decimal discountValue = discount.IsPercentage ? entity.Value * discount.Value / 100 : discount.Value;
+
+                        if (discount.IsPrediscount)
+                        {
+                            entity.Value = entity.Value - discountValue;
+                        }
+                        else
+                        {
+                            Outflow outflow = new Outflow
+                            {
+                                Id = Guid.NewGuid(),
+                                Value = discountValue,
+                                DateTimeStamp = DateTimeEast.Now,
+                                Description = $"{discount.Description} - Discount",
+                                ExpenseBudgetId = _expensesBudgetManager.GetByType("", entity.UserId).First().Id,
+                                TransactionDate = entity.TransactionDate,
+                            };
+                            _outflowManager.Add(outflow);
+                        }
+                    }
+                }
+                _inflowManager.Update(inflow.Income);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -63,12 +127,43 @@ namespace FamnancesServices.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Inflow>> Create(Inflow inflow)
+        public async Task<ActionResult<Inflow>> Create(IncomeTransactionModel inflow)
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-            inflow.UserId = Guid.Parse(accountId.ToString());
-            _inflowManager.Add(inflow);
-            return CreatedAtAction("GetInflow", new { id = inflow.Id }, inflow);
+
+            Inflow entity = inflow.Income;
+            entity.InflowByDiscount = new List<InflowByDiscount>();
+            entity.UserId = Guid.Parse(accountId.ToString());
+
+            if (inflow.SelectedIncomeDiscountIds != null || inflow.SelectedIncomeDiscountIds.Count > 0)
+            {
+                foreach (var discountId in inflow.SelectedIncomeDiscountIds)
+                {
+                    entity.InflowByDiscount.Add(new InflowByDiscount { IncomeDiscountId = discountId });
+                    IncomeDiscount discount = _incomeDiscountManager.GetById(discountId);
+                    decimal discountValue = discount.IsPercentage ? entity.Value * discount.Value / 100 : discount.Value;
+
+                    if (discount.IsPrediscount)
+                    {
+                        entity.Value = entity.Value - discountValue;
+                    }
+                    else
+                    {
+                        Outflow outflow = new Outflow
+                        {
+                            Id = Guid.NewGuid(),
+                            Value = discountValue,
+                            DateTimeStamp = DateTimeEast.Now,
+                            Description = $"{discount.Description} - Discount",
+                            ExpenseBudgetId = _expensesBudgetManager.GetByType("", entity.UserId).First().Id,
+                            TransactionDate = entity.TransactionDate,
+                        };
+                        _outflowManager.Add(outflow);
+                    }
+                }
+            }
+            _inflowManager.Add(entity);
+            return CreatedAtAction("GetInflow", new { id = entity.Id }, inflow);
         }
 
         // DELETE: api/Users/5

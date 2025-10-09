@@ -15,14 +15,24 @@ namespace FamnancesServices.Controllers
         IFixedIncomeManager _fixedIncomeManager;
         IUtilitiesManager _utilitiesManager;
         IInflowManager _inflowManager;
+        IIncomeDiscountManager _incomeDiscountManager;
+        IExpensesBudgetManager _expensesBudgetManager;
+        IOutflowManager _outflowManager;
+
         public FixedIncomesController(
             IFixedIncomeManager fixedIncomeManager, 
             IInflowManager inflowManager,
-            IUtilitiesManager utilitiesManager)
+            IUtilitiesManager utilitiesManager,
+            IIncomeDiscountManager incomeDiscountManager,
+            IExpensesBudgetManager expensesBudgetManager,
+            IOutflowManager outflowManager)
         {
             _fixedIncomeManager = fixedIncomeManager;
             _inflowManager = inflowManager;
             _utilitiesManager = utilitiesManager;
+            _incomeDiscountManager = incomeDiscountManager;
+            _expensesBudgetManager = expensesBudgetManager;
+            _outflowManager = outflowManager;
         }
 
         [HttpGet]
@@ -79,9 +89,42 @@ namespace FamnancesServices.Controllers
                 {
                     Description = income.Description,
                     TransactionDate = DateTime.Now,
-                    Value = income.Value, 
-                    UserId = userId
+                    Value = income.Value,
+                    UserId = userId,
+                    InflowByDiscount = new List<InflowByDiscount>()
                 };
+
+                
+                if (income.FixedIncomeByDiscount != null || income.FixedIncomeByDiscount.Count > 0)
+                {
+                    foreach (var fixedIncomeByDiscount in income.FixedIncomeByDiscount)
+                    {
+                        inflow.InflowByDiscount.Add(new InflowByDiscount { IncomeDiscountId = fixedIncomeByDiscount.IncomeDiscountId });
+                        IncomeDiscount discount = _incomeDiscountManager.GetById(fixedIncomeByDiscount.IncomeDiscountId);
+                        decimal discountValue = discount.IsPercentage ? inflow.Value * discount.Value / 100 : discount.Value;
+
+                        if (discount.IsPrediscount)
+                        {
+                            inflow.Value = inflow.Value - discountValue;
+                        }
+                        else
+                        {
+                            Outflow outflow = new Outflow
+                            {
+                                Id = Guid.NewGuid(),
+                                Value = discountValue,
+                                DateTimeStamp = DateTimeEast.Now,
+                                Description = $"{discount.Description} - Discount",
+                                ExpenseBudgetId = _expensesBudgetManager.GetByType("", inflow.UserId).First().Id,
+                                TransactionDate = inflow.TransactionDate,
+                            };
+                            _outflowManager.Add(outflow);
+                        }
+                    }
+                }
+                _inflowManager.Add(inflow);
+
+
                 _inflowManager.Add(inflow);
                 income.LastAutomaticDateStamp = DateTime.Now;
                 _fixedIncomeManager.Update(income);
