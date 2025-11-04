@@ -19,17 +19,17 @@ namespace FamnancesServices.Business
             DateTime? dateStart = null;
             DateTime? dateEnd = null;
 
-            while ((dateStart == null && dateEnd == null!) || !(dateStart <= DateTime.Now && dateEnd >= DateTime.Now))
+            while ((dateStart == null && dateEnd == null) || !(dateStart <= DateTimeEast.Now && dateEnd >= DateTimeEast.Now))
             {
                 switch (period.Code)
                 {
                     case "MON":
-                        dateStart = DateTime.Parse($"{DateTime.Now.Year}/{DateTime.Now.Month}/{dayStart}");
+                        dateStart = dateStart == null? DateTime.Parse($"{DateTimeEast.Now.Year}/{DateTimeEast.Now.AddMonths(-1).Month}/{dayStart}"): dateEnd.Value.AddMinutes(1);
                         dateEnd = dateStart.Value.AddMonths(1).AddMinutes(-1);
                         break;
                     case "SMON":
                         dateStart = dateStart == null ?
-                            DateTime.Parse($"{DateTime.Now.Year}/{DateTime.Now.Month}/{dayStart}")
+                            DateTime.Parse($"{DateTimeEast.Now.Year}/{DateTimeEast.Now.AddMonths(-1).Month}/{dayStart}")
                         : dateEnd.Value.AddMinutes(1);
 
                         dateEnd = DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month) < 31? 
@@ -38,21 +38,21 @@ namespace FamnancesServices.Business
                         break;
                     case "BWEEK":
                         dateStart = dateStart == null ?
-                            DateTime.Parse($"{DateTime.Now.Year}/{DateTime.Now.Month}/{dayStart}")
+                            DateTime.Parse($"{DateTimeEast.Now.Year}/{DateTimeEast.Now.AddMonths(-1).Month}/{dayStart}")
                         : dateEnd.Value.AddDays(1);
 
                         dateEnd = dateStart.Value.AddDays(15).AddMinutes(-1);
                         break;
                     case "WEEK":
                         dateStart = dateStart == null ?
-                            DateTime.Parse($"{DateTime.Now.Year}/{DateTime.Now.Month}/{dayStart}")
+                            DateTime.Parse($"{DateTimeEast.Now.Year}/{DateTimeEast.Now.AddMonths(-1).Month}/{dayStart}")
                         : dateEnd.Value.AddDays(1);
 
                         dateEnd = dateStart.Value.AddDays(8).AddMinutes(-1);
                         break;
                     case "DAY":
                         dateStart = dateStart == null ?
-                            DateTime.Parse($"{dayStart}/{DateTime.Now.Month}/{DateTime.Now.Year}")
+                            DateTime.Parse($"{dayStart}/{DateTimeEast.Now.AddMonths(-1).Month}/{DateTimeEast.Now.Year}")
                         : dateEnd.Value.AddDays(1).AddMinutes(-1);
 
                         dateEnd = dateStart.Value.AddDays(1);

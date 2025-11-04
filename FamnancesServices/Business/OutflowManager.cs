@@ -29,6 +29,7 @@ namespace FamnancesServices.Business
 
         public bool Update(Outflow outflow)
         {
+            outflow.DateTimeStamp = DateTimeEast.Now;
             _context.Outflow.Update(outflow);
             return _context.SaveChanges() > 0;
         }

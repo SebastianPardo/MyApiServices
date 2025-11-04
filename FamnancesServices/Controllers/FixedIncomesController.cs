@@ -4,6 +4,7 @@ using Famnances.DataCore.Entities;
 using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Controllers
 {
@@ -76,60 +77,87 @@ namespace FamnancesServices.Controllers
             return NoContent();
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, FixedIncome fixedIncome)
+        {
+            if (id != fixedIncome.Id)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+                fixedIncome.UserId = Guid.Parse(accountId.ToString());
+                _fixedIncomeManager.Update(fixedIncome);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+
+            return NoContent();
+        }
+
         [HttpPost("Receive")]
         public async Task<IActionResult> Receive(Guid id)
         {
-            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-            var userId = Guid.Parse(accountId.ToString());
-            var income = _fixedIncomeManager.GetById(userId, id);
-            var dates = _utilitiesManager.GetPeriodDates(income.PayablePeriodId, income.FirstPayDate.Day);
-            if (income.LastAutomaticDateStamp == null || income.LastAutomaticDateStamp < dates.Item1)
+            try
             {
-                Inflow inflow = new Inflow
+                HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+                var userId = Guid.Parse(accountId.ToString());
+                var income = _fixedIncomeManager.GetById(userId, id);
+                var dates = _utilitiesManager.GetPeriodDates(income.PayablePeriodId, income.FirstPayDate.Day);
+                if (income.LastAutomaticDateStamp == null || income.LastAutomaticDateStamp < dates.Item1)
                 {
-                    Description = income.Description,
-                    TransactionDate = DateTime.Now,
-                    Value = income.Value,
-                    UserId = userId,
-                    InflowByDiscount = new List<InflowByDiscount>()
-                };
-
-                
-                if (income.FixedIncomeByDiscount != null || income.FixedIncomeByDiscount.Count > 0)
-                {
-                    foreach (var fixedIncomeByDiscount in income.FixedIncomeByDiscount)
+                    Inflow inflow = new Inflow
                     {
-                        inflow.InflowByDiscount.Add(new InflowByDiscount { IncomeDiscountId = fixedIncomeByDiscount.IncomeDiscountId });
-                        IncomeDiscount discount = _incomeDiscountManager.GetById(fixedIncomeByDiscount.IncomeDiscountId);
-                        decimal discountValue = discount.IsPercentage ? inflow.Value * discount.Value / 100 : discount.Value;
+                        Description = income.Description,
+                        TransactionDate = DateTime.Now,
+                        Value = income.Value,
+                        UserId = userId,
+                        InflowByDiscount = new List<InflowByDiscount>()
+                    };
 
-                        if (discount.IsPrediscount)
+
+                    if (income.FixedIncomeByDiscount != null && income.FixedIncomeByDiscount.Count > 0)
+                    {
+                        foreach (var fixedIncomeByDiscount in income.FixedIncomeByDiscount)
                         {
-                            inflow.Value = inflow.Value - discountValue;
-                        }
-                        else
-                        {
-                            Outflow outflow = new Outflow
+                            inflow.InflowByDiscount.Add(new InflowByDiscount { IncomeDiscountId = fixedIncomeByDiscount.IncomeDiscountId });
+                            IncomeDiscount discount = _incomeDiscountManager.GetById(fixedIncomeByDiscount.IncomeDiscountId);
+                            decimal discountValue = discount.IsPercentage ? inflow.Value * discount.Value / 100 : discount.Value;
+
+                            if (discount.IsPrediscount)
                             {
-                                Id = Guid.NewGuid(),
-                                Value = discountValue,
-                                DateTimeStamp = DateTimeEast.Now,
-                                Description = $"{discount.Description} - Discount",
-                                ExpenseBudgetId = _expensesBudgetManager.GetByType("", inflow.UserId).First().Id,
-                                TransactionDate = inflow.TransactionDate,
-                            };
-                            _outflowManager.Add(outflow);
+                                inflow.Value = inflow.Value - discountValue;
+                            }
+                            else
+                            {
+                                Outflow outflow = new Outflow
+                                {
+                                    Id = Guid.NewGuid(),
+                                    Value = discountValue,
+                                    DateTimeStamp = DateTimeEast.Now,
+                                    Description = $"{discount.Description} - Discount",
+                                    ExpenseBudgetId = _expensesBudgetManager.GetByType("DIS", inflow.UserId).First().Id,
+                                    TransactionDate = inflow.TransactionDate,
+                                };
+                                _outflowManager.Add(outflow);
+                            }
                         }
                     }
+                    _inflowManager.Add(inflow);
+                    income.LastAutomaticDateStamp = DateTimeEast.Now;
+                    _fixedIncomeManager.Update(income);
                 }
-                _inflowManager.Add(inflow);
-
-
-                _inflowManager.Add(inflow);
-                income.LastAutomaticDateStamp = DateTime.Now;
-                _fixedIncomeManager.Update(income);
+                return Ok();
             }
-            return Ok();
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return Ok();
+            }
         }
     }
 }
