@@ -22,7 +22,16 @@ namespace FamnancesServices.Controllers
         public async Task<ActionResult<TotalsByPeriod?>> GetCurrentPeriod()
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-            TotalsByPeriod? totalsByPeriod = _totalsByPeriodManager.GetByCurrentPeriod(Guid.Parse(accountId.ToString()));
+            TotalsByPeriod? totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(Guid.Parse(accountId.ToString()));
+            return Ok(totalsByPeriod);
+
+        }
+
+        [HttpGet("GetByDate/{date}")]
+        public async Task<ActionResult<TotalsByPeriod?>> GetByDate(DateTime date)
+        {
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+            TotalsByPeriod? totalsByPeriod = _totalsByPeriodManager.GetByDate(Guid.Parse(accountId.ToString()), date);
             return Ok(totalsByPeriod);
 
         }

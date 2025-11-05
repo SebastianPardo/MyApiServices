@@ -21,21 +21,14 @@ namespace FamnancesServices.Business
 
         }
 
-        public TotalsByPeriod? GetByCurrentPeriod(Guid userId)
+        public TotalsByPeriod? GetByDate(Guid userId, DateTime date)
         {
-            try
-            {
-                return _context.TotalsByPeriod.Include(e => e.User).SingleOrDefault(e => e.UserId == userId && e.PeriodDateStart <= DateTime.Now && e.PeriodDateEnd >= DateTime.Now);
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
+            return _context.TotalsByPeriod.Include(e => e.User).SingleOrDefault(e => e.UserId == userId && e.PeriodDateStart <= date && e.PeriodDateEnd >= date);
         }
 
         public TotalsByPeriod? GetByCurrentDay(Guid userId)
         {
-            return _context.TotalsByPeriod.SingleOrDefault(e=>e.UserId == userId && e.PeriodDateStart < DateTime.Now && e.PeriodDateEnd > DateTime.Now);
+            return _context.TotalsByPeriod.Include(e => e.User).SingleOrDefault(e=>e.UserId == userId && e.PeriodDateStart < DateTime.Now && e.PeriodDateEnd > DateTime.Now);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Famnances.Core.Security;
 using Famnances.Core.Security.Authorization;
+using Famnances.Core.Utils.Helpers;
 using Famnances.DataCore.Entities;
 using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business.Interfaces;
@@ -77,15 +78,17 @@ namespace FamnancesServices.Controllers
             return Ok(totalsByPeriod);
         }
 
-        [HttpGet("CurentTotals")]
-        public async Task<ActionResult<SummaryModel>> CurentTotals()
+        [HttpGet("CurentTotals/{date}")]
+        public async Task<ActionResult<SummaryModel>> CurentTotals(DateTime? date)
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             User user = _userManager.GetById(userId);
-            Home home = _homeManager.GetComplete(userId);
+            Home home = _homeManager.GetComplete(userId, date?? DateTimeEast.Now);
 
-            TotalsByPeriod? totalsByPeriod = _totalsByPeriodManager.GetByCurrentPeriod(userId);
+            TotalsByPeriod? totalsByPeriod = date == null? 
+                _totalsByPeriodManager.GetByCurrentDay(userId) : _totalsByPeriodManager.GetByDate(userId, date.Value);
+            
             if (totalsByPeriod != null)
             {
                 decimal balance = totalsByPeriod.User.BudgetByPeriod - totalsByPeriod.TotalExpenses;
@@ -101,7 +104,7 @@ namespace FamnancesServices.Controllers
                     Chequing = totalsByPeriod.User.TotalBudget,
                     Savings = totalsByPeriod.User.TotalSavings,
                     PeriodSavingsExpeses = totalsByPeriod.TotalSavingsExpenses,
-                    Roommates = _homeManager.GetComplete(userId).Users.Select(e => new RoommateModel(e)).ToList(),
+                    Roommates = home.Users.Select(e => new RoommateModel(e)).ToList(),
                 };               
                 return Ok(summaryModel);
             }

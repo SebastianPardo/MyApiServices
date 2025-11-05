@@ -23,10 +23,10 @@ namespace FamnancesServices.Business
             return context.Home.FirstOrDefault(e => e.Users.Any(ee => ee.Id == userId));
         }
 
-        public Home GetComplete(Guid userId)
+        public Home GetComplete(Guid userId, DateTime date)
         {
             User user = context.User.First(u => u.Id == userId);
-            var totalsByPeriod = context.TotalsByPeriod.SingleOrDefault(e => e.UserId == userId && e.PeriodDateStart < DateTime.Now && e.PeriodDateEnd > DateTime.Now);
+            var totalsByPeriod = context.TotalsByPeriod.SingleOrDefault(e => e.UserId == userId && e.PeriodDateStart <= date && e.PeriodDateEnd >= date);
             if (user.HomeId != null)
             {
                 Home home = context.Home.Include(e => e.Users).First(e => e.Id == user.HomeId);
