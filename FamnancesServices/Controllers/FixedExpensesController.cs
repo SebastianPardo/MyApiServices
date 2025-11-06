@@ -18,9 +18,11 @@ namespace FamnancesServices.Controllers
         IOutflowManager _outflowManager;
         ITotalsByPeriodManager _totalsByPeriodManager;
         IUtilitiesManager _utilitiesManager;
+        IFixedExpensePaymentRecordManager _fixedExpensePaymentRecordManager;
 
         public FixedExpensesController(
             IFixedExpenseManager fixedExpenseManager,
+            IFixedExpensePaymentRecordManager fixedExpensePaymentRecordManager,
             IExpensesBudgetManager expensesBudgetManager,
             IOutflowManager outflowManager,
             ITotalsByPeriodManager totalsByPeriodManager,
@@ -32,6 +34,7 @@ namespace FamnancesServices.Controllers
             _outflowManager = outflowManager;
             _totalsByPeriodManager = totalsByPeriodManager;
             _utilitiesManager = utilitiesManager;
+            _fixedExpensePaymentRecordManager = fixedExpensePaymentRecordManager;
         }
 
         [HttpGet]
@@ -40,18 +43,15 @@ namespace FamnancesServices.Controllers
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
-            var expeneses = _fixedExpenseManager.GetAllByUserId(userId);
+            var expenses = _fixedExpenseManager.GetAllByUserId(userId);
             var totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(userId);
 
-            foreach(var expense in expeneses)
+            foreach(var expense in expenses)
             {
-                if (!(expense.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && expense.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd))
-                {
-                    expense.LastAutomaticDateStamp = null;
-                }
+                expense.FixedExpensesPaymentsRecord = expense.FixedExpensesPaymentsRecord.Where(e => e.PaymentDate >= totalsByPeriod.PeriodDateStart && e.PaymentDate <= totalsByPeriod.PeriodDateEnd).ToList();
             }
 
-            return Ok(expeneses);
+            return Ok(expenses);
         }
 
         [HttpGet("{id}")]
@@ -116,19 +116,24 @@ namespace FamnancesServices.Controllers
             var userId = Guid.Parse(accountId.ToString());
             var expense = _fixedExpenseManager.GetById(id);
             var dates = _utilitiesManager.GetPeriodDates(expense.PeriodId, expense.StartDate.Day);
-            if (expense.LastAutomaticDateStamp == null || expense.LastAutomaticDateStamp < dates.Item1)
+            if ( !expense.FixedExpensesPaymentsRecord.Any( e => e.PaymentDate >= dates.Item1) )
             {
                 var budget = _expensesBudgetManager.GetByType("FIX", userId);
                 Outflow outflow = new Outflow
                 {
                     Description = expense.Name,
                     ExpenseBudgetId = budget.First().Id,
-                    TransactionDate = DateTime.Now,
-                    Value = expense.Value,
+                    TransactionDate = DateTimeEast.Now,
+                    Value = expense.Value,                    
                 };
                 _outflowManager.Add(outflow);
-                expense.LastAutomaticDateStamp = DateTime.Now;
-                _fixedExpenseManager.Update(expense);
+                
+                FixedExpensePaymentRecord fixedExpensePaymentRecord = new FixedExpensePaymentRecord
+                {
+                    PaymentDate = DateTimeEast.Now,
+                };
+
+                _fixedExpensePaymentRecordManager.Add(fixedExpensePaymentRecord);
             }
             return Ok();
         }

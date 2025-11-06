@@ -57,19 +57,28 @@ namespace FamnancesServices.Business
                                     ).ToList(),
                     FixedExpense = e.Id != userId ?
                         home.ShareExpenses ?
-                            context.FixedExpense.Where(ee => ee.UserId == e.Id).ToList().Select(eee => new FixedExpense
-                            {
-                                Id = eee.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && eee.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd ? Guid.Empty : eee.Id,
-                                Name = eee.Name,
-                                Value = eee.Value
-                            }).ToList() : null
-                            : context.FixedExpense.Where(ee => ee.UserId == userId).Select(eee => new FixedExpense
-                            {
-                                Id = eee.LastAutomaticDateStamp >= totalsByPeriod.PeriodDateStart && eee.LastAutomaticDateStamp <= totalsByPeriod.PeriodDateEnd ? Guid.Empty : eee.Id,
+                            context.FixedExpense.Where(ee => ee.UserId == e.Id).Select(eee => 
+                            new FixedExpense {
+                                Id = eee.Id,
                                 Name = eee.Name,
                                 Value = eee.Value,
-                                UserId = eee.UserId
-                            }).ToList(),
+                                FixedExpensesPaymentsRecord = context.FixedExpensePaymentRecord
+                                                                .Where(eeee => 
+                                                                    eeee.PaymentDate >= totalsByPeriod.PeriodDateStart
+                                                                    && eeee.PaymentDate <= totalsByPeriod.PeriodDateEnd).ToList(),
+                            }).ToList() : null
+                            : context.FixedExpense.Where(ee => ee.UserId == userId).Select(eee =>
+                                new FixedExpense
+                                {
+                                    Id = eee.Id,
+                                    Name = eee.Name,
+                                    Value = eee.Value,
+                                    UserId = eee.UserId,
+                                    FixedExpensesPaymentsRecord = context.FixedExpensePaymentRecord
+                                                                .Where(eeee =>
+                                                                    eeee.PaymentDate >= totalsByPeriod.PeriodDateStart
+                                                                    && eeee.PaymentDate <= totalsByPeriod.PeriodDateEnd).ToList(),
+                                }).ToList(),
                 }).ToList();
                 return home;
             }
