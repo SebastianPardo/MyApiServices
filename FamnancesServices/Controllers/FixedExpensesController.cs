@@ -130,6 +130,7 @@ namespace FamnancesServices.Controllers
                 
                 FixedExpensePaymentRecord fixedExpensePaymentRecord = new FixedExpensePaymentRecord
                 {
+                    FixedExpenseId = id,
                     PaymentDate = DateTimeEast.Now,
                 };
 

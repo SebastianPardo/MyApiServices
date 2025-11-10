@@ -63,8 +63,8 @@ namespace FamnancesServices.Business
                                 Name = eee.Name,
                                 Value = eee.Value,
                                 FixedExpensesPaymentsRecord = context.FixedExpensePaymentRecord
-                                                                .Where(eeee => 
-                                                                    eeee.PaymentDate >= totalsByPeriod.PeriodDateStart
+                                                                .Where(eeee => eeee.FixedExpenseId == eee.Id 
+                                                                    && eeee.PaymentDate >= totalsByPeriod.PeriodDateStart
                                                                     && eeee.PaymentDate <= totalsByPeriod.PeriodDateEnd).ToList(),
                             }).ToList() : null
                             : context.FixedExpense.Where(ee => ee.UserId == userId).Select(eee =>
@@ -75,8 +75,8 @@ namespace FamnancesServices.Business
                                     Value = eee.Value,
                                     UserId = eee.UserId,
                                     FixedExpensesPaymentsRecord = context.FixedExpensePaymentRecord
-                                                                .Where(eeee =>
-                                                                    eeee.PaymentDate >= totalsByPeriod.PeriodDateStart
+                                                                .Where(eeee => eeee.FixedExpenseId == eee.Id
+                                                                    && eeee.PaymentDate >= totalsByPeriod.PeriodDateStart
                                                                     && eeee.PaymentDate <= totalsByPeriod.PeriodDateEnd).ToList(),
                                 }).ToList(),
                 }).ToList();
