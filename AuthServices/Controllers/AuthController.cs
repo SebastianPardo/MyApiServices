@@ -16,7 +16,7 @@ using Google.Apis.Services;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
+using Account = Famnances.DataCore.Entities.Account;
 
 [ApiController]
 [Route("Api/[controller]")]

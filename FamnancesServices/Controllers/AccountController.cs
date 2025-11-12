@@ -8,7 +8,7 @@ using FamnancesServices.Business.Interfaces;
 using FamnancesServices.Models;
 using Microsoft.AspNetCore.Mvc;
 
-[Authorize]
+[ServiceFilter(typeof(AuthorizeAttribute))]
 [ApiController]
 [Route("Api/[controller]")]
 public class AccountController : ControllerBase

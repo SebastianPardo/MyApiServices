@@ -7,7 +7,7 @@ using Famnances.Core.Security;
 
 namespace FamnancesServices.Controllers
 {
-    [Authorize]
+    [ServiceFilter(typeof(AuthorizeAttribute))]
     [Route("Api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase

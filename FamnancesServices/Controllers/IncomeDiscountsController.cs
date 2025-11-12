@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Controllers
 {
-    [Authorize]
+    [ServiceFilter(typeof(AuthorizeAttribute))]
     [Route("api/[controller]")]
     [ApiController]
     public class IncomeDiscountsController : ControllerBase

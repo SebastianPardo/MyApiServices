@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Controllers
 {
-    [Authorize]
+    [ServiceFilter(typeof(AuthorizeAttribute))]
     [Route("Api/[controller]")]
     [ApiController]
     public class HomesController : ControllerBase

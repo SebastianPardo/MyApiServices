@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamnancesServices.Controllers
 {
-    [Authorize]
+    [ServiceFilter(typeof(AuthorizeAttribute))]
     [Route("Api/[controller]")]
     [ApiController]
     public class BudgetTypesController : ControllerBase
