@@ -2,8 +2,6 @@
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Famnances.Core.Security;
 
 namespace FamnancesServices.Controllers
 {
@@ -32,7 +30,7 @@ namespace FamnancesServices.Controllers
         public async Task<ActionResult<ErrorLog>> Create(ErrorLog error)
         {
             _errorLogManager.Add(error);
-            return CreatedAtAction("GetPocket", new { id = error.Id }, error);
+            return CreatedAtAction("GetErrorLog", new { id = error.Id }, error);
         }
 
     }
