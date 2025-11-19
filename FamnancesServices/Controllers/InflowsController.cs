@@ -121,7 +121,7 @@ namespace FamnancesServices.Controllers
                 throw;
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Users
@@ -177,7 +177,7 @@ namespace FamnancesServices.Controllers
             }
 
             _inflowManager.Delete(inflow);
-            return NoContent();
+            return Ok();
         }
     }
 }

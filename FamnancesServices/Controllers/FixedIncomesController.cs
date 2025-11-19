@@ -19,6 +19,7 @@ namespace FamnancesServices.Controllers
         IIncomeDiscountManager _incomeDiscountManager;
         IExpensesBudgetManager _expensesBudgetManager;
         IOutflowManager _outflowManager;
+        IFixedIncomeByDiscountManager _fixedIncomeByDiscountManager;
 
         public FixedIncomesController(
             IFixedIncomeManager fixedIncomeManager, 
@@ -26,7 +27,8 @@ namespace FamnancesServices.Controllers
             IUtilitiesManager utilitiesManager,
             IIncomeDiscountManager incomeDiscountManager,
             IExpensesBudgetManager expensesBudgetManager,
-            IOutflowManager outflowManager)
+            IOutflowManager outflowManager,
+            IFixedIncomeByDiscountManager fixedIncomeByDiscountManager)
         {
             _fixedIncomeManager = fixedIncomeManager;
             _inflowManager = inflowManager;
@@ -34,6 +36,7 @@ namespace FamnancesServices.Controllers
             _incomeDiscountManager = incomeDiscountManager;
             _expensesBudgetManager = expensesBudgetManager;
             _outflowManager = outflowManager;
+            _fixedIncomeByDiscountManager = fixedIncomeByDiscountManager;
         }
 
         [HttpGet]
@@ -74,7 +77,7 @@ namespace FamnancesServices.Controllers
                 return NotFound();
             }
             _fixedIncomeManager.Delete(fixedIncomes);
-            return NoContent();
+            return Ok();
         }
 
         [HttpPut("{id}")]
@@ -89,6 +92,7 @@ namespace FamnancesServices.Controllers
             {
                 HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
                 fixedIncome.UserId = Guid.Parse(accountId.ToString());
+                _fixedIncomeByDiscountManager.DeleteByFixedIncomme(fixedIncome.Id);
                 _fixedIncomeManager.Update(fixedIncome);
             }
             catch (DbUpdateConcurrencyException)
@@ -96,7 +100,7 @@ namespace FamnancesServices.Controllers
                 throw;
             }
 
-            return NoContent();
+            return Ok();
         }
 
         [HttpPost("Receive")]

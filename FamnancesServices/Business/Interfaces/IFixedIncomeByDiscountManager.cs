@@ -8,7 +8,7 @@ namespace FamnancesServices.Business.Interfaces
         FixedIncomeByDiscount GetById(Guid id);
         bool Add(FixedIncomeByDiscount entity);
         FixedIncomeByDiscount Update(FixedIncomeByDiscount entity);
-        bool Delete(FixedIncomeByDiscount entity);
+        bool DeleteByFixedIncomme(Guid fixedIncommeId);
 
     }
 }

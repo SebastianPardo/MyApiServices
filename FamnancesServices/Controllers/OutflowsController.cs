@@ -53,7 +53,7 @@ namespace FamnancesServices.Controllers
                 throw;
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Users
@@ -64,7 +64,7 @@ namespace FamnancesServices.Controllers
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             //outflow.UserId = Guid.Parse(accountId.ToString());
             _outflowManager.Add(outflow);
-            return CreatedAtAction("GetBudget", new { id = outflow.Id }, outflow);
+            return CreatedAtAction("GetOutflow", new { id = outflow.Id }, outflow);
         }
 
         // DELETE: api/Users/5
@@ -78,7 +78,7 @@ namespace FamnancesServices.Controllers
             }
 
             _outflowManager.Delete(outflow);
-            return NoContent();
+            return Ok();
         }
     }
 }

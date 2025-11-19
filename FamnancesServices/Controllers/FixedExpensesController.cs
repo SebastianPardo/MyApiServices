@@ -81,7 +81,7 @@ namespace FamnancesServices.Controllers
                 throw;
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Users
@@ -106,7 +106,7 @@ namespace FamnancesServices.Controllers
             }
 
             _fixedExpenseManager.Delete(budget);
-            return NoContent();
+            return Ok();
         }
 
         [HttpPost("Pay")]

@@ -61,7 +61,7 @@ namespace FamnancesServices.Controllers
                 throw;
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Users
@@ -84,7 +84,7 @@ namespace FamnancesServices.Controllers
             }
 
             _userManager.Delete(user);
-            return NoContent();
+            return Ok();
         }
     }
 }

@@ -71,7 +71,7 @@ namespace FamnancesServices.Controllers
                 throw;
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Users
@@ -96,7 +96,7 @@ namespace FamnancesServices.Controllers
             }
 
             _expensesBudgetManager.Delete(budget);
-            return NoContent();
+            return Ok();
         }
     }
 }

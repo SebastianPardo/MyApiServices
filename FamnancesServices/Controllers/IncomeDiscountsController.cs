@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore;
 namespace FamnancesServices.Controllers
 {
     [ServiceFilter(typeof(AuthorizeAttribute))]
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("Api/[controller]")]
     public class IncomeDiscountsController : ControllerBase
     {
         IIncomeDiscountManager _incomeDiscountManager;
@@ -44,7 +44,7 @@ namespace FamnancesServices.Controllers
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             discount.UserId = Guid.Parse(accountId.ToString());
             _incomeDiscountManager.Add(discount);
-            return CreatedAtAction("GetBudget", new { id = discount.Id }, discount);
+            return CreatedAtAction("Get", new { id = discount.Id }, discount);
         }
 
         // PUT api/<ValuesController>/5
@@ -58,6 +58,8 @@ namespace FamnancesServices.Controllers
 
             try
             {
+                HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+                discount.UserId = Guid.Parse(accountId.ToString());
                 _incomeDiscountManager.Update(discount);
             }
             catch (DbUpdateConcurrencyException)
@@ -65,7 +67,7 @@ namespace FamnancesServices.Controllers
                 throw;
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // DELETE api/<ValuesController>/5
@@ -79,7 +81,7 @@ namespace FamnancesServices.Controllers
             }
 
             _incomeDiscountManager.Delete(budget);
-            return NoContent();
+            return Ok();
         }
     }
 }

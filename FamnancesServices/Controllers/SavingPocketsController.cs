@@ -56,6 +56,8 @@ namespace FamnancesServices.Controllers
 
             try
             {
+                HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+                pocket.UserId = Guid.Parse(accountId.ToString());
                 _savingsPocketManager.Update(pocket);
             }
             catch (DbUpdateConcurrencyException)
@@ -63,7 +65,7 @@ namespace FamnancesServices.Controllers
                 throw;
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // DELETE: api/Users/5
@@ -77,7 +79,7 @@ namespace FamnancesServices.Controllers
             }
 
             _savingsPocketManager.Delete(pocket);
-            return NoContent();
+            return Ok();
         }
     }
 }

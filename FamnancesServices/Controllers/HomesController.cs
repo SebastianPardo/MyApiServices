@@ -116,7 +116,7 @@ namespace FamnancesServices.Controllers
                 throw;
             }
 
-            return NoContent();
+            return Ok();
         }
 
 
@@ -131,7 +131,7 @@ namespace FamnancesServices.Controllers
             }
 
             _homeManager.Delete(Home);
-            return NoContent();
+            return Ok();
         }
     }
 }

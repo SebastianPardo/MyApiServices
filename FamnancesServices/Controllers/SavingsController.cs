@@ -61,7 +61,7 @@ namespace FamnancesServices.Controllers
                 throw;
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // DELETE: api/Users/5
@@ -75,7 +75,7 @@ namespace FamnancesServices.Controllers
             }
 
             _savingRecordManager.Delete(savingRecord);
-            return NoContent();
+            return Ok();
         }
     }
 }

@@ -81,6 +81,7 @@ builder.Services.AddSwaggerGen(swagger =>
 builder.Services.AddSingleton<ITokenHandler, TokenHandler>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
+builder.Services.AddExceptionHandler<ApiErrorHandler>();
 
 var app = builder.Build();
 

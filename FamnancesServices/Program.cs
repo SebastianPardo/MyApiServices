@@ -1,6 +1,7 @@
 
 
 using Famnances.Core.Entities;
+using Famnances.Core.Errors;
 using Famnances.Core.Security.Authorization;
 using Famnances.Core.Security.Jwt;
 using Famnances.Core.Security.Services;
@@ -89,6 +90,7 @@ builder.Services.AddScoped<IUtilitiesManager, UtilitiesManager>();
 builder.Services.AddScoped<ITotalsByPeriodManager, TotalsByPeriodManager>();
 builder.Services.AddScoped<IHomeManager, HomeManager>();
 builder.Services.AddScoped<IHomeInvitationManager, HomeInvitationManager>();
+builder.Services.AddExceptionHandler<ApiErrorHandler>();
 
 var app = builder.Build();
 

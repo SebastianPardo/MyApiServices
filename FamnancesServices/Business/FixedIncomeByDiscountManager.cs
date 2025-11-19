@@ -17,9 +17,11 @@ namespace FamnancesServices.Business
             throw new NotImplementedException();
         }
 
-        public bool Delete(FixedIncomeByDiscount entity)
+        public bool DeleteByFixedIncomme(Guid fixedIncommeId)
         {
-            throw new NotImplementedException();
+            var fixedIncomesByDiscounts = context.FixedIncomeByDiscount.Where(e => e.FixedIncomeId == fixedIncommeId);
+            context.FixedIncomeByDiscount.RemoveRange(fixedIncomesByDiscounts);
+            return context.SaveChanges() > 0;
         }
 
         public IEnumerable<FixedIncomeByDiscount> GetAll()
