@@ -3,14 +3,12 @@ using AuthServices.Business.Interfaces;
 using AuthServices.Security;
 using Famnances.Core.Entities;
 using Famnances.Core.Errors;
-using Famnances.Core.Security.Authorization;
 using Famnances.Core.Security.Services;
 using Famnances.Core.Security.Services.Interfaces;
 using Famnances.Core.Utils.Services;
 using Famnances.Core.Utils.Services.Interface;
 using Famnances.DataCore.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
 //AppContext.SetSwitch("Switch.Microsoft.Data.SqlClient.UseManagedNetworkingOnWindows", true);
@@ -41,7 +39,10 @@ builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(b
 builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Database"), x => x.MigrationsAssembly("Famnances.DataCore")));
 #endif
 
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddMaps(typeof(Program).Assembly);
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(swagger =>
