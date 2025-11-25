@@ -15,8 +15,9 @@ namespace FamnancesServices.Business
 
         public decimal GetHomeSavings(Guid homeId)
         {
-            var users = _context.User.Where(e => e.HomeId == homeId);
-            return users.Sum(e => e.TotalSavings);
+            var savingsPockets = _context.SavingsPocket.Include(e => e.User)
+                .Where(e => e.ShareOnHousehold == true && e.User.HomeId == homeId);
+            return savingsPockets.Sum(e => e.Total);
         }
 
         public SavingRecord Add(SavingRecord savingsRecord)

@@ -38,7 +38,7 @@ namespace FamnancesServices.Business
                     HomeId = e.HomeId,
                     ExpensesBudget = e.Id != userId ?
                             home.ShareExpenses ? 
-                                context.ExpensesBudget.Where(ee => ee.UserId == e.Id)
+                                context.ExpensesBudget.Where(ee => ee.UserId == e.Id && ee.ShareOnHousehold == true)
                                     .Include(ee => ee.Outflow
                                                 .Where(eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd)
                                     ).ToList() : null
@@ -47,7 +47,7 @@ namespace FamnancesServices.Business
                                                 .Where(eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd)
                                     ).ToList(),
                     SavingsPockets = e.Id != userId ?
-                        home.ShareSavings ? context.SavingsPocket.Where(ee => ee.UserId == e.Id)
+                        home.ShareSavings ? context.SavingsPocket.Where(ee => ee.UserId == e.Id && ee.ShareOnHousehold == true)
                                     .Include(ee => ee.SavingsRecords
                                                 .Where(eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd)
                                     ).ToList() : null
@@ -57,7 +57,7 @@ namespace FamnancesServices.Business
                                     ).ToList(),
                     FixedExpense = e.Id != userId ?
                         home.ShareExpenses ?
-                            context.FixedExpense.Where(ee => ee.UserId == e.Id).Select(eee => 
+                            context.FixedExpense.Where(ee => ee.UserId == e.Id && ee.ShareOnHousehold == true).Select(eee => 
                             new FixedExpense {
                                 Id = eee.Id,
                                 Name = eee.Name,
