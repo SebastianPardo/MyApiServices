@@ -39,7 +39,7 @@ namespace FamnancesServices.Business
 
         public SavingsPocket GetById(Guid id)
         {
-            return context.SavingsPocket.FirstOrDefault(x => x.Id == id);
+            return context.SavingsPocket.Include(e=>e.SavingsRecords).FirstOrDefault(x => x.Id == id);
         }
 
         public bool Update(SavingsPocket savingsPocket)

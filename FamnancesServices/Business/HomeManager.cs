@@ -23,6 +23,18 @@ namespace FamnancesServices.Business
             return context.Home.FirstOrDefault(e => e.Users.Any(ee => ee.Id == userId));
         }
 
+        private List<SavingsPocket> SavingsPockets(Guid userId, DateTime from, DateTime to, bool guest)
+        {
+            return context.SavingsPocket.Where(e => e.UserId == userId && (e.ShareOnHousehold == true || e.ShareOnHousehold == guest))
+                                    .Select(e => new SavingsPocket
+                                    {
+                                        Id = guest? Guid.Empty : e.Id,
+                                        Name = e.Name,
+                                        SavingsRecords = e.SavingsRecords.Where(ee => ee.TransactionDate >= from && ee.TransactionDate <= to).ToList(),
+                                        Total = e.Total,                                        
+                                    }).ToList();
+        }
+
         public Home GetComplete(Guid userId, DateTime date)
         {
             User user = context.User.First(u => u.Id == userId);
@@ -46,15 +58,7 @@ namespace FamnancesServices.Business
                                     .Include(ee => ee.Outflow
                                                 .Where(eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd)
                                     ).ToList(),
-                    SavingsPockets = e.Id != userId ?
-                        home.ShareSavings ? context.SavingsPocket.Where(ee => ee.UserId == e.Id && ee.ShareOnHousehold == true)
-                                    .Include(ee => ee.SavingsRecords
-                                                .Where(eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd)
-                                    ).ToList() : null
-                        : context.SavingsPocket.Where(ee => ee.UserId == userId)
-                                    .Include(ee => ee.SavingsRecords
-                                                .Where(eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd)
-                                    ).ToList(),
+                    SavingsPockets = home.ShareSavings ? SavingsPockets(e.Id, totalsByPeriod.PeriodDateStart, totalsByPeriod.PeriodDateEnd, e.Id != userId) : null,
                     FixedExpense = e.Id != userId ?
                         home.ShareExpenses ?
                             context.FixedExpense.Where(ee => ee.UserId == e.Id && ee.ShareOnHousehold == true).Select(eee => 
