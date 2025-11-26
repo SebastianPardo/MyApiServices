@@ -28,10 +28,10 @@ namespace FamnancesServices.Business
             return context.SavingsPocket.Where(e => e.UserId == userId && (e.ShareOnHousehold == true || e.ShareOnHousehold == guest))
                                     .Select(e => new SavingsPocket
                                     {
-                                        Id = guest? Guid.Empty : e.Id,
+                                        Id = guest ? Guid.Empty : e.Id,
                                         Name = e.Name,
                                         SavingsRecords = e.SavingsRecords.Where(ee => ee.TransactionDate >= from && ee.TransactionDate <= to).ToList(),
-                                        Total = e.Total,                                        
+                                        Total = e.Total,
                                     }).ToList();
         }
 
@@ -43,8 +43,20 @@ namespace FamnancesServices.Business
                                         Id = guest ? Guid.Empty : e.Id,
                                         Name = e.Name,
                                         Value = e.Value,
-                                        Outflow = e.Outflow.Where(eee => eee.TransactionDate >= from && eee.TransactionDate <= to).ToList()
+                                        Outflow = e.Outflow.Where(ee => ee.TransactionDate >= from && ee.TransactionDate <= to).ToList()
                                     }).ToList();
+        }
+
+        private List<FixedExpense> FixedExpenses(Guid userId, DateTime from, DateTime to, bool guest)
+        {
+            return context.FixedExpense.Where(e => e.UserId == userId && (e.ShareOnHousehold == true || e.ShareOnHousehold == guest))
+                                .Select(e => new FixedExpense
+                                {
+                                    Id = e.Id,
+                                    Name = e.Name,
+                                    Value = e.Value,
+                                    FixedExpensesPaymentsRecord = e.FixedExpensesPaymentsRecord.Where(ee => ee.PaymentDate >= from && ee.PaymentDate <= to).ToList(),
+                                }).ToList();
         }
 
         public Home GetComplete(Guid userId, DateTime date)
@@ -62,30 +74,7 @@ namespace FamnancesServices.Business
                     HomeId = e.HomeId,
                     ExpensesBudget = home.ShareSavings ? ExpensesBudgets(e.Id, totalsByPeriod.PeriodDateStart, totalsByPeriod.PeriodDateEnd, e.Id != userId) : null,
                     SavingsPockets = home.ShareSavings ? SavingsPockets(e.Id, totalsByPeriod.PeriodDateStart, totalsByPeriod.PeriodDateEnd, e.Id != userId) : null,
-                    FixedExpense = e.Id != userId ?
-                        home.ShareExpenses ?
-                            context.FixedExpense.Where(ee => ee.UserId == e.Id && ee.ShareOnHousehold == true).Select(eee => 
-                            new FixedExpense {
-                                Id = eee.Id,
-                                Name = eee.Name,
-                                Value = eee.Value,
-                                FixedExpensesPaymentsRecord = context.FixedExpensePaymentRecord
-                                                                .Where(eeee => eeee.FixedExpenseId == eee.Id 
-                                                                    && eeee.PaymentDate >= totalsByPeriod.PeriodDateStart
-                                                                    && eeee.PaymentDate <= totalsByPeriod.PeriodDateEnd).ToList(),
-                            }).ToList() : null
-                            : context.FixedExpense.Where(ee => ee.UserId == userId).Select(eee =>
-                                new FixedExpense
-                                {
-                                    Id = eee.Id,
-                                    Name = eee.Name,
-                                    Value = eee.Value,
-                                    UserId = eee.UserId,
-                                    FixedExpensesPaymentsRecord = context.FixedExpensePaymentRecord
-                                                                .Where(eeee => eeee.FixedExpenseId == eee.Id
-                                                                    && eeee.PaymentDate >= totalsByPeriod.PeriodDateStart
-                                                                    && eeee.PaymentDate <= totalsByPeriod.PeriodDateEnd).ToList(),
-                                }).ToList(),
+                    FixedExpense = home.ShareSavings ? FixedExpenses(e.Id, totalsByPeriod.PeriodDateStart, totalsByPeriod.PeriodDateEnd, e.Id != userId) : null
                 }).ToList();
                 return home;
             }
