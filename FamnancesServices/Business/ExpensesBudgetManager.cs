@@ -57,7 +57,7 @@ namespace FamnancesServices.Business
 
         public ExpensesBudget GetById(Guid id)
         {
-            return context.ExpensesBudget.FirstOrDefault(x => x.Id == id);
+            return context.ExpensesBudget.Include(e => e.Outflow).FirstOrDefault(x => x.Id == id);
         }
 
         public bool Update(ExpensesBudget expensesBudget)

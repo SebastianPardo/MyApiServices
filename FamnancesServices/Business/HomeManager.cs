@@ -35,6 +35,18 @@ namespace FamnancesServices.Business
                                     }).ToList();
         }
 
+        private List<ExpensesBudget> ExpensesBudgets(Guid userId, DateTime from, DateTime to, bool guest)
+        {
+            return context.ExpensesBudget.Where(e => e.UserId == userId && (e.ShareOnHousehold == true || e.ShareOnHousehold == guest))
+                                    .Select(e => new ExpensesBudget
+                                    {
+                                        Id = guest ? Guid.Empty : e.Id,
+                                        Name = e.Name,
+                                        Value = e.Value,
+                                        Outflow = e.Outflow.Where(eee => eee.TransactionDate >= from && eee.TransactionDate <= to).ToList()
+                                    }).ToList();
+        }
+
         public Home GetComplete(Guid userId, DateTime date)
         {
             User user = context.User.First(u => u.Id == userId);
@@ -48,16 +60,7 @@ namespace FamnancesServices.Business
                     FirstName = e.FirstName,
                     LastName = e.LastName,
                     HomeId = e.HomeId,
-                    ExpensesBudget = e.Id != userId ?
-                            home.ShareExpenses ? 
-                                context.ExpensesBudget.Where(ee => ee.UserId == e.Id && ee.ShareOnHousehold == true)
-                                    .Include(ee => ee.Outflow
-                                                .Where(eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd)
-                                    ).ToList() : null
-                            : context.ExpensesBudget.Where(ee => ee.UserId == userId)
-                                    .Include(ee => ee.Outflow
-                                                .Where(eee => eee.TransactionDate >= totalsByPeriod.PeriodDateStart && eee.TransactionDate <= totalsByPeriod.PeriodDateEnd)
-                                    ).ToList(),
+                    ExpensesBudget = home.ShareSavings ? ExpensesBudgets(e.Id, totalsByPeriod.PeriodDateStart, totalsByPeriod.PeriodDateEnd, e.Id != userId) : null,
                     SavingsPockets = home.ShareSavings ? SavingsPockets(e.Id, totalsByPeriod.PeriodDateStart, totalsByPeriod.PeriodDateEnd, e.Id != userId) : null,
                     FixedExpense = e.Id != userId ?
                         home.ShareExpenses ?
