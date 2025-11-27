@@ -1,9 +1,10 @@
-﻿using Famnances.Core.Security.Authorization;
+﻿using Famnances.Core.Security;
+using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
+using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Famnances.Core.Security;
 
 namespace FamnancesServices.Controllers
 {
@@ -31,6 +32,12 @@ namespace FamnancesServices.Controllers
         public async Task<ActionResult<SavingsPocket>> GetPocket(Guid id)
         {
             return Ok(_savingsPocketManager.GetById(id));
+        }
+
+        [HttpGet("{id}/{from}/{to}")]
+        public async Task<ActionResult<SavingsPocket>> GetFixedExpenseByDates(Guid id, DateTime from, DateTime to)
+        {
+            return Ok(_savingsPocketManager.GetCompleteByIdDates(id, from, to));
         }
 
         // POST: api/Users

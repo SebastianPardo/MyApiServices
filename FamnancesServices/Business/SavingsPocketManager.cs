@@ -29,7 +29,7 @@ namespace FamnancesServices.Business
 
         public IEnumerable<SavingsPocket> GetAllByUserId(Guid userId)
         {
-            return context.SavingsPocket.Include(e=>e.SavingsRecords).Where(e => e.UserId  == userId);
+            return context.SavingsPocket.Include(e => e.SavingsRecords).Where(e => e.UserId == userId);
         }
 
         public IEnumerable<SavingsPocket> GetAllByHome(Guid homeId)
@@ -39,7 +39,7 @@ namespace FamnancesServices.Business
 
         public SavingsPocket GetById(Guid id)
         {
-            return context.SavingsPocket.Include(e=>e.SavingsRecords).FirstOrDefault(x => x.Id == id);
+            return context.SavingsPocket.FirstOrDefault(x => x.Id == id);
         }
 
         public bool Update(SavingsPocket savingsPocket)
@@ -48,5 +48,10 @@ namespace FamnancesServices.Business
             return context.SaveChanges() > 0;
         }
 
+        public SavingsPocket? GetCompleteByIdDates(Guid id, DateTime from, DateTime to)
+        {
+            return context.SavingsPocket.Include(e => e.SavingsRecords.Where(e => e.TransactionDate >= from && e.TransactionDate <= to).OrderBy(e=>e.TransactionDate))
+                .FirstOrDefault(x => x.Id == id);
+        }
     }
 }

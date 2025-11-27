@@ -30,7 +30,7 @@ namespace FamnancesServices.Business
         public List<ExpensesBudget> GetAllByHomeId(Guid homeId)
         {
             return context.ExpensesBudget
-                .Include(e=>e.BudgetType)
+                .Include(e => e.BudgetType)
                 .Include(e => e.Outflow)
                 .Include(e => e.User)
                 .Where(e => e.User.HomeId == homeId && e.BudgetType.Code == "PER").ToList();
@@ -64,6 +64,12 @@ namespace FamnancesServices.Business
         {
             context.ExpensesBudget.Update(expensesBudget);
             return context.SaveChanges() > 0;
+        }
+
+        public ExpensesBudget? GetCompleteByIdDates(Guid id, DateTime from, DateTime to)
+        {
+            return context.ExpensesBudget.Include(e => e.Outflow.Where(e => e.TransactionDate >= from && e.TransactionDate <= to).OrderBy(e => e.TransactionDate))
+                .FirstOrDefault(x => x.Id == id);
         }
     }
 }

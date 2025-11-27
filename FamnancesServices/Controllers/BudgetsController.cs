@@ -43,6 +43,11 @@ namespace FamnancesServices.Controllers
             return Ok(_expensesBudgetManager.GetById(id));
         }
 
+        [HttpGet("{id}/{from}/{to}")]
+        public async Task<ActionResult<ExpensesBudget>> GetFixedExpenseByDates(Guid id, DateTime from, DateTime to)
+        {
+            return Ok(_expensesBudgetManager.GetCompleteByIdDates(id, from, to));
+        }
 
         [HttpGet("GetByType/{type}")]
         public async Task<ActionResult<FixedExpense>> GetByType(string type)

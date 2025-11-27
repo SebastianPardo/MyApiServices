@@ -39,6 +39,11 @@ namespace FamnancesServices.Business
             return _context.SavingRecord.Include(e => e.SavingsPocket).Where(e => e.SavingsPocket.UserId == userId).OrderByDescending(e => e.TransactionDate);
         }
 
+        public IEnumerable<SavingRecord> GetAllByPeriod(DateTime from, DateTime to, Guid userId)
+        {
+            return _context.SavingRecord.Where(e => e.DateTimeStamp >= from && e.DateTimeStamp <= to && e.SavingsPocket.UserId == userId).OrderByDescending(e => e.TransactionDate);
+        }
+
         public SavingRecord GetById(Guid id)
         {
             return _context.SavingRecord.Include(e => e.SavingsPocket).FirstOrDefault(x => x.Id == id);

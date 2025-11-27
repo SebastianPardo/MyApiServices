@@ -33,12 +33,18 @@ namespace FamnancesServices.Business
 
         public IEnumerable<FixedExpense> GetAllByUserId(Guid userId)
         {
-            return context.FixedExpense.Include(e=>e.FixedExpensesPaymentsRecord).Include(e => e.Period).Where(fe => fe.UserId == userId);
+            return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord).Include(e => e.Period).Where(fe => fe.UserId == userId);
         }
 
         public FixedExpense GetById(Guid id)
         {
-            return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord).FirstOrDefault(x => x.Id == id);
+            return context.FixedExpense.FirstOrDefault(x => x.Id == id);
+        }
+
+        public FixedExpense? GetCompleteByIdDates(Guid id, DateTime from, DateTime to)
+        {
+            return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord.Where(e => e.PaymentDate >= from && e.PaymentDate <= to).OrderBy(e=>e.PaymentDate))
+                .FirstOrDefault(x => x.Id == id);
         }
 
         public bool Update(FixedExpense fixedExpense)

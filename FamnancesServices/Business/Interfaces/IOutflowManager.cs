@@ -10,5 +10,6 @@ namespace FamnancesServices.Business.Interfaces
         bool Update(Outflow variableExpense);
         bool Delete(Outflow variableExpense);
         decimal GetByPeriod(DateTime startDate, DateTime endDate, Guid userId);
+        IEnumerable<Outflow> GetAllByPeriod(DateTime from, DateTime to, Guid userId);
     }
 }

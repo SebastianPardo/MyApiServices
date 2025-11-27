@@ -46,7 +46,7 @@ namespace FamnancesServices.Controllers
             var expenses = _fixedExpenseManager.GetAllByUserId(userId);
             var totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(userId);
 
-            foreach(var expense in expenses)
+            foreach (var expense in expenses)
             {
                 expense.FixedExpensesPaymentsRecord = expense.FixedExpensesPaymentsRecord.Where(e => e.PaymentDate >= totalsByPeriod.PeriodDateStart && e.PaymentDate <= totalsByPeriod.PeriodDateEnd).ToList();
             }
@@ -58,6 +58,12 @@ namespace FamnancesServices.Controllers
         public async Task<ActionResult<FixedExpense>> GetFixedExpense(Guid id)
         {
             return Ok(_fixedExpenseManager.GetById(id));
+        }
+
+        [HttpGet("{id}/{from}/{to}")]
+        public async Task<ActionResult<FixedExpense>> GetFixedExpenseByDates(Guid id, DateTime from, DateTime to)
+        {
+            return Ok(_fixedExpenseManager.GetCompleteByIdDates(id, from, to));
         }
 
         // PUT: api/Users/5
@@ -116,7 +122,7 @@ namespace FamnancesServices.Controllers
             var userId = Guid.Parse(accountId.ToString());
             var expense = _fixedExpenseManager.GetById(id);
             var dates = _utilitiesManager.GetPeriodDates(expense.PeriodId, expense.StartDate.Day);
-            if ( !expense.FixedExpensesPaymentsRecord.Any( e => e.PaymentDate >= dates.Item1) )
+            if (!expense.FixedExpensesPaymentsRecord.Any(e => e.PaymentDate >= dates.Item1))
             {
                 var budget = _expensesBudgetManager.GetByType("FIX", userId);
                 Outflow outflow = new Outflow
@@ -124,10 +130,10 @@ namespace FamnancesServices.Controllers
                     Description = expense.Name,
                     ExpenseBudgetId = budget.First().Id,
                     TransactionDate = DateTimeEast.Now,
-                    Value = expense.Value,                    
+                    Value = expense.Value,
                 };
                 _outflowManager.Add(outflow);
-                
+
                 FixedExpensePaymentRecord fixedExpensePaymentRecord = new FixedExpensePaymentRecord
                 {
                     FixedExpenseId = id,

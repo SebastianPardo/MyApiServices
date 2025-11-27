@@ -12,5 +12,6 @@ namespace FamnancesServices.Business.Interfaces
         ExpensesBudget Add(ExpensesBudget expensesBudget);
         bool Update(ExpensesBudget expensesBudget);
         bool Delete(ExpensesBudget expensesBudget);
+        ExpensesBudget? GetCompleteByIdDates(Guid id, DateTime from, DateTime to);
     }
 }

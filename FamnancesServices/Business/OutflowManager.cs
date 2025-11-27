@@ -48,5 +48,10 @@ namespace FamnancesServices.Business
         {
             return _context.Outflow.Where(e => e.DateTimeStamp >= startDate && e.DateTimeStamp <= endDate && e.ExpensesBudget.UserId == userId).Sum(e => e.Value);
         }
+
+        public IEnumerable<Outflow> GetAllByPeriod(DateTime from, DateTime to, Guid userId)
+        {
+            return _context.Outflow.Where(e => e.DateTimeStamp >= from && e.DateTimeStamp <= to && e.ExpensesBudget.UserId == userId).OrderByDescending(e => e.TransactionDate);
+        }
     }
 }

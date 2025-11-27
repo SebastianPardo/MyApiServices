@@ -26,6 +26,14 @@ namespace FamnancesServices.Controllers
             return Ok(_savingRecordManager.GetAll(userId));
         }
 
+        [HttpGet("{from}/{to}")]
+        public async Task<ActionResult<IEnumerable<SavingRecord>>> GetRecordsByDates(DateTime from, DateTime to)
+        {
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+            var userId = Guid.Parse(accountId.ToString());
+            return Ok(_savingRecordManager.GetAllByPeriod(from, to, userId));
+        }
+
         // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<SavingRecord>> GetRecord(Guid id)

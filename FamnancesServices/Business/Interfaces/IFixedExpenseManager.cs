@@ -6,6 +6,7 @@ namespace FamnancesServices.Business.Interfaces
     {
         IEnumerable<FixedExpense> GetAllByUserId(Guid userId);
         FixedExpense GetById(Guid id);
+        FixedExpense GetCompleteByIdDates(Guid id, DateTime from, DateTime to);
         FixedExpense Add(FixedExpense fixedExpense);
         bool Update(FixedExpense fixedExpense);
         bool Delete(FixedExpense fixedExpense);

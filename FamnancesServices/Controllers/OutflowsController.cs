@@ -1,6 +1,7 @@
-﻿using Famnances.Core.Security.Authorization;
+﻿using Famnances.Core.Security;
+using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
-using Famnances.Core.Security;
+using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,14 @@ namespace FamnancesServices.Controllers
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             return Ok(_outflowManager.GetAllByUserId(userId));
+        }
+
+        [HttpGet("{from}/{to}")]
+        public async Task<ActionResult<IEnumerable<Outflow>>> GetOtflowsByDates(DateTime from, DateTime to)
+        {
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+            var userId = Guid.Parse(accountId.ToString());
+            return Ok(_outflowManager.GetAllByPeriod(from, to, userId));
         }
 
         [HttpGet("{id}")]
