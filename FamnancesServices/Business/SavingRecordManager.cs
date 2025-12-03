@@ -1,4 +1,5 @@
-﻿using Famnances.DataCore.Data;
+﻿using Famnances.Core.Utils.Helpers;
+using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ namespace FamnancesServices.Business
 
         public SavingRecord Add(SavingRecord savingsRecord)
         {
-            savingsRecord.DateTimeStamp = DateTime.Now;
+            savingsRecord.DateTimeStamp = DateTimeEast.Now;
             savingsRecord = _context.SavingRecord.Add(savingsRecord).Entity;
             _context.SaveChanges();
             return savingsRecord;
@@ -41,7 +42,7 @@ namespace FamnancesServices.Business
 
         public IEnumerable<SavingRecord> GetAllByPeriod(DateTime from, DateTime to, Guid userId)
         {
-            return _context.SavingRecord.Where(e => e.DateTimeStamp >= from && e.DateTimeStamp <= to && e.SavingsPocket.UserId == userId).OrderByDescending(e => e.TransactionDate);
+            return _context.SavingRecord.Where(e => e.TransactionDate >= from && e.TransactionDate <= to && e.SavingsPocket.UserId == userId).OrderByDescending(e => e.TransactionDate);
         }
 
         public SavingRecord GetById(Guid id)
@@ -51,19 +52,19 @@ namespace FamnancesServices.Business
 
         public decimal GetSavingsExpensesByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
-            return _context.SavingRecord.Where(e => e.DateTimeStamp >= startDate && e.DateTimeStamp <= endDate && e.IsExpense == true && e.SavingsPocket.UserId == userId).Sum(e => e.Value);
+            return _context.SavingRecord.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.IsExpense == true && e.SavingsPocket.UserId == userId).Sum(e => e.Value);
         }
 
         public decimal GetSavingsIncomeByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
-            return _context.SavingRecord.Where(e => e.DateTimeStamp >= startDate && e.DateTimeStamp <= endDate && e.IsExpense == false && e.SavingsPocket.UserId == userId).Sum(e => e.Value);
+            return _context.SavingRecord.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.IsExpense == false && e.SavingsPocket.UserId == userId).Sum(e => e.Value);
         }
 
         public bool Update(SavingRecord savingsRecord)
         {
             try
             {
-                savingsRecord.DateTimeStamp = DateTime.Now;
+                savingsRecord.DateTimeStamp = DateTimeEast.Now;
                 _context.SavingRecord.Update(savingsRecord);
                 return _context.SaveChanges() > 0;
             }

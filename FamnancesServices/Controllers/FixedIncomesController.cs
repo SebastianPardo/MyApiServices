@@ -1,5 +1,6 @@
 ﻿using Famnances.Core.Security;
 using Famnances.Core.Security.Authorization;
+using Famnances.Core.Utils.Helpers;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
@@ -117,7 +118,7 @@ namespace FamnancesServices.Controllers
                     Inflow inflow = new Inflow
                     {
                         Description = income.Description,
-                        TransactionDate = DateTime.Now,
+                        TransactionDate = DateTimeEast.Now,
                         Value = income.Value,
                         UserId = userId,
                         InflowByDiscount = new List<InflowByDiscount>()

@@ -40,8 +40,8 @@ namespace FamnancesServices.Controllers
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             Guid userId = Guid.Parse(accountId.ToString());
-            startDate = startDate ?? DateTime.Now.AddDays(-15);
-            endDate = endDate ?? DateTime.Now;
+            startDate = startDate ?? DateTimeEast.Now.AddDays(-15);
+            endDate = endDate ?? DateTimeEast.Now;
             return Ok(_inflowManager.GetAllByPeriod(startDate.Value, endDate.Value, userId));
         }
 

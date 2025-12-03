@@ -1,4 +1,5 @@
-﻿using Famnances.DataCore.Data;
+﻿using Famnances.Core.Utils.Helpers;
+using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 
@@ -32,7 +33,7 @@ namespace FamnancesServices.Business
                             DateTime.Parse($"{DateTimeEast.Now.Year}/{DateTimeEast.Now.AddMonths(-1).Month}/{dayStart}")
                         : dateEnd.Value.AddMinutes(1);
 
-                        dateEnd = DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month) < 31? 
+                        dateEnd = DateTime.DaysInMonth(DateTimeEast.Now.Year, DateTimeEast.Now.Month) < 31? 
                             dateStart.Value.AddMonths(1).AddDays(-14).AddMinutes(-1) : 
                             dateStart.Value.AddMonths(1).AddDays(-15).AddMinutes(-1);
                         break;

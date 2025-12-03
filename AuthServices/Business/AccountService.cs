@@ -1,4 +1,5 @@
 ﻿using AuthServices.Business.Interfaces;
+using Famnances.Core.Utils.Helpers;
 using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace AuthServices.Business
 
         public Account Add(Account account)
         {
-            account.LastLogin = DateTime.Now;
+            account.LastLogin = DateTimeEast.Now;
             account = context.Account.Add(account).Entity;
             context.SaveChanges();
             return account;

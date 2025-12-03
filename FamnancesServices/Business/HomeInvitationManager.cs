@@ -1,4 +1,5 @@
-﻿using Famnances.DataCore.Data;
+﻿using Famnances.Core.Utils.Helpers;
+using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +51,7 @@ namespace FamnancesServices.Business
         public HomeInvitation Accept(Guid invitationId)
         {
             var invitation = context.HomeInvitation.FirstOrDefault(e => e.Id == invitationId);
-            invitation.InvitedAceptedDate = DateTime.Now;
+            invitation.InvitedAceptedDate = DateTimeEast.Now;
 
             context.HomeInvitation.Update(invitation);
 

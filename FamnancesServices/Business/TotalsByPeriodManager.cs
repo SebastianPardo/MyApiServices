@@ -1,4 +1,5 @@
-﻿using Famnances.DataCore.Data;
+﻿using Famnances.Core.Utils.Helpers;
+using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +29,7 @@ namespace FamnancesServices.Business
 
         public TotalsByPeriod? GetByCurrentDay(Guid userId)
         {
-            return _context.TotalsByPeriod.Include(e => e.User).SingleOrDefault(e=>e.UserId == userId && e.PeriodDateStart < DateTime.Now && e.PeriodDateEnd > DateTime.Now);
+            return _context.TotalsByPeriod.Include(e => e.User).SingleOrDefault(e=>e.UserId == userId && e.PeriodDateStart < DateTimeEast.Now && e.PeriodDateEnd > DateTimeEast.Now);
         }
     }
 }

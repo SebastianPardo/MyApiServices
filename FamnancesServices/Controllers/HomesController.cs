@@ -4,6 +4,7 @@ using Famnances.Core.Security;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Famnances.Core.Utils.Helpers;
 
 namespace FamnancesServices.Controllers
 {
@@ -81,7 +82,7 @@ namespace FamnancesServices.Controllers
                 homeInvitation.HostId = account.Id;
             else
                 homeInvitation.GuestId = account.Id;
-            homeInvitation.InvitationDate = DateTime.Now;
+            homeInvitation.InvitationDate = DateTimeEast.Now;
             _homeInvitationManager.Add(homeInvitation);
 
             var invitations = _homeInvitationManager.GetInvitations(account.Email);

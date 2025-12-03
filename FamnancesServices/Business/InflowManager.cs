@@ -1,8 +1,8 @@
-﻿using Famnances.DataCore.Data;
+﻿using Famnances.Core.Utils.Helpers;
+using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace FamnancesServices.Business
 {
@@ -16,7 +16,7 @@ namespace FamnancesServices.Business
 
         public Inflow Add(Inflow inflow)
         {
-            inflow.DateTimeStamp = DateTime.Now;
+            inflow.DateTimeStamp = DateTimeEast.Now;
             inflow = _context.Inflow.Add(inflow).Entity;
             _context.SaveChanges();
             return inflow;
@@ -35,7 +35,7 @@ namespace FamnancesServices.Business
         }
         public decimal GetTotalByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
-            return _context.Inflow.Where(e => e.DateTimeStamp >= startDate && e.DateTimeStamp <= endDate && e.UserId == userId).Sum(e => e.Value);
+            return _context.Inflow.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.UserId == userId).Sum(e => e.Value);
         }
 
         public Inflow GetById(Guid id)
@@ -45,7 +45,7 @@ namespace FamnancesServices.Business
 
         public List<Inflow> GetAllByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
-            return _context.Inflow.Where(e => e.DateTimeStamp >= startDate && e.DateTimeStamp <= endDate && e.UserId == userId).OrderByDescending(e => e.TransactionDate).ToList();
+            return _context.Inflow.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.UserId == userId).OrderByDescending(e => e.TransactionDate).ToList();
         }
         public List<InflowByDiscount> GetDiscountsByInflow(Guid inflowId)
         {

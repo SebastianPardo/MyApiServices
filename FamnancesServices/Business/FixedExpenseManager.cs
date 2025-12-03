@@ -36,9 +36,9 @@ namespace FamnancesServices.Business
             return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord).Include(e => e.Period).Where(fe => fe.UserId == userId);
         }
 
-        public FixedExpense GetById(Guid id)
+        public FixedExpense? GetById(Guid id)
         {
-            return context.FixedExpense.FirstOrDefault(x => x.Id == id);
+            return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord).FirstOrDefault(x => x.Id == id);
         }
 
         public FixedExpense? GetCompleteByIdDates(Guid id, DateTime from, DateTime to)

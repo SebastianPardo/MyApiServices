@@ -52,7 +52,7 @@ namespace FamnancesServices.Business
             return context.FixedExpense.Where(e => e.UserId == userId && (e.ShareOnHousehold == true || e.ShareOnHousehold == guest))
                                 .Select(e => new FixedExpense
                                 {
-                                    Id = e.Id,
+                                    Id = guest ? Guid.Empty : e.Id,
                                     Name = e.Name,
                                     Value = e.Value,
                                     FixedExpensesPaymentsRecord = e.FixedExpensesPaymentsRecord.Where(ee => ee.PaymentDate >= from && ee.PaymentDate <= to).ToList(),

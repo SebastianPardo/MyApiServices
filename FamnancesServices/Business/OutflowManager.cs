@@ -1,4 +1,5 @@
-﻿using Famnances.DataCore.Data;
+﻿using Famnances.Core.Utils.Helpers;
+using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ namespace FamnancesServices.Business
 
         public Outflow Add(Outflow outflow)
         {
-            outflow.DateTimeStamp = DateTime.Now;
+            outflow.DateTimeStamp = DateTimeEast.Now;
             outflow = _context.Outflow.Add(outflow).Entity;
             _context.SaveChanges();
             return outflow;
@@ -46,12 +47,12 @@ namespace FamnancesServices.Business
 
         public decimal GetByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
-            return _context.Outflow.Where(e => e.DateTimeStamp >= startDate && e.DateTimeStamp <= endDate && e.ExpensesBudget.UserId == userId).Sum(e => e.Value);
+            return _context.Outflow.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.ExpensesBudget.UserId == userId).Sum(e => e.Value);
         }
 
         public IEnumerable<Outflow> GetAllByPeriod(DateTime from, DateTime to, Guid userId)
         {
-            return _context.Outflow.Where(e => e.DateTimeStamp >= from && e.DateTimeStamp <= to && e.ExpensesBudget.UserId == userId).OrderByDescending(e => e.TransactionDate);
+            return _context.Outflow.Where(e => e.TransactionDate >= from && e.TransactionDate <= to && e.ExpensesBudget.UserId == userId).OrderByDescending(e => e.TransactionDate);
         }
     }
 }
