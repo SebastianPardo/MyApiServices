@@ -111,5 +111,28 @@ namespace FamnancesServices.Controllers
             return Ok(new SummaryModel());
         }
 
+        [HttpGet("GetHeaderSummary/{date}")]
+        public async Task<ActionResult<MiniSummaryModel>> GetHeaderSummary(DateTime? date)
+        {
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+            var userId = Guid.Parse(accountId.ToString());
+            User user = _userManager.GetById(userId);
+            TotalsByPeriod? totalsByPeriod = date == null ?
+                _totalsByPeriodManager.GetByCurrentDay(userId) : _totalsByPeriodManager.GetByDate(userId, date.Value);
+
+            if (totalsByPeriod != null) {
+                MiniSummaryModel summaryModel = new MiniSummaryModel
+                {
+                    PeriodFrom = totalsByPeriod.PeriodDateStart,
+                    PeriodTo = totalsByPeriod.PeriodDateEnd,
+                    Chequing = user.TotalBudget,
+                    Savings = user.TotalSavings,
+                };
+                return Ok(summaryModel);
+            }
+
+            return Ok(null);
+        }
+
     }
 }
