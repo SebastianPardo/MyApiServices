@@ -75,6 +75,7 @@ builder.Services.AddScoped<IExpensesBudgetManager, ExpensesBudgetManager>();
 builder.Services.AddScoped<IFixedExpenseManager, FixedExpenseManager>();
 builder.Services.AddScoped<IFixedExpensePaymentRecordManager, FixedExpensePaymentRecordManager>();
 builder.Services.AddScoped<IFixedIncomeManager, FixedIncomeManager>();
+builder.Services.AddScoped<IFixedSavingManager, FixedSavingManager>();
 builder.Services.AddScoped<IInflowByDiscountManager, InflowByDiscountManager>();
 builder.Services.AddScoped<IIncomeDiscountManager, IncomeDiscountManager>();
 builder.Services.AddScoped<IInflowManager, InflowManager>();

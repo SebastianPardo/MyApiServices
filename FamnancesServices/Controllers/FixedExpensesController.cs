@@ -94,25 +94,25 @@ namespace FamnancesServices.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> Create(FixedExpense fixedExpense)
+        public async Task<ActionResult<FixedExpense>> Create(FixedExpense fixedExpense)
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             fixedExpense.UserId = Guid.Parse(accountId.ToString());
             _fixedExpenseManager.Add(fixedExpense);
-            return CreatedAtAction("GetBudget", new { id = fixedExpense.Id }, fixedExpense);
+            return CreatedAtAction("GetFixedExpense", new { id = fixedExpense.Id }, fixedExpense);
         }
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var budget = _fixedExpenseManager.GetById(id);
-            if (budget == null)
+            var fixedExpense = _fixedExpenseManager.GetById(id);
+            if (fixedExpense == null)
             {
                 return NotFound();
             }
 
-            _fixedExpenseManager.Delete(budget);
+            _fixedExpenseManager.Delete(fixedExpense);
             return Ok();
         }
 
