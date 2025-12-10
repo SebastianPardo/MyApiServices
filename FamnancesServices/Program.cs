@@ -85,6 +85,7 @@ builder.Services.AddScoped<IPeriodManager, PeriodManager>();
 builder.Services.AddScoped<IProvinceManager, ProvinceManager>();
 builder.Services.AddScoped<ISavingRecordManager, SavingRecordManager>();
 builder.Services.AddScoped<ISavingsPocketManager, SavingsPocketManager>();
+builder.Services.AddScoped<ISavingSourceManager, SavingSourceManager>();
 builder.Services.AddScoped<ISocialMediaManager, SocialMediaManager>();
 builder.Services.AddScoped<IUserManager, UserManager>();
 builder.Services.AddScoped<IUtilitiesManager, UtilitiesManager>();

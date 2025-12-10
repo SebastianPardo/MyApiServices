@@ -29,7 +29,7 @@ namespace FamnancesServices.Business
 
         public IEnumerable<FixedSaving> GetAllByUserId(Guid userId)
         {
-            return _context.FixedSaving.Include(e => e.SavingsPocket).Include(e => e.Periodicity).Where(e => e.SavingsPocket.UserId == userId);
+            return _context.FixedSaving.Include(e => e.SavingsPocket).Include(e=>e.SavingSource).Include(e => e.Periodicity).Where(e => e.SavingsPocket.UserId == userId);
         }
 
         public FixedSaving GetById(Guid userId, Guid id)
