@@ -34,7 +34,7 @@ namespace FamnancesServices.Business
 
         public FixedSaving GetById(Guid userId, Guid id)
         {
-            return _context.FixedSaving.Single(e => e.Id == id && e.SavingsPocket.UserId == userId);
+            return _context.FixedSaving.Include(e => e.SavingsPocket).Include(e => e.SavingSource).Single(e => e.Id == id && e.SavingsPocket.UserId == userId);
         }
 
         public bool Update(FixedSaving fixedSaving)
