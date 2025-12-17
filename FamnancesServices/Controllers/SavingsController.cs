@@ -81,7 +81,7 @@ namespace FamnancesServices.Controllers
             {
                 return NotFound();
             }
-
+            savingRecord.SavingsPocket = null;
             _savingRecordManager.Delete(savingRecord);
             return Ok();
         }
