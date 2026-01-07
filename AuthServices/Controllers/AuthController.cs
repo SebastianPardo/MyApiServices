@@ -149,6 +149,7 @@ public class AuthController : ControllerBase
                 UserName = account.UserName,
                 Email = account.Email,
                 Token = _tokenHandler.GetToken(tokenContent),
+                Language = firstLogin? "EN": account.User.Language,
                 IsFirstLogin = firstLogin
             };
 
