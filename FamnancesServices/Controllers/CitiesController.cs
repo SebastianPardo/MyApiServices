@@ -28,5 +28,11 @@ namespace FamnancesServices.Controllers
         {
             return Ok(_cityManager.GetById(id));
         }
+
+        [HttpGet("GetByCode/{code}")]
+        public async Task<IActionResult> GetByCode(string code)
+        {
+            return Ok(_cityManager.GetByCode(code));
+        }
     }
 }

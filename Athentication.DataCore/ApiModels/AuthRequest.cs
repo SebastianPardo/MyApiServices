@@ -1,8 +1,8 @@
-namespace AuthServices.Models.ApiModels;
+namespace Athentication.DataCore.ApiModels;
 
 using System.ComponentModel.DataAnnotations;
 
-public class AuthenticateRequest
+public class AuthRequest
 {
     [Required]
     public string Param_1 { get; set; }

@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36119.2
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamnancesServices", "FamnancesServices\FamnancesServices.csproj", "{B0AD64AB-2BB6-4721-A11E-03AC4023CD8A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthServices", "AuthServices\AuthServices.csproj", "{9F466AFC-36A2-4D21-A7B3-72D8C6A5DF6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Athentication.DataCore", "Athentication.DataCore\Athentication.DataCore.csproj", "{194E4CE6-ACDA-4864-952F-87CE8D06DA2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{9F466AFC-36A2-4D21-A7B3-72D8C6A5DF6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F466AFC-36A2-4D21-A7B3-72D8C6A5DF6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F466AFC-36A2-4D21-A7B3-72D8C6A5DF6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{194E4CE6-ACDA-4864-952F-87CE8D06DA2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{194E4CE6-ACDA-4864-952F-87CE8D06DA2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{194E4CE6-ACDA-4864-952F-87CE8D06DA2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{194E4CE6-ACDA-4864-952F-87CE8D06DA2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

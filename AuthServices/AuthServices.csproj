@@ -34,4 +34,12 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Athentication.DataCore\Athentication.DataCore.csproj" />
+  </ItemGroup>
+
 </Project>

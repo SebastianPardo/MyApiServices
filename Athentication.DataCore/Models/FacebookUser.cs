@@ -1,4 +1,4 @@
-﻿namespace AuthServices.Models.ExternalModels
+﻿namespace Athentication.DataCore.Models
 {
     public class FacebookUser
     {

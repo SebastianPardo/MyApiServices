@@ -18,6 +18,11 @@ namespace FamnancesServices.Business
             return _context.City.Where(e => e.ProvinceId == provinceId).ToList();
         }
 
+        public City? GetByCode(string code)
+        {
+            return _context.City.Include(e => e.Province).ThenInclude(e => e.Country).Single(e => e.Code == code);
+        }
+
         public City? GetById(Guid id)
         {
             return _context.City.Include(e => e.Province).ThenInclude(e => e.Country).Single(e => e.Id == id);

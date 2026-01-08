@@ -1,9 +1,9 @@
 ﻿namespace AuthServices.Controllers;
 
+using Athentication.DataCore.ApiModels;
+using Athentication.DataCore.Models;
 using AuthServices.Business;
 using AuthServices.Business.Interfaces;
-using AuthServices.Models.ApiModels;
-using AuthServices.Models.ExternalModels;
 using AutoMapper;
 using Famnances.Core.Entities;
 using Famnances.Core.Errors;
@@ -39,7 +39,7 @@ public class AuthController : ControllerBase
 
 
     [HttpPost("Authenticate")]
-    public async Task<IActionResult> Authenticate(AuthenticateRequest model)
+    public async Task<IActionResult> Authenticate(AuthRequest model)
     {
 #if DEBUG
         var email = "js.pardo.j@gmail.com";
@@ -74,11 +74,14 @@ public class AuthController : ControllerBase
             User = account.UserName
         };
 
-        AuthenticateResponse response = new AuthenticateResponse
+        AuthResponse response = new AuthResponse
         {
             AccountId = account.Id,
-            UserName = account.UserName,
-            Email = account.Email,
+            UserInfo = new UserInfo
+            {
+                UserName = account.UserName,
+                Email = email,
+            },
             Token = _tokenHandler.GetToken(tokenContent)
         };
 
@@ -86,7 +89,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("ExternalAuthenticate")]
-    public async Task<IActionResult> ExternalAuthenticate([FromBody] AuthenticateRequest model)
+    public async Task<IActionResult> ExternalAuthenticate([FromBody] AuthRequest model)
     {
         var provider = model.Param_1;
         var accessToken = model.Param_2;
@@ -107,7 +110,6 @@ public class AuthController : ControllerBase
 
         if (userInfo != null)
         {
-
             var account = _accountService.getByUserNameOrEmail(userInfo.Email);
             if (account == null)
             {
@@ -141,13 +143,10 @@ public class AuthController : ControllerBase
                 User = account.UserName
             };
 
-            AuthenticateResponse response = new AuthenticateResponse
+            AuthResponse response = new AuthResponse
             {
                 AccountId = account.Id,
-                FirstName = userInfo.GivenName,
-                LastName = userInfo.FamilyName,
-                UserName = account.UserName,
-                Email = account.Email,
+                UserInfo = userInfo,
                 Token = _tokenHandler.GetToken(tokenContent),
                 Language = firstLogin? "EN": account.User.Language,
                 IsFirstLogin = firstLogin

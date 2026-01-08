@@ -22,5 +22,12 @@ namespace FamnancesServices.Controllers
             var periods = _periodManager.GetAll();
             return Ok(periods);
         }
+
+        [HttpGet("{code}")]
+        public async Task<IActionResult> GetPeriod(string code)
+        {
+            var period = _periodManager.GetByCode(code);
+            return Ok(period);
+        }
     }
 }

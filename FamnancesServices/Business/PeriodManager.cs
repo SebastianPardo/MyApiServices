@@ -15,5 +15,10 @@ namespace FamnancesServices.Business
         {
             return _context.Period;
         }
+
+        public Period GetByCode(string code)
+        {
+            return _context.Period.Single(e => e.Code == code);
+        }
     }
 }
