@@ -23,7 +23,14 @@ namespace FamnancesServices.Controllers
             return Ok(periods);
         }
 
-        [HttpGet("{code}")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPeriod(Guid id)
+        {
+            var period = _periodManager.GetById(id);
+            return Ok(period);
+        }
+
+        [HttpGet("GetByCode/{code}")]
         public async Task<IActionResult> GetPeriod(string code)
         {
             var period = _periodManager.GetByCode(code);

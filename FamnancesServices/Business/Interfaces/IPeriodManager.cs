@@ -6,5 +6,6 @@ namespace FamnancesServices.Business.Interfaces
     {
         IEnumerable<Period> GetAll();
         Period GetByCode(string code);
+        Period GetById(Guid id);
     }
 }
