@@ -42,7 +42,7 @@ namespace FamnancesServices.Business
 
         public IEnumerable<SavingRecord> GetAllByPeriod(DateTime from, DateTime to, Guid userId)
         {
-            return _context.SavingRecord.Where(e => e.TransactionDate >= from && e.TransactionDate <= to && e.SavingsPocket.UserId == userId).OrderByDescending(e => e.TransactionDate);
+            return _context.SavingRecord.Include(e=>e.SavingsPocket).Where(e => e.TransactionDate >= from && e.TransactionDate <= to && e.SavingsPocket.UserId == userId).OrderByDescending(e => e.TransactionDate);
         }
 
         public SavingRecord GetById(Guid id)

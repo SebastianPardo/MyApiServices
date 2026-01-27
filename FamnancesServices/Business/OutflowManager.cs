@@ -52,7 +52,7 @@ namespace FamnancesServices.Business
 
         public IEnumerable<Outflow> GetAllByPeriod(DateTime from, DateTime to, Guid userId)
         {
-            return _context.Outflow.Where(e => e.TransactionDate >= from && e.TransactionDate <= to && e.ExpensesBudget.UserId == userId).OrderByDescending(e => e.TransactionDate);
+            return _context.Outflow.Include(e=>e.ExpensesBudget).Where(e => e.TransactionDate >= from && e.TransactionDate <= to && e.ExpensesBudget.UserId == userId).OrderByDescending(e => e.TransactionDate);
         }
     }
 }
