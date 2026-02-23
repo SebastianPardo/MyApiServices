@@ -27,6 +27,11 @@ namespace FamnancesServices.Business
             return _context.TotalsByPeriod.Include(e => e.User).SingleOrDefault(e => e.UserId == userId && e.PeriodDateStart <= date && e.PeriodDateEnd >= date);
         }
 
+        public TotalsByPeriod? GetMostRecent(Guid userId)
+        {
+            return _context.TotalsByPeriod.OrderByDescending(e => e.PeriodDateStart).FirstOrDefault(e => e.UserId == userId);
+        }
+
         public TotalsByPeriod? GetByCurrentDay(Guid userId)
         {
             return _context.TotalsByPeriod.Include(e => e.User).SingleOrDefault(e=>e.UserId == userId && e.PeriodDateStart < DateTimeEast.Now && e.PeriodDateEnd > DateTimeEast.Now);

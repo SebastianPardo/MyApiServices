@@ -5,6 +5,7 @@ using Famnances.DataCore.Entities;
 using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace FamnancesServices.Controllers
 {
@@ -23,6 +24,7 @@ namespace FamnancesServices.Controllers
         IExpensesBudgetManager _expensesBudgetManager;
         IHomeManager _homeManager;
         IFixedExpenseManager _fixedExpenseManager;
+        IExpensesBudgetByPeriodManager _expensesBudgetByPeriodManager;
 
 
         public AccountingController(
@@ -35,7 +37,8 @@ namespace FamnancesServices.Controllers
             ISavingsPocketManager savingPocketManager,
             IExpensesBudgetManager expensesBudgetManager,
             IHomeManager homeManager,
-            IFixedExpenseManager fixedExpenseManager
+            IFixedExpenseManager fixedExpenseManager,
+            IExpensesBudgetByPeriodManager expensesBudgetByPeriodManager
             )
         {
             _totalsByPeriodManager = totalsByPeriodManager;
@@ -48,34 +51,49 @@ namespace FamnancesServices.Controllers
             _expensesBudgetManager = expensesBudgetManager;
             _homeManager = homeManager;
             _fixedExpenseManager = fixedExpenseManager;
+            _expensesBudgetByPeriodManager = expensesBudgetByPeriodManager;
         }
 
-        [HttpGet("CalculatePeriod")]
-        public async Task<ActionResult<TotalsByPeriod>> CalculatePeriod()
+        private TotalsByPeriod GetNew(User user)
+        {
+            var periodDates = _utilitiesManager.GetPeriodDates(user.PeriodId, user.PeriodStartsMonthsDay);
+            TotalsByPeriod totalsByPeriod = new TotalsByPeriod
+            {
+                Id = Guid.NewGuid(),
+                PeriodDateStart = periodDates.Item1,
+                PeriodDateEnd = periodDates.Item2,
+                PeriodActive = true,
+                TotalExpenses = _outflowManager.GetByPeriod(periodDates.Item1, periodDates.Item2, user.Id),
+                TotalIncomes = _inflowManager.GetTotalByPeriod(periodDates.Item1, periodDates.Item2, user.Id),
+                TotalSavings = _savingRecordManager.GetSavingsIncomeByPeriod(periodDates.Item1, periodDates.Item2, user.Id),
+                TotalSavingsExpenses = _savingRecordManager.GetSavingsExpensesByPeriod(periodDates.Item1, periodDates.Item2, user.Id),
+                UserId = user.Id
+            };
+            return _totalsByPeriodManager.Save(totalsByPeriod);
+        }
+
+        [HttpPost("ClosePeriod")]
+        public async Task<ActionResult<Guid>> ClosePeriod(List<RemainderBalance> remainderBalance)
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-
             User user = _userManager.GetById(Guid.Parse(accountId.ToString()));
-            TotalsByPeriod totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(user.Id);
 
+            TotalsByPeriod totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(user.Id);
             if (totalsByPeriod == null)
             {
-                var periodDates = _utilitiesManager.GetPeriodDates(user.PeriodId, user.PeriodStartsMonthsDay);
-                totalsByPeriod = new TotalsByPeriod
+                totalsByPeriod = GetNew(user);
+                TotalsByPeriod prevTotalsByPeriod = _totalsByPeriodManager.GetMostRecent(user.Id);
+                if (prevTotalsByPeriod == null) 
                 {
-                    Id = Guid.NewGuid(),
-                    PeriodDateStart = periodDates.Item1,
-                    PeriodDateEnd = periodDates.Item2,
-                    PeriodActive = true,
-                    TotalExpenses = _outflowManager.GetByPeriod(periodDates.Item1, periodDates.Item2, user.Id),
-                    TotalIncomes = _inflowManager.GetTotalByPeriod(periodDates.Item1, periodDates.Item2, user.Id),
-                    TotalSavings = _savingRecordManager.GetSavingsIncomeByPeriod(periodDates.Item1, periodDates.Item2, user.Id),
-                    TotalSavingsExpenses = _savingRecordManager.GetSavingsExpensesByPeriod(periodDates.Item1, periodDates.Item2, user.Id),
-                    UserId = user.Id
-                };
-                _totalsByPeriodManager.Save(totalsByPeriod);
+                    _expensesBudgetByPeriodManager.VeryFirst(user.Id, totalsByPeriod.Id);
+                }
+                else
+                {
+                    _expensesBudgetByPeriodManager.CalculateNew(user.Id, totalsByPeriod.Id, remainderBalance.Where(e => e.IsSavingPocket == false).ToList());
+                    _savingRecordManager.ClosePeriod(remainderBalance);
+                }
             }
-            return Ok(totalsByPeriod);
+            return totalsByPeriod.Id;
         }
 
         [HttpGet("CurentTotals/{date}")]
@@ -110,6 +128,7 @@ namespace FamnancesServices.Controllers
             }
             return Ok(new SummaryModel());
         }
+
 
         [HttpGet("GetHeaderSummary/{date}")]
         public async Task<ActionResult<MiniSummaryModel>> GetHeaderSummary(DateTime? date)

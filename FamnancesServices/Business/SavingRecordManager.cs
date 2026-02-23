@@ -1,6 +1,7 @@
 ﻿using Famnances.Core.Utils.Helpers;
 using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
+using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -72,6 +73,40 @@ namespace FamnancesServices.Business
             {
                 return false;
             }
+        }
+
+        public void ClosePeriod(List<RemainderBalance> remainderBalances)
+        {
+            foreach (var movement in remainderBalances) {
+                if (movement.IsSavingPocket)
+                {
+                    var expensesBudgetPeriod = _context.ExpenseBudgetByPeriod.Include(e=>e.TotalsByPeriod).Single(e=>e.Id == movement.BudgesTotalstId);
+                    var expenseBudget = _context.ExpensesBudget.Single(e => e.Id == expensesBudgetPeriod.ExpensesBudgetId);
+                    var savingPocket = _context.SavingsPocket.Single(e => e.Id == movement.MoveToId);
+                    
+                    var outflow = new Outflow
+                    {
+                        Description = $"Moving reminders from {expenseBudget.Name} To {savingPocket.Name}",
+                        ExpenseBudgetId = expensesBudgetPeriod.ExpensesBudgetId,
+                        Value = expensesBudgetPeriod.Budget - expensesBudgetPeriod.Expense,
+                        TransactionDate = expensesBudgetPeriod.TotalsByPeriod.PeriodDateEnd
+                    };
+                    _context.Outflow.Add(outflow);
+
+                    var savingTransaction = new SavingRecord
+                    {
+                        Description = $"Moving reminders from {expenseBudget.Name} To {savingPocket.Name}",
+                        IsEmergency = false,
+                        SavingsPocketId = savingPocket.Id,
+                        IsExpense = false,
+                        Value = outflow.Value,
+                        TransactionDate = expensesBudgetPeriod.TotalsByPeriod.PeriodDateEnd
+                    };
+                    _context.SavingRecord.Add(savingTransaction);
+
+                }
+            }
+            _context.SaveChanges();
         }
     }
 }
