@@ -6,6 +6,7 @@ using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using System.Net.Sockets;
 
 namespace FamnancesServices.Controllers
 {
@@ -102,14 +103,28 @@ namespace FamnancesServices.Controllers
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             User user = _userManager.GetById(userId);
-            Home home = _homeManager.GetComplete(userId, date?? DateTimeEast.Now);
 
             TotalsByPeriod? totalsByPeriod = date == null? 
                 _totalsByPeriodManager.GetByCurrentDay(userId) : _totalsByPeriodManager.GetByDate(userId, date.Value);
             
             if (totalsByPeriod != null)
             {
-                decimal balance = totalsByPeriod.User.BudgetByPeriod - totalsByPeriod.TotalExpenses;
+                decimal balance = user.BudgetByPeriod - totalsByPeriod.TotalExpenses;
+
+                var budgetsByUser = _expensesBudgetByPeriodManager.ExpensesBudgetsSummary(userId, date?? DateTimeEast.Now).ToLookup(b => b.UserId);
+                var pocketsByUser = _savingPocketManager.Summary(userId, date ?? DateTimeEast.Now).ToLookup(p => p.UserId);
+                var fixedsByUser = _fixedExpenseManager.Summary(userId, date ?? DateTimeEast.Now).ToLookup(f => f.UserId);
+
+                var roommates = budgetsByUser
+                    .Select(g => new RoommateModel
+                    {
+                        Name = g.First().UserName,
+                        IsCurrentUser = g.Key == userId,
+                        SummaryBudgets = g.ToList(),
+                        SummaryPockets = pocketsByUser[g.Key].ToList(),
+                        SummaryFixedExpenses = fixedsByUser[g.Key].ToList()
+                    }).OrderByDescending(r => r.IsCurrentUser)
+                    .ToList();
 
                 SummaryModel summaryModel = new SummaryModel
                 {
@@ -118,11 +133,11 @@ namespace FamnancesServices.Controllers
                     PeriodBudget = totalsByPeriod.User.BudgetByPeriod,
                     PeriodBalance = balance,
                     PeriodExpenses = totalsByPeriod.TotalExpenses,
-                    HomeSavings = _savingRecordManager.GetHomeSavings(home.Id),
+                    HomeSavings = user.HomeId == null ? 0 : _savingRecordManager.GetHomeSavings(user.HomeId.Value),
                     Chequing = totalsByPeriod.User.TotalBudget,
                     Savings = totalsByPeriod.User.TotalSavings,
                     PeriodSavingsExpeses = totalsByPeriod.TotalSavingsExpenses,
-                    Roommates = home.Users.Select(e => new RoommateModel(e)).ToList(),
+                    Roommates = roommates,
                 };               
                 return Ok(summaryModel);
             }

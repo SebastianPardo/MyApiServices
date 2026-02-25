@@ -1,5 +1,7 @@
-﻿using Famnances.DataCore.Data;
+﻿using Famnances.Core.Utils.Helpers;
+using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
+using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,7 +45,7 @@ namespace FamnancesServices.Business
 
         public FixedExpense? GetCompleteByIdDates(Guid id, DateTime from, DateTime to)
         {
-            return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord.Where(e => e.PaymentDate >= from && e.PaymentDate <= to).OrderBy(e=>e.PaymentDate))
+            return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord.Where(e => e.PaymentDate >= from && e.PaymentDate <= to).OrderBy(e => e.PaymentDate))
                 .FirstOrDefault(x => x.Id == id);
         }
 
@@ -51,6 +53,21 @@ namespace FamnancesServices.Business
         {
             context.FixedExpense.Update(fixedExpense);
             return context.SaveChanges() > 0;
+        }
+
+        public List<SummaryFixedExpensesModel> Summary(Guid userId, DateTime dateTime)
+        {
+            var totalByPeriod = context.TotalsByPeriod.Single(e => dateTime >= e.PeriodDateStart && dateTime <= e.PeriodDateEnd && e.UserId == userId);
+            return context.FixedExpense.Where(e => e.UserId == userId || e.ShareOnHousehold)
+                        .Select(e => new SummaryFixedExpensesModel
+                        {
+                            Id = e.Id,
+                            Name = e.Name,
+                            Value = e.Value,
+                            WasPaid = e.FixedExpensesPaymentsRecord.Any(e => e.PaymentDate >= totalByPeriod.PeriodDateStart && e.PaymentDate <= totalByPeriod.PeriodDateEnd),
+                            UserId = e.UserId,
+                            UserName = e.User.FirstName
+                        }).ToList();
         }
     }
 }

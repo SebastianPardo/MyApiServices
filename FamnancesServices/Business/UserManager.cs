@@ -57,7 +57,7 @@ namespace FamnancesServices.Business
             return GetAll();
         }
 
-        User GetById(Guid id)
+        User? GetById(Guid id)
         {
             return context.User.FirstOrDefault(x => x.Id == id);
         }
@@ -67,14 +67,14 @@ namespace FamnancesServices.Business
             return GetById(id);
         }
 
-        User? getByUserNameOrEmail(string accountEmail)
+        User? GetByUserNameOrEmail(string accountEmail)
         {
             return context.User.FirstOrDefault(x => x.Account.Email == accountEmail || x.Account.UserName == accountEmail);
         }
 
-        User? IUserManager.getByUserNameOrEmail(string accountEmail)
+        User? IUserManager.GetByUserNameOrEmail(string accountEmail)
         {
-            return getByUserNameOrEmail(accountEmail);
+            return GetByUserNameOrEmail(accountEmail);
         }
     }
 }

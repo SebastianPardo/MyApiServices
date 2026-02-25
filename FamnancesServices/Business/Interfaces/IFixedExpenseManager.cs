@@ -1,4 +1,5 @@
 ﻿using Famnances.DataCore.Entities;
+using Famnances.DataCore.ServicesModels;
 
 namespace FamnancesServices.Business.Interfaces
 {
@@ -11,5 +12,6 @@ namespace FamnancesServices.Business.Interfaces
         bool Update(FixedExpense fixedExpense);
         bool Delete(FixedExpense fixedExpense);
         IEnumerable<FixedExpense> GetAllByHome(Guid id);
+        List<SummaryFixedExpensesModel> Summary(Guid userId, DateTime dateTime);
     }
 }

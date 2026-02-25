@@ -1,4 +1,5 @@
 ﻿using Famnances.DataCore.Entities;
+using Famnances.DataCore.ServicesModels;
 
 namespace FamnancesServices.Business.Interfaces
 {
@@ -11,5 +12,6 @@ namespace FamnancesServices.Business.Interfaces
         bool Update(SavingsPocket savingsPocket);
         bool Delete(SavingsPocket savingsPocket);
         SavingsPocket? GetCompleteByIdDates(Guid id, DateTime from, DateTime to);
+        List<SummaryPocketModel> Summary(Guid userId, DateTime dateTime);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Famnances.DataCore.Data;
+﻿using Famnances.Core.Utils.Helpers;
+using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business.Interfaces;
@@ -11,6 +12,22 @@ namespace FamnancesServices.Business
         public ExpensesBudgetByPeriodManager(DatabaseContext context)
         {
             _context = context;
+        }
+
+        public List<SummaryBudgetModel> ExpensesBudgetsSummary(Guid userId, DateTime dateTime)
+        {
+            return _context.ExpenseBudgetByPeriod
+                .Where(e => dateTime >= e.TotalsByPeriod.PeriodDateStart && dateTime <= e.TotalsByPeriod.PeriodDateEnd
+                    && (e.ExpensesBudget.UserId == userId || e.ExpensesBudget.ShareOnHousehold))
+                .Select(e => new SummaryBudgetModel
+                {
+                    Id = e.ExpensesBudgetId,
+                    Name = e.ExpensesBudget.Name,
+                    Budget = e.Budget,
+                    Spent = e.Expense,
+                    UserId  = e.ExpensesBudget.UserId,
+                    UserName = e.ExpensesBudget.User.FirstName
+                }).ToList();
         }
 
         public List<ExpenseBudgetByPeriod> VeryFirst(Guid userId, Guid TotalByPeriodId)

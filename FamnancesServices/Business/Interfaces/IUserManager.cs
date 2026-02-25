@@ -4,9 +4,9 @@ namespace FamnancesServices.Business.Interfaces
 {
     public interface IUserManager
     {
-        User? getByUserNameOrEmail(string accountEmail);
+        User? GetByUserNameOrEmail(string accountEmail);
         IEnumerable<User> GetAll();
-        User GetById(Guid id);
+        User? GetById(Guid id);
         List<User> Search (string email, bool admisitrator);
         bool Add(User user);
         User Update(User user);

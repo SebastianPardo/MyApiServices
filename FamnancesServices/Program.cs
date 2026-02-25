@@ -72,6 +72,7 @@ builder.Services.AddScoped<ICityManager, CityManager>();
 builder.Services.AddScoped<ICountryManager, CountryManager>();
 builder.Services.AddScoped<IBudgetTypeManager, BudgetTypeManager>();
 builder.Services.AddScoped<IExpensesBudgetManager, ExpensesBudgetManager>();
+builder.Services.AddScoped<IExpensesBudgetByPeriodManager, ExpensesBudgetByPeriodManager>();
 builder.Services.AddScoped<IFixedExpenseManager, FixedExpenseManager>();
 builder.Services.AddScoped<IFixedExpensePaymentRecordManager, FixedExpensePaymentRecordManager>();
 builder.Services.AddScoped<IFixedIncomeManager, FixedIncomeManager>();
