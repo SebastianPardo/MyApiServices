@@ -80,7 +80,7 @@ namespace FamnancesServices.Business
             foreach (var movement in remainderBalances) {
                 if (movement.IsSavingPocket)
                 {
-                    var expensesBudgetPeriod = _context.ExpenseBudgetByPeriod.Include(e=>e.TotalsByPeriod).Single(e=>e.Id == movement.BudgesTotalstId);
+                    var expensesBudgetPeriod = _context.ExpenseBudgetByPeriod.Include(e=>e.TotalsByPeriod).Single(e=>e.Id == movement.BudgetBalanceId);
                     var expenseBudget = _context.ExpensesBudget.Single(e => e.Id == expensesBudgetPeriod.ExpensesBudgetId);
                     var savingPocket = _context.SavingsPocket.Single(e => e.Id == movement.MoveToId);
                     

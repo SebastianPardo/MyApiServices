@@ -21,6 +21,7 @@ namespace FamnancesServices.Business
                     && (e.ExpensesBudget.UserId == userId || e.ExpensesBudget.ShareOnHousehold))
                 .Select(e => new SummaryBudgetModel
                 {
+                    BudgetBalanceId = e.Id,
                     Id = e.ExpensesBudgetId,
                     Name = e.ExpensesBudget.Name,
                     Budget = e.Budget,
@@ -57,10 +58,16 @@ namespace FamnancesServices.Business
             {
                 if (!movement.IsSavingPocket)
                 {
-                    var prevBudget = _context.ExpenseBudgetByPeriod.First(e => e.Id == movement.BudgesTotalstId);
+                    var prevBudget = _context.ExpenseBudgetByPeriod.First(e => e.Id == movement.BudgetBalanceId);
+
+                    movement.MoveToId = movement.MoveToId == Guid.Empty ? movement.BudgetId : movement.MoveToId;
                     var budget = newBudgets.First(e => e.ExpensesBudgetId == movement.MoveToId);
                     budget.Budget = budget.Budget + (prevBudget.Budget - prevBudget.Expense);
+                    
                     _context.ExpenseBudgetByPeriod.Update(budget);
+
+                    prevBudget.Budget = prevBudget.Expense;
+                    _context.ExpenseBudgetByPeriod.Update(prevBudget);
                 }
             }
             return newBudgets;
