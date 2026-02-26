@@ -1,6 +1,7 @@
 ﻿using Famnances.Core.Security;
 using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
+using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +15,21 @@ namespace FamnancesServices.Controllers
     public class BudgetsController : ControllerBase
     {
         IExpensesBudgetManager _expensesBudgetManager;
-        public BudgetsController(IExpensesBudgetManager expensesBudgetManager)
+        ITotalsByPeriodManager _totalsByPeriodManager;
+        IExpensesBudgetByPeriodManager _expensesBudgetByPeriodManager;
+
+        public BudgetsController(
+            IExpensesBudgetManager expensesBudgetManager,
+            ITotalsByPeriodManager totalsByPeriodManager,
+            IExpensesBudgetByPeriodManager expensesBudgetByPeriodManager
+            )
         {
             _expensesBudgetManager = expensesBudgetManager;
+            _totalsByPeriodManager = totalsByPeriodManager;
+            _expensesBudgetByPeriodManager = expensesBudgetByPeriodManager;
         }
 
         [HttpGet]
-
         public async Task<ActionResult<IEnumerable<ExpensesBudget>>> GetBudgets()
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
@@ -37,10 +46,21 @@ namespace FamnancesServices.Controllers
         }
 
         [HttpGet("{id}")]
-
         public async Task<ActionResult<ExpensesBudget>> GetBudget(Guid id)
         {
             return Ok(_expensesBudgetManager.GetById(id));
+        }
+
+        [HttpGet("GetSummary")]
+        public async Task<ActionResult<List<SummaryBudgetModel>>> GetSummary()
+        {
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+            var userId = Guid.Parse(accountId.ToString());
+
+            var totalsByPeriod = _totalsByPeriodManager.GetMostRecent(userId);
+            var summary = _expensesBudgetByPeriodManager.ExpensesBudgetsSummary(userId, totalsByPeriod.PeriodDateStart.AddDays(1));
+
+            return Ok(summary.Where(e => e.UserId == userId));
         }
 
         [HttpGet("{id}/{from}/{to}")]
