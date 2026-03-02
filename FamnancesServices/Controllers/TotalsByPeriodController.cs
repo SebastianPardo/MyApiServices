@@ -18,6 +18,14 @@ namespace FamnancesServices.Controllers
             _totalsByPeriodManager = totalsByPeriodManager;
         }
 
+        [HttpGet("GetLastPeriod")]
+        public async Task<ActionResult<TotalsByPeriod>> GetLastPeriod()
+        {
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+            TotalsByPeriod totalsByPeriod = _totalsByPeriodManager.GetMostRecent(Guid.Parse(accountId.ToString()));
+            return Ok(totalsByPeriod);
+        }
+
         [HttpGet("GetCurrentPeriod")]
         public async Task<ActionResult<TotalsByPeriod?>> GetCurrentPeriod()
         {
