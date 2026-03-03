@@ -83,13 +83,14 @@ namespace FamnancesServices.Business
                     var expensesBudgetPeriod = _context.ExpenseBudgetByPeriod.Include(e=>e.TotalsByPeriod).Single(e=>e.Id == movement.BudgetBalanceId);
                     var expenseBudget = _context.ExpensesBudget.Single(e => e.Id == expensesBudgetPeriod.ExpensesBudgetId);
                     var savingPocket = _context.SavingsPocket.Single(e => e.Id == movement.MoveToId);
-                    
+
                     var outflow = new Outflow
                     {
                         Description = $"Moving reminders from {expenseBudget.Name} To {savingPocket.Name}",
                         ExpenseBudgetId = expensesBudgetPeriod.ExpensesBudgetId,
                         Value = expensesBudgetPeriod.Budget - expensesBudgetPeriod.Expense,
-                        TransactionDate = expensesBudgetPeriod.TotalsByPeriod.PeriodDateEnd
+                        TransactionDate = expensesBudgetPeriod.TotalsByPeriod.PeriodDateEnd.AddDays(-1),
+                        DateTimeStamp = DateTimeEast.Now
                     };
                     _context.Outflow.Add(outflow);
 
@@ -100,7 +101,7 @@ namespace FamnancesServices.Business
                         SavingsPocketId = savingPocket.Id,
                         IsExpense = false,
                         Value = outflow.Value,
-                        TransactionDate = expensesBudgetPeriod.TotalsByPeriod.PeriodDateEnd
+                        TransactionDate = expensesBudgetPeriod.TotalsByPeriod.PeriodDateEnd.AddDays(-1)
                     };
                     _context.SavingRecord.Add(savingTransaction);
 
