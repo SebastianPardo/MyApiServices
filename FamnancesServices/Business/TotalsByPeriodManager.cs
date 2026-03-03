@@ -36,5 +36,10 @@ namespace FamnancesServices.Business
         {
             return _context.TotalsByPeriod.Include(e => e.User).SingleOrDefault(e=>e.UserId == userId && e.PeriodDateStart < DateTimeEast.Now && e.PeriodDateEnd > DateTimeEast.Now);
         }
+
+        public bool Exist(Guid userId, DateTime date)
+        {
+            return _context.TotalsByPeriod.Any(e => e.UserId == userId && e.PeriodDateStart <= date && e.PeriodDateEnd >= date);
+        }
     }
 }

@@ -3,6 +3,7 @@ using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business.Interfaces;
+using FamnancesServices.Models;
 
 namespace FamnancesServices.Business
 {

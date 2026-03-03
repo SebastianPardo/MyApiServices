@@ -1,9 +1,9 @@
 ﻿using Famnances.Core.Security;
 using Famnances.Core.Security.Authorization;
 using Famnances.DataCore.Entities;
-using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
+using FamnancesServices.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

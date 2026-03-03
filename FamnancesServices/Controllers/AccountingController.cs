@@ -4,9 +4,8 @@ using Famnances.Core.Utils.Helpers;
 using Famnances.DataCore.Entities;
 using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business.Interfaces;
+using FamnancesServices.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using System.Net.Sockets;
 
 namespace FamnancesServices.Controllers
 {
@@ -22,8 +21,6 @@ namespace FamnancesServices.Controllers
         IInflowManager _inflowManager;
         ISavingRecordManager _savingRecordManager;
         ISavingsPocketManager _savingPocketManager;
-        IExpensesBudgetManager _expensesBudgetManager;
-        IHomeManager _homeManager;
         IFixedExpenseManager _fixedExpenseManager;
         IExpensesBudgetByPeriodManager _expensesBudgetByPeriodManager;
 
@@ -36,8 +33,6 @@ namespace FamnancesServices.Controllers
             IInflowManager inflowManager,
             ISavingRecordManager savingRecordManager,
             ISavingsPocketManager savingPocketManager,
-            IExpensesBudgetManager expensesBudgetManager,
-            IHomeManager homeManager,
             IFixedExpenseManager fixedExpenseManager,
             IExpensesBudgetByPeriodManager expensesBudgetByPeriodManager
             )
@@ -49,8 +44,6 @@ namespace FamnancesServices.Controllers
             _inflowManager = inflowManager;
             _savingRecordManager = savingRecordManager;
             _savingPocketManager = savingPocketManager;
-            _expensesBudgetManager = expensesBudgetManager;
-            _homeManager = homeManager;
             _fixedExpenseManager = fixedExpenseManager;
             _expensesBudgetByPeriodManager = expensesBudgetByPeriodManager;
         }
@@ -126,8 +119,13 @@ namespace FamnancesServices.Controllers
                     }).OrderByDescending(r => r.IsCurrentUser)
                     .ToList();
 
+
+                bool periodClosed = !(_totalsByPeriodManager.Exist(userId, totalsByPeriod.PeriodDateEnd.AddDays(1)) || DateTimeEast.Now <= totalsByPeriod.PeriodDateEnd)
+                    || (DateTimeEast.Now >= totalsByPeriod.PeriodDateEnd.AddDays(-3) && DateTimeEast.Now <= totalsByPeriod.PeriodDateEnd);
+
                 SummaryModel summaryModel = new SummaryModel
                 {
+                    ToBeClosed = periodClosed,
                     PeriodStartDate = totalsByPeriod.PeriodDateStart,
                     PeriodEndDate = totalsByPeriod.PeriodDateEnd,
                     PeriodBudget = totalsByPeriod.User.BudgetByPeriod,

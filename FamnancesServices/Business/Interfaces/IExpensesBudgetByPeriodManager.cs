@@ -1,6 +1,7 @@
 ﻿using Famnances.Core.Utils.Helpers;
 using Famnances.DataCore.Entities;
 using Famnances.DataCore.ServicesModels;
+using FamnancesServices.Models;
 
 namespace FamnancesServices.Business.Interfaces
 {
