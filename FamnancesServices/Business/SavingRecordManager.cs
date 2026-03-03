@@ -104,10 +104,9 @@ namespace FamnancesServices.Business
                         TransactionDate = expensesBudgetPeriod.TotalsByPeriod.PeriodDateEnd.AddDays(-1)
                     };
                     _context.SavingRecord.Add(savingTransaction);
-
+                    _context.SaveChanges();
                 }
             }
-            _context.SaveChanges();
         }
     }
 }
