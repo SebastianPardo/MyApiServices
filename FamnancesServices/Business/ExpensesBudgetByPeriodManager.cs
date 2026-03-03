@@ -4,6 +4,7 @@ using Famnances.DataCore.Entities;
 using Famnances.DataCore.ServicesModels;
 using FamnancesServices.Business.Interfaces;
 using FamnancesServices.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Business
 {
@@ -27,7 +28,7 @@ namespace FamnancesServices.Business
                     Name = e.ExpensesBudget.Name,
                     Budget = e.Budget,
                     Spent = e.Expense,
-                    UserId  = e.ExpensesBudget.UserId,
+                    UserId = e.ExpensesBudget.UserId,
                     UserName = e.ExpensesBudget.User.FirstName
                 }).ToList();
         }
@@ -59,12 +60,12 @@ namespace FamnancesServices.Business
             {
                 if (!movement.IsSavingPocket)
                 {
-                    var prevBudget = _context.ExpenseBudgetByPeriod.First(e => e.Id == movement.BudgetBalanceId);
+                    var prevBudget = _context.ExpenseBudgetByPeriod.Single(e => e.Id == movement.BudgetBalanceId);
 
                     movement.MoveToId = movement.MoveToId == Guid.Empty ? movement.BudgetId : movement.MoveToId;
                     var budget = newBudgets.First(e => e.ExpensesBudgetId == movement.MoveToId);
                     budget.Budget = budget.Budget + (prevBudget.Budget - prevBudget.Expense);
-                    
+
                     _context.ExpenseBudgetByPeriod.Update(budget);
 
                     prevBudget.Budget = prevBudget.Expense;
@@ -72,6 +73,16 @@ namespace FamnancesServices.Business
                 }
             }
             return newBudgets;
+        }
+
+        public ExpenseBudgetByPeriod GetByBudgetCurrentPeriod(Guid userId, Guid id)
+        {
+            return _context.ExpenseBudgetByPeriod.Include(e => e.ExpensesBudget)
+                .Single(e =>
+                DateTimeEast.Now >= e.TotalsByPeriod.PeriodDateStart
+                && DateTimeEast.Now <= e.TotalsByPeriod.PeriodDateEnd
+                && e.ExpensesBudget.UserId == userId
+                && e.ExpensesBudgetId == id);
         }
     }
 }

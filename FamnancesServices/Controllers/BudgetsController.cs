@@ -63,6 +63,15 @@ namespace FamnancesServices.Controllers
             return Ok(summary.Where(e => e.UserId == userId));
         }
 
+        [HttpGet("GetByIdCurrentPeriod/{id}")]
+        public async Task<ActionResult<ExpenseBudgetByPeriod>> GetByIdCurrentPeriod (Guid id)
+        {
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+            var userId = Guid.Parse(accountId.ToString());
+
+            return _expensesBudgetByPeriodManager.GetByBudgetCurrentPeriod(userId, id);
+        }
+
         [HttpGet("{id}/{from}/{to}")]
         public async Task<ActionResult<ExpensesBudget>> GetFixedExpenseByDates(Guid id, DateTime from, DateTime to)
         {

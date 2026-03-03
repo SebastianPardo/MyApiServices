@@ -10,5 +10,6 @@ namespace FamnancesServices.Business.Interfaces
         List<SummaryBudgetModel> ExpensesBudgetsSummary(Guid userId, DateTime date);
         List<ExpenseBudgetByPeriod> VeryFirst(Guid userId, Guid totalByPeriodId);
         List<ExpenseBudgetByPeriod> CalculateNew(Guid userId, Guid totalByPeriodId, List<RemainderBalance> remaindersBalance);
+        ExpenseBudgetByPeriod GetByBudgetCurrentPeriod(Guid userId, Guid id);
     }
 }
