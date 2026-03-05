@@ -1,5 +1,6 @@
 ﻿using Famnances.Core.Security;
 using Famnances.Core.Security.Authorization;
+using Famnances.Core.Utils.Helpers;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
@@ -63,13 +64,14 @@ namespace FamnancesServices.Controllers
             return Ok(summary.Where(e => e.UserId == userId));
         }
 
-        [HttpGet("GetByIdCurrentPeriod/{id}")]
-        public async Task<ActionResult<ExpenseBudgetByPeriod>> GetByIdCurrentPeriod (Guid id)
+        [HttpGet("GetBalanceByIdDate/{id}/{date}")]
+        public async Task<ActionResult<ExpenseBudgetByPeriod>> GetBalanceByIdDate(Guid id, DateTime? date)
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
 
-            return _expensesBudgetByPeriodManager.GetByBudgetCurrentPeriod(userId, id);
+            date = date ?? DateTimeEast.Now;
+            return _expensesBudgetByPeriodManager.GetByIdDate(userId, id, date.Value);
         }
 
         [HttpGet("{id}/{from}/{to}")]

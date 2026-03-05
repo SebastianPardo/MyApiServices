@@ -75,12 +75,12 @@ namespace FamnancesServices.Business
             return newBudgets;
         }
 
-        public ExpenseBudgetByPeriod GetByBudgetCurrentPeriod(Guid userId, Guid id)
+        public ExpenseBudgetByPeriod GetByIdDate(Guid userId, Guid id, DateTime date)
         {
             return _context.ExpenseBudgetByPeriod.Include(e => e.ExpensesBudget)
                 .Single(e =>
-                DateTimeEast.Now >= e.TotalsByPeriod.PeriodDateStart
-                && DateTimeEast.Now <= e.TotalsByPeriod.PeriodDateEnd
+                date >= e.TotalsByPeriod.PeriodDateStart
+                && date <= e.TotalsByPeriod.PeriodDateEnd
                 && e.ExpensesBudget.UserId == userId
                 && e.ExpensesBudgetId == id);
         }
