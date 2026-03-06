@@ -70,6 +70,8 @@ namespace FamnancesServices.Business
 
                     prevBudget.Budget = prevBudget.Expense;
                     _context.ExpenseBudgetByPeriod.Update(prevBudget);
+
+                    _context.SaveChanges();
                 }
             }
             return newBudgets;
