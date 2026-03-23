@@ -19,7 +19,7 @@ namespace FamnancesServices.Business
             Period period = _context.Period.Single(e => e.Id == periodId);
             
             DateTime dateStart = DateTimeEast.Now.AddMonths(-1);
-            if (dateStart.Month == 02 && dayStart == 30)
+            if (dateStart.Month == 2 && dayStart == 30)
                 dayStart = 28;
             dateStart = DateTime.Parse($"{dateStart.Year}/{dateStart.Month}/{dayStart}");
             
