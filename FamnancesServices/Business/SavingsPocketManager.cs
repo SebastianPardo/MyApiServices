@@ -56,11 +56,11 @@ namespace FamnancesServices.Business
                 .FirstOrDefault(x => x.Id == id);
         }
 
-        public List<SummaryPocketModel> Summary(Guid userId, DateTime dateTime)
+        public List<SummaryPocketModel> Summary(Guid userId, Guid? householdId, DateTime dateTime)
         {
             var totalByPeriod = context.TotalsByPeriod.Single(e => dateTime >= e.PeriodDateStart && dateTime <= e.PeriodDateEnd && e.UserId == userId);
             return context.SavingsPocket
-                .Where(e => e.UserId == userId || e.ShareOnHousehold)
+                .Where(e => e.UserId == userId || (e.ShareOnHousehold && e.User.HomeId == householdId))
                         .Select(e => new SummaryPocketModel
                         {
                             Id = e.Id,

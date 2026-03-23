@@ -16,11 +16,11 @@ namespace FamnancesServices.Business
             _context = context;
         }
 
-        public List<SummaryBudgetModel> ExpensesBudgetsSummary(Guid userId, DateTime dateTime)
+        public List<SummaryBudgetModel> ExpensesBudgetsSummary(Guid userId, Guid? householdId, DateTime dateTime)
         {
             return _context.ExpenseBudgetByPeriod
                 .Where(e => dateTime >= e.TotalsByPeriod.PeriodDateStart && dateTime <= e.TotalsByPeriod.PeriodDateEnd
-                    && (e.ExpensesBudget.UserId == userId || e.ExpensesBudget.ShareOnHousehold) && e.ExpensesBudget.BudgetType.Code == "PER")
+                    && (e.ExpensesBudget.UserId == userId || (e.ExpensesBudget.ShareOnHousehold && e.ExpensesBudget.User.HomeId == householdId )) && e.ExpensesBudget.BudgetType.Code == "PER")
                 .Select(e => new SummaryBudgetModel
                 {
                     BudgetBalanceId = e.Id,

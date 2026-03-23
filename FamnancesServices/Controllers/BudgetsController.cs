@@ -5,6 +5,7 @@ using Famnances.DataCore.Entities;
 using FamnancesServices.Business;
 using FamnancesServices.Business.Interfaces;
 using FamnancesServices.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,16 +19,19 @@ namespace FamnancesServices.Controllers
         IExpensesBudgetManager _expensesBudgetManager;
         ITotalsByPeriodManager _totalsByPeriodManager;
         IExpensesBudgetByPeriodManager _expensesBudgetByPeriodManager;
+        IUserManager _userManager;
 
         public BudgetsController(
             IExpensesBudgetManager expensesBudgetManager,
             ITotalsByPeriodManager totalsByPeriodManager,
-            IExpensesBudgetByPeriodManager expensesBudgetByPeriodManager
+            IExpensesBudgetByPeriodManager expensesBudgetByPeriodManager,
+            IUserManager userManager
             )
         {
             _expensesBudgetManager = expensesBudgetManager;
             _totalsByPeriodManager = totalsByPeriodManager;
             _expensesBudgetByPeriodManager = expensesBudgetByPeriodManager;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -57,9 +61,10 @@ namespace FamnancesServices.Controllers
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
+            User user = _userManager.GetById(userId);
 
             var totalsByPeriod = _totalsByPeriodManager.GetMostRecent(userId);
-            var summary = _expensesBudgetByPeriodManager.ExpensesBudgetsSummary(userId, totalsByPeriod.PeriodDateStart.AddDays(1));
+            var summary = _expensesBudgetByPeriodManager.ExpensesBudgetsSummary(userId, user.HomeId, totalsByPeriod.PeriodDateStart.AddDays(1));
 
             return Ok(summary.Where(e => e.UserId == userId));
         }

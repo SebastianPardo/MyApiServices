@@ -55,10 +55,10 @@ namespace FamnancesServices.Business
             return context.SaveChanges() > 0;
         }
 
-        public List<SummaryFixedExpensesModel> Summary(Guid userId, DateTime dateTime)
+        public List<SummaryFixedExpensesModel> Summary(Guid userId, Guid? householdId, DateTime dateTime)
         {
             var totalByPeriod = context.TotalsByPeriod.Single(e => dateTime >= e.PeriodDateStart && dateTime <= e.PeriodDateEnd && e.UserId == userId);
-            return context.FixedExpense.Where(e => e.UserId == userId || e.ShareOnHousehold)
+            return context.FixedExpense.Where(e => e.UserId == userId || (e.ShareOnHousehold && e.User.HomeId == householdId))
                         .Select(e => new SummaryFixedExpensesModel
                         {
                             Id = e.Id,

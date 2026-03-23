@@ -12,6 +12,6 @@ namespace FamnancesServices.Business.Interfaces
         bool Update(SavingsPocket savingsPocket);
         bool Delete(SavingsPocket savingsPocket);
         SavingsPocket? GetCompleteByIdDates(Guid id, DateTime from, DateTime to);
-        List<SummaryPocketModel> Summary(Guid userId, DateTime dateTime);
+        List<SummaryPocketModel> Summary(Guid userId, Guid? householdId, DateTime dateTime);
     }
 }

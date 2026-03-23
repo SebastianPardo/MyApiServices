@@ -104,9 +104,9 @@ namespace FamnancesServices.Controllers
             {
                 decimal balance = user.BudgetByPeriod - totalsByPeriod.TotalExpenses;
 
-                var budgetsByUser = _expensesBudgetByPeriodManager.ExpensesBudgetsSummary(userId, date?? DateTimeEast.Now).ToLookup(b => b.UserId);
-                var pocketsByUser = _savingPocketManager.Summary(userId, date ?? DateTimeEast.Now).ToLookup(p => p.UserId);
-                var fixedsByUser = _fixedExpenseManager.Summary(userId, date ?? DateTimeEast.Now).ToLookup(f => f.UserId);
+                var budgetsByUser = _expensesBudgetByPeriodManager.ExpensesBudgetsSummary(userId, user.HomeId, date?? DateTimeEast.Now).ToLookup(b => b.UserId);
+                var pocketsByUser = _savingPocketManager.Summary(userId, user.HomeId, date ?? DateTimeEast.Now).ToLookup(p => p.UserId);
+                var fixedsByUser = _fixedExpenseManager.Summary(userId, user.HomeId, date ?? DateTimeEast.Now).ToLookup(f => f.UserId);
 
                 var roommates = budgetsByUser
                     .Select(g => new RoommateModel
