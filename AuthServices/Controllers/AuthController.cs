@@ -41,17 +41,11 @@ public class AuthController : ControllerBase
     [HttpPost("Authenticate")]
     public async Task<IActionResult> Authenticate(AuthRequest model)
     {
-#if DEBUG
-        var email = "js.pardo.j@gmail.com";
-        var password = "Test@User1";
-        var googleReCaptchaString = string.Empty;
-        var IP = HttpContext.Connection.RemoteIpAddress.ToString();
-#else
         var email = model.Param_1;
         var password = model.Param_2;
         var googleReCaptchaString = model.Param_3;
         var IP = HttpContext.Connection.RemoteIpAddress.ToString();
-#endif
+
         var account = _accountService.getByUserNameOrEmail(email);
         var enviroment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         if (account == null || !_passwordService.Compare(password, account.Password))
