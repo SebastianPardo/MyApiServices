@@ -23,6 +23,7 @@ namespace FamnancesServices.Controllers
         ISavingsPocketManager _savingPocketManager;
         IFixedExpenseManager _fixedExpenseManager;
         IExpensesBudgetByPeriodManager _expensesBudgetByPeriodManager;
+        IHomeManager _homeManager;
 
 
         public AccountingController(
@@ -34,7 +35,8 @@ namespace FamnancesServices.Controllers
             ISavingRecordManager savingRecordManager,
             ISavingsPocketManager savingPocketManager,
             IFixedExpenseManager fixedExpenseManager,
-            IExpensesBudgetByPeriodManager expensesBudgetByPeriodManager
+            IExpensesBudgetByPeriodManager expensesBudgetByPeriodManager,
+            IHomeManager homeManager
             )
         {
             _totalsByPeriodManager = totalsByPeriodManager;
@@ -46,6 +48,7 @@ namespace FamnancesServices.Controllers
             _savingPocketManager = savingPocketManager;
             _fixedExpenseManager = fixedExpenseManager;
             _expensesBudgetByPeriodManager = expensesBudgetByPeriodManager;
+            _homeManager = homeManager;
         }
 
         private TotalsByPeriod GetNew(User user)
@@ -95,7 +98,7 @@ namespace FamnancesServices.Controllers
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
-            User user = _userManager.GetById(userId);
+            User user = _userManager.GetById(userId);           
 
             TotalsByPeriod? totalsByPeriod = date == null? 
                 _totalsByPeriodManager.GetByCurrentDay(userId) : _totalsByPeriodManager.GetByDate(userId, date.Value);
@@ -108,12 +111,16 @@ namespace FamnancesServices.Controllers
                 var pocketsByUser = _savingPocketManager.Summary(userId, user.HomeId, date ?? DateTimeEast.Now).ToLookup(p => p.UserId);
                 var fixedsByUser = _fixedExpenseManager.Summary(userId, user.HomeId, date ?? DateTimeEast.Now).ToLookup(f => f.UserId);
 
-                var roommates = budgetsByUser
+                var homeMembers = user.HomeId != null ? 
+                    _homeManager.GetById(user.HomeId.Value).Users.ToList().ToLookup(e => e.Id)
+                    : new List<User> { user }.ToLookup(e => e.Id);
+
+                var roommates = homeMembers
                     .Select(g => new RoommateModel
                     {
-                        Name = g.First().UserName,
+                        Name = g.First().FirstName,
                         IsCurrentUser = g.Key == userId,
-                        SummaryBudgets = g.ToList(),
+                        SummaryBudgets = budgetsByUser[g.Key].ToList(),
                         SummaryPockets = pocketsByUser[g.Key].ToList(),
                         SummaryFixedExpenses = fixedsByUser[g.Key].ToList()
                     }).OrderByDescending(r => r.IsCurrentUser)

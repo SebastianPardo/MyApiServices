@@ -1,6 +1,7 @@
 ﻿using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Business
 {
@@ -13,7 +14,7 @@ namespace FamnancesServices.Business
         }
         public Home? GetById(Guid id)
         {
-            return context.Home.FirstOrDefault(u => u.Id == id);
+            return context.Home.Include(e => e.Users).FirstOrDefault(u => u.Id == id);
         }
 
         public Home? GetByUser(Guid userId)
