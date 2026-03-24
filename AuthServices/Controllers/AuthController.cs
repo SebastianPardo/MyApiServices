@@ -54,13 +54,13 @@ public class AuthController : ControllerBase
         {
             throw new AppException("User Account is Deactivated Please Contact Admin");
         }
-#if DEBUG
-#else
-        else if (!await _googleReCaptcha.Validate(googleReCaptchaString))
-        {   
-            throw new AppException("Recaptcha validation failed");
-        }
-#endif
+//#if DEBUG
+//#else
+//        else if (!await _googleReCaptcha.Validate(googleReCaptchaString))
+//        {   
+//            throw new AppException("Recaptcha validation failed");
+//        }
+//#endif
         TokenContent tokenContent = new TokenContent
         {
             UserId = account.Id,
