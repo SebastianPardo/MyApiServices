@@ -15,6 +15,10 @@ namespace FamnancesServices.Business
 
         public FixedIncome Add(FixedIncome fixedIncome)
         {
+            foreach (var byDiscount in fixedIncome.FixedIncomeByDiscount)
+            {
+                byDiscount.FixedIncomeId = fixedIncome.Id;
+            }
             fixedIncome = context.FixedIncome.Add(fixedIncome).Entity;
             context.SaveChanges();
             return fixedIncome;
@@ -38,6 +42,10 @@ namespace FamnancesServices.Business
 
         public bool Update(FixedIncome fixedIncome)
         {
+            foreach (var byDiscount in fixedIncome.FixedIncomeByDiscount)
+            {
+                byDiscount.FixedIncomeId = fixedIncome.Id;
+            }
             context.FixedIncome.Update(fixedIncome);
             return context.SaveChanges() > 0;
         }
