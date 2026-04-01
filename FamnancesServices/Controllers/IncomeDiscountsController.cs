@@ -31,7 +31,7 @@ namespace FamnancesServices.Controllers
 
         // GET api/<ValuesController>/5
         [HttpGet("{id}")]
-        public ActionResult<IEnumerable<IncomeDiscount>> Get(Guid id)
+        public ActionResult<IncomeDiscount> Get(Guid id)
         {
             var discounts = _incomeDiscountManager.GetById(id);
             return Ok(discounts);
@@ -43,7 +43,7 @@ namespace FamnancesServices.Controllers
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             discount.UserId = Guid.Parse(accountId.ToString());
-            _incomeDiscountManager.Add(discount);
+            discount = _incomeDiscountManager.Add(discount);
             return CreatedAtAction("Get", new { id = discount.Id }, discount);
         }
 
