@@ -14,7 +14,21 @@ namespace AuthServices.Business
             this.context = context;
         }
         public Account? GetById(Guid id) => context.Account.Include(e => e.AccountType).FirstOrDefault(x => x.Id == id);
-        public Account? getByUserNameOrEmail(string accountEmail) => context.Account.Include(e => e.User).FirstOrDefault(x => x.Email == accountEmail || x.UserName == accountEmail);
+        public Account? getByUserNameOrEmail(string accountEmail)
+        {
+            try
+            {
+                return context.Account.Include(e => e.User).FirstOrDefault(x => x.Email == accountEmail || x.UserName == accountEmail);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException?.InnerException?.Message == "No such host is known.")
+                {
+                    return new Account { UserName = "NO_DATABASE" };
+                }
+                return null;
+            }
+        }
 
         public Account Add(Account account)
         {

@@ -54,13 +54,13 @@ public class AuthController : ControllerBase
         {
             throw new AppException("User Account is Deactivated Please Contact Admin");
         }
-//#if DEBUG
-//#else
-//        else if (!await _googleReCaptcha.Validate(googleReCaptchaString))
-//        {   
-//            throw new AppException("Recaptcha validation failed");
-//        }
-//#endif
+        //#if DEBUG
+        //#else
+        //        else if (!await _googleReCaptcha.Validate(googleReCaptchaString))
+        //        {   
+        //            throw new AppException("Recaptcha validation failed");
+        //        }
+        //#endif
         TokenContent tokenContent = new TokenContent
         {
             UserId = account.Id,
@@ -126,9 +126,12 @@ public class AuthController : ControllerBase
                 account = _accountService.Add(account);
                 firstLogin = true;
             }
+            else if (account.UserName == "NO_DATABASE")
+            {
+                return Ok(new AuthResponse { Token = "NO_DATABASE" });
+            }
 
             firstLogin = account.User == null;
-
 
             TokenContent tokenContent = new TokenContent
             {
@@ -142,7 +145,7 @@ public class AuthController : ControllerBase
                 AccountId = account.Id,
                 UserInfo = userInfo,
                 Token = _tokenHandler.GetToken(tokenContent),
-                Language = firstLogin? "EN": account.User.Language,
+                Language = firstLogin ? "EN" : account.User.Language,
                 IsFirstLogin = firstLogin
             };
 
@@ -168,7 +171,7 @@ public class AuthController : ControllerBase
             var userinfo = userGet.Execute();
 
             //var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
-            return new UserInfo (userinfo);
+            return new UserInfo(userinfo);
         }
         catch
         {
@@ -181,7 +184,7 @@ public class AuthController : ControllerBase
         using var client = new HttpClient();
         var payload = await client.GetFromJsonAsync<FacebookUser>($"https://graph.facebook.com/me?fields=id,email,first_name,middle_name,last_name,picture&access_token={accessToken}");
         if (payload == null || string.IsNullOrEmpty(payload.Email))
-            return null;        
+            return null;
         return new UserInfo(payload);
     }
 
@@ -252,7 +255,4 @@ public class AuthController : ControllerBase
     //        return BadRequest();
     //    }
     //}
-
-
-    
 }
