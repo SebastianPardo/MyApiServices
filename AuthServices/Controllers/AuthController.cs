@@ -7,6 +7,7 @@ using AuthServices.Business.Interfaces;
 using AutoMapper;
 using Famnances.Core.Entities;
 using Famnances.Core.Errors;
+using Famnances.Core.Security;
 using Famnances.Core.Security.Services.Interfaces;
 using Famnances.Core.Utils.Services.Interface;
 using Famnances.DataCore.Entities;
@@ -126,9 +127,9 @@ public class AuthController : ControllerBase
                 account = _accountService.Add(account);
                 firstLogin = true;
             }
-            else if (account.UserName == "NO_DATABASE")
+            else if (account.UserName == Constants.NO_DATABASE)
             {
-                return Ok(new AuthResponse { Token = "NO_DATABASE" });
+                return Ok(new AuthResponse { Token = Constants.NO_DATABASE });
             }
 
             firstLogin = account.User == null;

@@ -3,6 +3,7 @@ using Famnances.Core.Utils.Helpers;
 using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using Microsoft.EntityFrameworkCore;
+using Famnances.Core.Security;
 
 namespace AuthServices.Business
 {
@@ -24,7 +25,7 @@ namespace AuthServices.Business
             {
                 if (ex.InnerException?.InnerException?.Message == "No such host is known.")
                 {
-                    return new Account { UserName = "NO_DATABASE" };
+                    return new Account { UserName = Constants.NO_DATABASE };
                 }
                 return null;
             }
