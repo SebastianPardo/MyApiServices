@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/AuthServices/appsettings.Development.json
+/AuthServices/appsettings.Production.json
+/FamnancesServices/appsettings.Production.json
