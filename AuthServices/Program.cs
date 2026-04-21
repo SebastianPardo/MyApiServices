@@ -9,7 +9,7 @@ using Famnances.Core.Utils.Services;
 using Famnances.Core.Utils.Services.Interface;
 using Famnances.DataCore.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 //AppContext.SetSwitch("Switch.Microsoft.Data.SqlClient.UseManagedNetworkingOnWindows", true);
 var builder = WebApplication.CreateBuilder(args);
@@ -62,21 +62,6 @@ builder.Services.AddSwaggerGen(swagger =>
         In = ParameterLocation.Header,
         Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
     });
-    swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                          new OpenApiSecurityScheme
-                            {
-                                Reference = new OpenApiReference
-                                {
-                                    Type = ReferenceType.SecurityScheme,
-                                    Id = "Bearer"
-                                }
-                            },
-                            new string[] {}
-
-                    }
-                });
 });
 
 builder.Services.AddSingleton<ITokenHandler, TokenHandler>();
