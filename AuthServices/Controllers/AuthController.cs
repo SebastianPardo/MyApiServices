@@ -24,7 +24,6 @@ using Account = Famnances.DataCore.Entities.Account;
 public class AuthController : ControllerBase
 {
     IAccountService _accountService;
-    IMapper Mapper;
     IPasswordService _passwordService;
     GoogleReCaptcha _googleReCaptcha;
     ITokenHandler _tokenHandler;
@@ -93,7 +92,6 @@ public class AuthController : ControllerBase
 
         UserInfo? userInfo = null;
 
-
         if (provider.Equals(GoogleDefaults.AuthenticationScheme, StringComparison.OrdinalIgnoreCase))
         {
             userInfo = await ValidateGoogleToken(accessToken);
@@ -114,7 +112,7 @@ public class AuthController : ControllerBase
                     UserName = userInfo.Email,
                     IsActive = true,
                     Password = _passwordService.Generate(),
-                    AccounTypeId = Guid.Parse("db727d49-2de5-4029-9556-055872cdea55"),
+                    AccounTypeId = _accountService.GetDefault().Id,
                     LinkedSocialMedias = new List<LinkedSocialMedia>
                     {
                         new LinkedSocialMedia {
@@ -161,6 +159,17 @@ public class AuthController : ControllerBase
         return Ok(_accountService.GetById(id));
     }
 
+    [HttpPost("NewAccount")]
+    public async Task<IActionResult> NewAccount(Account account)
+    {
+        account.IsActive = true;
+        account.AccounTypeId = _accountService.GetDefault().Id;
+        account.UserName = account.Email;
+        account = _accountService.Add(account);
+        return Ok();
+    }
+
+
     private async Task<UserInfo?> ValidateGoogleToken(string idToken)
     {
         try
@@ -170,7 +179,6 @@ public class AuthController : ControllerBase
             var oauthSerivce = new Oauth2Service(new BaseClientService.Initializer { HttpClientInitializer = credentials });
             var userGet = oauthSerivce.Userinfo.V2.Me.Get();
             var userinfo = userGet.Execute();
-
             //var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
             return new UserInfo(userinfo);
         }

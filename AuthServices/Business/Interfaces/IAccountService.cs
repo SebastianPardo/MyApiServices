@@ -6,6 +6,7 @@ namespace AuthServices.Business.Interfaces
     {
         Account? GetById(Guid id);
         Account? getByUserNameOrEmail(string accountEmail);
+        AccountType GetDefault();
         Account Add(Account account);
     }
 }

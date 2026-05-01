@@ -20,7 +20,7 @@ namespace AuthServices.Security
         {
             try
             {
-                if (context.Request.Path.Value.Contains("Authenticate"))
+                if (context.Request.Path.Value.Contains("Authenticate") || context.Request.Path.Value.Contains("NewAccount"))
                     await _next(context);
                 else
                 {

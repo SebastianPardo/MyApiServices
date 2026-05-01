@@ -31,6 +31,11 @@ namespace AuthServices.Business
             }
         }
 
+        public AccountType GetDefault()
+        {
+            return context.AccountType.First(e=>e.Code == "REG");
+        }
+
         public Account Add(Account account)
         {
             account.LastLogin = DateTimeEast.Now;
