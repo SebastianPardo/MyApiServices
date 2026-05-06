@@ -159,6 +159,12 @@ public class AuthController : ControllerBase
         return Ok(_accountService.GetById(id));
     }
 
+    [HttpGet("Any/{userName}")]
+    public async Task<IActionResult> Any(string userName)
+    {
+        return Ok(_accountService.Any(userName));
+    }
+
     [HttpPost("NewAccount")]
     public async Task<IActionResult> NewAccount(Account account)
     {

@@ -31,6 +31,11 @@ namespace AuthServices.Business
             }
         }
 
+        public bool Any(string userName)
+        {
+            return context.Account.Any(e => e.UserName == userName);
+        }
+
         public AccountType GetDefault()
         {
             return context.AccountType.First(e=>e.Code == "REG");
