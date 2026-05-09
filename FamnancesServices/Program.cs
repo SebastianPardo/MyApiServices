@@ -30,7 +30,8 @@ builder.Services.AddHttpClient("AuthService", client =>
 #if DEBUG
     client.BaseAddress = new Uri("https://localhost:7238/Api/");
 #else
-    client.BaseAddress = new Uri("https://sp-authservices.azurewebsites.net/api/");
+    client.BaseAddress = new Uri("https://frustrate-affiliate-devourer.ngrok-free.dev/auth-services/");
+    //client.BaseAddress = new Uri("https://sp-authservices.azurewebsites.net/api/");
 #endif
 
 });
