@@ -22,10 +22,10 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient("LoggingService", client =>
 {
 #if DEBUG
-
     client.BaseAddress = new Uri("https://localhost:7246/Api/");
 #else
-client.BaseAddress = new Uri("https://famnancesservices.azurewebsites.net/api/");
+client.BaseAddress = new Uri("https://frustrate-affiliate-devourer.ngrok-free.dev/famnances-services/");
+//client.BaseAddress = new Uri("https://famnancesservices.azurewebsites.net/api/");
 #endif
 });
 builder.Services.AddExceptionHandler<ApiErrorHandler>();
