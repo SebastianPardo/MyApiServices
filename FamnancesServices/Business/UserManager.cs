@@ -59,7 +59,7 @@ namespace FamnancesServices.Business
 
         User? GetById(Guid id)
         {
-            return context.User.FirstOrDefault(x => x.Id == id);
+            return context.User.Include(e => e.Period).FirstOrDefault(x => x.Id == id);
         }
 
         User IUserManager.GetById(Guid id)
