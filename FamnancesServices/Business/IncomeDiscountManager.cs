@@ -1,6 +1,7 @@
 ﻿using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Business
 {
@@ -20,7 +21,7 @@ namespace FamnancesServices.Business
 
         public IEnumerable<IncomeDiscount> GetAllByUser(Guid userId)
         {
-            return _context.IncomeDiscount.Where(e => e.UserId == userId);
+            return _context.IncomeDiscount.Include(e => e.FixedIncomeByDiscount).Where(e => e.UserId == userId);
         }
 
         public bool Update(IncomeDiscount entity)
