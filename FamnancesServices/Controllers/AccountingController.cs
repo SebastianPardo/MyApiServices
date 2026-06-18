@@ -133,15 +133,12 @@ namespace FamnancesServices.Controllers
                 SummaryModel summaryModel = new SummaryModel
                 {
                     ToBeClosed = periodClosed,
-                    PeriodStartDate = totalsByPeriod.PeriodDateStart,
-                    PeriodEndDate = totalsByPeriod.PeriodDateEnd,
                     PeriodBudget = totalsByPeriod.User.BudgetByPeriod,
-                    PeriodBalance = balance,
-                    PeriodExpenses = totalsByPeriod.TotalExpenses,
+                    PeriodSpent = totalsByPeriod.TotalExpenses,
                     HomeSavings = user.HomeId == null ? 0 : _savingRecordManager.GetHomeSavings(user.HomeId.Value),
                     Chequing = totalsByPeriod.User.TotalBudget,
                     Savings = totalsByPeriod.User.TotalSavings,
-                    PeriodSavingsExpeses = totalsByPeriod.TotalSavingsExpenses,
+                    PeriodSavingsSpent = totalsByPeriod.TotalSavingsExpenses,
                     Roommates = roommates,
                 };               
                 return Ok(summaryModel);

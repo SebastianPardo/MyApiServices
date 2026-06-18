@@ -23,7 +23,7 @@ namespace FamnancesServices.Business
                     && (e.ExpensesBudget.UserId == userId || (e.ExpensesBudget.ShareOnHousehold && e.ExpensesBudget.User.HomeId == householdId )) && e.ExpensesBudget.BudgetType.Code == "PER")
                 .Select(e => new SummaryBudgetModel
                 {
-                    BudgetBalanceId = e.Id,
+                    BudgetPeriodBalanceId = e.Id,
                     Id = e.ExpensesBudgetId,
                     Name = e.ExpensesBudget.Name,
                     Budget = e.Budget,
