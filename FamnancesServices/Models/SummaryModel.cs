@@ -2,7 +2,6 @@
 {
     public class SummaryModel
     {
-        public bool ToBeClosed { get; set; }
         public decimal PeriodBudget { get; set; }
         public decimal PeriodSpent { get; set; }
         public decimal Chequing { get; set; }

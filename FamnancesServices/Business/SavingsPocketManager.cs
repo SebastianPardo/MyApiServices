@@ -67,6 +67,7 @@ namespace FamnancesServices.Business
                             Name = e.Name,
                             Value = e.Total,
                             Spent = e.SavingsRecords.Where(ee => ee.IsExpense && ee.TransactionDate >= totalByPeriod.PeriodDateStart && ee.TransactionDate <= totalByPeriod.PeriodDateEnd).Sum(e => e.Value),
+                            Goal = e.ChallengeValue.Value,
                             UserId = e.UserId,
                             UserName = e.User.FirstName
                         }).ToList();
