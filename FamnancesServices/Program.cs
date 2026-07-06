@@ -54,6 +54,7 @@ builder.Services.AddSwaggerGen(swagger =>
 
 builder.Services.AddScoped<IErrorLogManager, ErrorLogManager>();
 builder.Services.AddExceptionHandler<ErrorHandler>();
+builder.Services.AddExceptionHandler<ApiErrorHandler>();
 builder.Services.AddScoped<AuthorizeAttribute>();
 
 builder.Services.AddSingleton<ITokenHandler, TokenHandler>();
@@ -86,7 +87,6 @@ builder.Services.AddScoped<IUtilitiesManager, UtilitiesManager>();
 builder.Services.AddScoped<ITotalsByPeriodManager, TotalsByPeriodManager>();
 builder.Services.AddScoped<IHomeManager, HomeManager>();
 builder.Services.AddScoped<IHomeInvitationManager, HomeInvitationManager>();
-builder.Services.AddExceptionHandler<ApiErrorHandler>();
 
 var app = builder.Build();
 
