@@ -8,7 +8,7 @@ namespace FamnancesServices.Controllers
     [ServiceFilter(typeof(AuthorizeAttribute))]
     [ApiController]
     [Route("Api/[controller]")]
-    public class ErrorLogController : Controller
+    public class ErrorLogController : ControllerBase
     {
         IErrorLogManager _errorLogManager;
         public ErrorLogController(IErrorLogManager errorLogManager)

@@ -10,7 +10,7 @@ namespace FamnancesServices.Controllers
     [ServiceFilter(typeof(AuthorizeAttribute))]
     [ApiController]
     [Route("Api/[controller]")]
-    public class SavingsController : Controller
+    public class SavingsController : ControllerBase
     {
         ISavingRecordManager _savingRecordManager;
         public SavingsController(ISavingRecordManager savingRecordManager)
@@ -34,15 +34,12 @@ namespace FamnancesServices.Controllers
             return Ok(_savingRecordManager.GetAllByPeriod(from, to, userId));
         }
 
-        // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<SavingRecord>> GetRecord(Guid id)
         {
             return Ok(_savingRecordManager.GetById(id));
         }
 
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<SavingRecord>> Create(SavingRecord savingRecord)
         {
@@ -50,8 +47,6 @@ namespace FamnancesServices.Controllers
             return CreatedAtAction("GetRecord", new { id = savingRecord.Id }, savingRecord);
         }
 
-        // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, SavingRecord savingRecord)
         {
@@ -72,7 +67,6 @@ namespace FamnancesServices.Controllers
             return Ok();
         }
 
-        // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

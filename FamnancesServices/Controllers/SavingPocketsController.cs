@@ -10,7 +10,7 @@ namespace FamnancesServices.Controllers
     [ServiceFilter(typeof(AuthorizeAttribute))]
     [ApiController]
     [Route("Api/[controller]")]
-    public class SavingPocketsController : Controller
+    public class SavingPocketsController : ControllerBase
     {
         ISavingsPocketManager _savingsPocketManager;
         public SavingPocketsController(ISavingsPocketManager savingsPocketManager)

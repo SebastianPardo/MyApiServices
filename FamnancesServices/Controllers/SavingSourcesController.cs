@@ -11,7 +11,7 @@ namespace FamnancesServices.Controllers
     [ServiceFilter(typeof(AuthorizeAttribute))]
     [ApiController]
     [Route("Api/[controller]")]
-    public class SavingSourcesController : Controller
+    public class SavingSourcesController : ControllerBase
     {
         ISavingSourceManager _savingSourceManager;
         public SavingSourcesController(ISavingSourceManager savingSourceManager)
