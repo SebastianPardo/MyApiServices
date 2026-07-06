@@ -135,8 +135,8 @@ namespace FamnancesServices.Controllers
             TotalsByPeriod totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(user.Id);
             if (totalsByPeriod == null)
             {
-                totalsByPeriod = GetNewPeriod(user);
                 TotalsByPeriod? prevTotalsByPeriod = _totalsByPeriodManager.GetMostRecent(user.Id);
+                totalsByPeriod = GetNewPeriod(user);
                 if (prevTotalsByPeriod == null || prevTotalsByPeriod.Id == totalsByPeriod.Id)
                 {
                     _expensesBudgetByPeriodManager.VeryFirst(user.Id, totalsByPeriod.Id);
