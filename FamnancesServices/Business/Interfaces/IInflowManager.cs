@@ -6,10 +6,10 @@ namespace FamnancesServices.Business.Interfaces
     {
         Inflow GetById(Guid id);
         List<Inflow> GetAllByPeriod(DateTime startDate, DateTime endDate, Guid userId);
+        decimal GetTotalByPeriod(DateTime startDate, DateTime endDate, Guid userId);        
+        List<Inflow?> GetByDiscountId(Guid id);
         Inflow Add(Inflow entity);
         bool Delete(Inflow inflow);
         bool Update(Inflow inflow);
-        decimal GetTotalByPeriod(DateTime startDate, DateTime endDate, Guid userId);
-        List<InflowByDiscount> GetDiscountsByInflow(Guid inflowId);
     }
 }

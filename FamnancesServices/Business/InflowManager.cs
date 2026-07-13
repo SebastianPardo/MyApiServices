@@ -2,7 +2,6 @@
 using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Business
 {
@@ -14,6 +13,22 @@ namespace FamnancesServices.Business
             this._context = context;
         }
 
+        public decimal GetTotalByPeriod(DateTime startDate, DateTime endDate, Guid userId)
+        {
+            return _context.Inflow.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.UserId == userId).Sum(e => e.Value);
+        }
+
+        public Inflow GetById(Guid id)
+        {
+            return _context.Inflow.Single(e => e.Id == id);
+        }
+
+        public List<Inflow> GetAllByPeriod(DateTime startDate, DateTime endDate, Guid userId)
+        {
+            return _context.Inflow.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.UserId == userId).OrderByDescending(e => e.TransactionDate).ToList();
+        }
+
+        public List<Inflow?> GetByDiscountId(Guid id) => _context.InflowByDiscount.Where(e => e.IncomeDiscountId == id).Select(e => e.Inflow).ToList();
         public Inflow Add(Inflow inflow)
         {
             inflow.DateTimeStamp = DateTimeEast.Now;
@@ -32,24 +47,6 @@ namespace FamnancesServices.Business
         {
             _context.Inflow.Update(inflow);
             return _context.SaveChanges() > 0;
-        }
-        public decimal GetTotalByPeriod(DateTime startDate, DateTime endDate, Guid userId)
-        {
-            return _context.Inflow.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.UserId == userId).Sum(e => e.Value);
-        }
-
-        public Inflow GetById(Guid id)
-        {
-            return _context.Inflow.Single(e => e.Id == id);
-        }
-
-        public List<Inflow> GetAllByPeriod(DateTime startDate, DateTime endDate, Guid userId)
-        {
-            return _context.Inflow.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.UserId == userId).OrderByDescending(e => e.TransactionDate).ToList();
-        }
-        public List<InflowByDiscount> GetDiscountsByInflow(Guid inflowId)
-        {
-            return _context.InflowByDiscount.Include(e => e.Inflow).Where(e => e.InflowId == inflowId).ToList();
         }
     }
 }

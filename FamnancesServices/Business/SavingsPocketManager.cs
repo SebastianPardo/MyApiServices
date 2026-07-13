@@ -23,12 +23,6 @@ namespace FamnancesServices.Business
             return savingsPocket;
         }
 
-        public bool Delete(SavingsPocket savingsPocket)
-        {
-            context.SavingsPocket.Remove(savingsPocket);
-            return context.SaveChanges() > 0;
-        }
-
         public IEnumerable<SavingsPocket> GetAllByUserId(Guid userId)
         {
             return context.SavingsPocket.Include(e => e.SavingsRecords).Where(e => e.UserId == userId);
@@ -71,6 +65,12 @@ namespace FamnancesServices.Business
                             UserId = e.UserId,
                             UserName = e.User.FirstName
                         }).ToList();
+        }
+
+        public bool Delete(SavingsPocket pocket)
+        {
+            context.SavingsPocket.Remove(pocket);
+            return context.SaveChanges() > 0;  
         }
     }
 }

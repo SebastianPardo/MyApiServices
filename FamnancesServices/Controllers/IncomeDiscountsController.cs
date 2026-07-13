@@ -15,9 +15,11 @@ namespace FamnancesServices.Controllers
     public class IncomeDiscountsController : ControllerBase
     {
         IIncomeDiscountManager _incomeDiscountManager;
-        public IncomeDiscountsController(IIncomeDiscountManager incomeDiscountManager)
+        IInflowManager _inflowManager;
+        public IncomeDiscountsController(IIncomeDiscountManager incomeDiscountManager, IInflowManager inflowManager)
         {
             _incomeDiscountManager = incomeDiscountManager;
+            _inflowManager = inflowManager;
         }
         // GET: api/<ValuesController>
         [HttpGet]
@@ -74,13 +76,22 @@ namespace FamnancesServices.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
-            var budget = _incomeDiscountManager.GetById(id);
-            if (budget == null)
+            var discount = _incomeDiscountManager.GetById(id);
+            if (discount == null)
             {
                 return NotFound();
             }
 
-            _incomeDiscountManager.Delete(budget);
+            var inflowByDiscount  = _inflowManager.GetByDiscountId(discount.Id);
+            if (inflowByDiscount != null && inflowByDiscount.Count > 0)
+            {
+                discount.Active = false;
+                _incomeDiscountManager.Update(discount);
+            }
+            else
+            {
+                _incomeDiscountManager.Delete(discount);
+            }
             return Ok();
         }
     }

@@ -1,6 +1,7 @@
 ﻿namespace FamnancesServices.Controllers;
 
 using Famnances.Core.Errors;
+using Famnances.Core.Security;
 using Famnances.Core.Security.Authorization;
 using Famnances.Core.Security.Services.Interfaces;
 using Famnances.Core.Utils.Services.Interface;
@@ -64,5 +65,20 @@ public class AccountController : ControllerBase
 
         _accountService.Update(user);
         return Ok(new { message = "User updated successfully" });
+    }
+
+    [HttpPut("Deactivate")]
+    public IActionResult Deactivate()
+    {
+        HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+        var userId = Guid.Parse(accountId.ToString());
+        var account = _accountService.GetById(userId);
+
+        if(account == null)
+            throw new AppException("User not found");
+
+        account.IsActive = false;
+        _accountService.Update(account);
+        return Ok(new { message = "User deactivated successfully" });
     }
 }

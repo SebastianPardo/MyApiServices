@@ -13,9 +13,11 @@ namespace FamnancesServices.Controllers
     public class SavingPocketsController : ControllerBase
     {
         ISavingsPocketManager _savingsPocketManager;
-        public SavingPocketsController(ISavingsPocketManager savingsPocketManager)
+        ISavingRecordManager _savingRecordManager;
+        public SavingPocketsController(ISavingsPocketManager savingsPocketManager, ISavingRecordManager savingRecordManager)
         {
             _savingsPocketManager = savingsPocketManager;
+            _savingRecordManager = savingRecordManager;
         }
 
         [HttpGet]
@@ -84,7 +86,16 @@ namespace FamnancesServices.Controllers
                 return NotFound();
             }
 
-            _savingsPocketManager.Delete(pocket);
+            var records = _savingRecordManager.GetByPocketId(id);
+            if (records != null && records.Count() > 0)
+            {
+                pocket.IsActive = false;
+                _savingsPocketManager.Update(pocket);
+            }
+            else
+            {
+                _savingsPocketManager.Delete(pocket);
+            }            
             return Ok();
         }
     }

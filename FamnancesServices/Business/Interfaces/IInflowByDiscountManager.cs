@@ -6,6 +6,7 @@ namespace FamnancesServices.Business.Interfaces
     {
         IEnumerable<InflowByDiscount> GetAll();
         InflowByDiscount GetById(Guid id);
+        List<InflowByDiscount> GetDiscountsByInflow(Guid inflowId);
         bool Add(InflowByDiscount entity);
         InflowByDiscount Update(InflowByDiscount entity);
         bool Delete(InflowByDiscount entity);

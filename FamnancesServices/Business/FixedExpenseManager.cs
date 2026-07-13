@@ -22,12 +22,6 @@ namespace FamnancesServices.Business
             return fixedExpense;
         }
 
-        public bool Delete(FixedExpense fixedExpense)
-        {
-            context.FixedExpense.Remove(fixedExpense);
-            return context.SaveChanges() > 0;
-        }
-
         public IEnumerable<FixedExpense> GetAllByHome(Guid id)
         {
             return context.FixedExpense.Where(e => e.User.HomeId == id);
@@ -38,15 +32,15 @@ namespace FamnancesServices.Business
             return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord).Include(e => e.Period).Where(fe => fe.UserId == userId);
         }
 
-        public FixedExpense? GetById(Guid id)
+        public FixedExpense? GetById(Guid userId, Guid id)
         {
-            return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord).FirstOrDefault(x => x.Id == id);
+            return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord).FirstOrDefault(x => x.Id == id && x.UserId == userId);
         }
 
-        public FixedExpense? GetCompleteByIdDates(Guid id, DateTime from, DateTime to)
+        public FixedExpense? GetCompleteByIdDates(Guid userId, Guid id, DateTime from, DateTime to)
         {
             return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord.Where(e => e.PaymentDate >= from && e.PaymentDate <= to).OrderBy(e => e.PaymentDate))
-                .FirstOrDefault(x => x.Id == id);
+                .FirstOrDefault(x => x.Id == id && x.UserId == userId);
         }
 
         public bool Update(FixedExpense fixedExpense)
@@ -68,6 +62,12 @@ namespace FamnancesServices.Business
                             UserId = e.UserId,
                             UserName = e.User.FirstName
                         }).ToList();
+        }
+
+        public bool Delete(FixedExpense fixedExpense)
+        {
+            context.FixedExpense.Remove(fixedExpense);
+            return context.SaveChanges() > 0;
         }
     }
 }

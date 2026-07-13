@@ -10,8 +10,8 @@ namespace FamnancesServices.Business.Interfaces
         SavingsPocket GetById(Guid id);
         SavingsPocket Add(SavingsPocket savingsPocket);
         bool Update(SavingsPocket savingsPocket);
-        bool Delete(SavingsPocket savingsPocket);
         SavingsPocket? GetCompleteByIdDates(Guid id, DateTime from, DateTime to);
         List<SummaryPocketModel> Summary(Guid userId, Guid? householdId, DateTime dateTime);
+        bool Delete(SavingsPocket pocket);
     }
 }

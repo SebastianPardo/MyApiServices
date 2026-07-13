@@ -11,6 +11,22 @@ namespace FamnancesServices.Business
         public FixedExpensePaymentRecordManager(DatabaseContext context)
         {
             this.context = context;
+        }        
+
+        public FixedExpensePaymentRecord? GetById(Guid id)
+        {
+            return context.FixedExpensePaymentRecord.Include(e => e.FixedExpense).FirstOrDefault(x => x.Id == id);
+        }
+
+        public IEnumerable<FixedExpensePaymentRecord>? GetByFixedExpenseId(Guid fixedExpenseId)
+        {
+            return context.FixedExpensePaymentRecord.Where(x => x.FixedExpenseId == fixedExpenseId);
+        }
+
+        public bool Update(FixedExpensePaymentRecord record)
+        {
+            context.FixedExpensePaymentRecord.Update(record);
+            return context.SaveChanges() > 0;
         }
 
         public FixedExpensePaymentRecord Add(FixedExpensePaymentRecord record)
@@ -23,17 +39,6 @@ namespace FamnancesServices.Business
         public bool Delete(FixedExpensePaymentRecord record)
         {
             context.FixedExpensePaymentRecord.Remove(record);
-            return context.SaveChanges() > 0;
-        }
-
-        public FixedExpensePaymentRecord GetById(Guid id)
-        {
-            return context.FixedExpensePaymentRecord.Include(e => e.FixedExpense).FirstOrDefault(x => x.Id == id);
-        }
-
-        public bool Update(FixedExpensePaymentRecord record)
-        {
-            context.FixedExpensePaymentRecord.Update(record);
             return context.SaveChanges() > 0;
         }
     }

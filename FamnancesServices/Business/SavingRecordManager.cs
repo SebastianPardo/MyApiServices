@@ -108,5 +108,10 @@ namespace FamnancesServices.Business
                 }
             }
         }
+
+        public IEnumerable<SavingRecord> GetByPocketId(Guid id)
+        {
+            return _context.SavingRecord.Where(e => e.SavingsPocketId == id);
+        }
     }
 }

@@ -58,13 +58,17 @@ namespace FamnancesServices.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<FixedExpense>> GetFixedExpense(Guid id)
         {
-            return Ok(_fixedExpenseManager.GetById(id));
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+            var userId = Guid.Parse(accountId.ToString());
+            return Ok(_fixedExpenseManager.GetById(userId, id));
         }
 
         [HttpGet("{id}/{from}/{to}")]
         public async Task<ActionResult<FixedExpense>> GetFixedExpenseByDates(Guid id, DateTime from, DateTime to)
         {
-            return Ok(_fixedExpenseManager.GetCompleteByIdDates(id, from, to));
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+            var userId = Guid.Parse(accountId.ToString());
+            return Ok(_fixedExpenseManager.GetCompleteByIdDates(userId, id, from, to));
         }
 
         // PUT: api/Users/5
@@ -106,13 +110,24 @@ namespace FamnancesServices.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var fixedExpense = _fixedExpenseManager.GetById(id);
+            HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+            var userId = Guid.Parse(accountId.ToString());
+            var fixedExpense = _fixedExpenseManager.GetById(userId, id);
             if (fixedExpense == null)
             {
                 return NotFound();
             }
 
-            _fixedExpenseManager.Delete(fixedExpense);
+            var paymentRecords = _fixedExpensePaymentRecordManager.GetByFixedExpenseId(fixedExpense.Id);
+            if(paymentRecords != null && paymentRecords.Count() > 0)
+            {
+                fixedExpense.Active = false;
+                _fixedExpenseManager.Update(fixedExpense);
+            }
+            else
+            {
+                _fixedExpenseManager.Delete(fixedExpense);
+            }            
             return Ok();
         }
 
@@ -121,7 +136,7 @@ namespace FamnancesServices.Controllers
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
-            var expense = _fixedExpenseManager.GetById(id);
+            var expense = _fixedExpenseManager.GetById(userId, id);
             var dates = _utilitiesManager.GetPeriodDates(expense.PeriodId, expense.StartDate.Day);
             if (!expense.FixedExpensesPaymentsRecord.Any(e => e.PaymentDate >= dates.Item1))
             {

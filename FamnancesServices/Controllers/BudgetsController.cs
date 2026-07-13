@@ -20,18 +20,21 @@ namespace FamnancesServices.Controllers
         ITotalsByPeriodManager _totalsByPeriodManager;
         IExpensesBudgetByPeriodManager _expensesBudgetByPeriodManager;
         IUserManager _userManager;
+        IOutflowManager _outflowManager;
 
         public BudgetsController(
             IExpensesBudgetManager expensesBudgetManager,
             ITotalsByPeriodManager totalsByPeriodManager,
             IExpensesBudgetByPeriodManager expensesBudgetByPeriodManager,
-            IUserManager userManager
+            IUserManager userManager,
+            IOutflowManager outflowManager
             )
         {
             _expensesBudgetManager = expensesBudgetManager;
             _totalsByPeriodManager = totalsByPeriodManager;
             _expensesBudgetByPeriodManager = expensesBudgetByPeriodManager;
             _userManager = userManager;
+            _outflowManager = outflowManager;
         }
 
         [HttpGet]
@@ -139,7 +142,15 @@ namespace FamnancesServices.Controllers
                 return NotFound();
             }
 
-            _expensesBudgetManager.Delete(budget);
+            if(budget.Outflow != null && budget.Outflow.Count() > 0)
+            {
+                budget.Active = false;
+                _expensesBudgetManager.Update(budget);
+            }
+            else
+            {
+                _expensesBudgetManager.Delete(budget);
+            }
             return Ok();
         }
     }

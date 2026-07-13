@@ -1,6 +1,7 @@
 ﻿using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamnancesServices.Business
 {
@@ -10,17 +11,6 @@ namespace FamnancesServices.Business
         public InflowByDiscountManager(DatabaseContext context)
         {
             _context = context;
-        }
-
-        public bool Add(InflowByDiscount entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Delete(InflowByDiscount entity)
-        {
-            _context.InflowByDiscount.Remove(entity);
-            return _context.SaveChanges() > 0;
         }
 
         public IEnumerable<InflowByDiscount> GetAll()
@@ -33,9 +23,25 @@ namespace FamnancesServices.Business
             throw new NotImplementedException();
         }
 
+        public List<InflowByDiscount> GetDiscountsByInflow(Guid inflowId)
+        {
+            return _context.InflowByDiscount.Include(e => e.Inflow).Where(e => e.InflowId == inflowId).ToList();
+        }
+
+        public bool Add(InflowByDiscount entity)
+        {
+            throw new NotImplementedException();
+        }
+
         public InflowByDiscount Update(InflowByDiscount entity)
         {
             throw new NotImplementedException();
+        }
+
+        public bool Delete(InflowByDiscount entity)
+        {
+            _context.InflowByDiscount.Remove(entity);
+            return _context.SaveChanges() > 0;
         }
     }
 }

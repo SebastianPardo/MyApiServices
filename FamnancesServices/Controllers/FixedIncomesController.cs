@@ -77,6 +77,7 @@ namespace FamnancesServices.Controllers
             {
                 return NotFound();
             }
+
             _fixedIncomeManager.Delete(fixedIncomes);
             return Ok();
         }

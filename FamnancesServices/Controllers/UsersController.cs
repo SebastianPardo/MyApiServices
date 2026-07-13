@@ -72,19 +72,5 @@ namespace FamnancesServices.Controllers
             _userManager.Add(user);
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
-
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(Guid id)
-        {
-            var user = _userManager.GetById(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _userManager.Delete(user);
-            return Ok();
-        }
     }
 }

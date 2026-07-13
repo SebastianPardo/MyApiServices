@@ -10,7 +10,6 @@ namespace FamnancesServices.Business.Interfaces
         List<User> Search (string email, bool admisitrator);
         bool Add(User user);
         User Update(User user);
-        bool Delete(User user);
 
     }
 }

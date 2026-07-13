@@ -19,12 +19,6 @@ namespace FamnancesServices.Business
             return context.SaveChanges() > 0;
         }
 
-        public bool Delete(User user)
-        {
-            context.User.Remove(user);
-            return context.SaveChanges() > 0;
-        }
-
         public List<User> Search(string email, bool admisitrator)
         {
             if (admisitrator)

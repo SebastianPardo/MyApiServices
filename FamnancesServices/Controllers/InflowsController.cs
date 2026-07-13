@@ -72,7 +72,7 @@ namespace FamnancesServices.Controllers
 
             try
             {
-                var oldDiscounts = _inflowManager.GetDiscountsByInflow(id);
+                var oldDiscounts = _inflowByDiscountManager.GetDiscountsByInflow(id);
                 var oldInflow = _inflowManager.GetById(id);
                 foreach (var oldDiscount in oldDiscounts)
                 {
