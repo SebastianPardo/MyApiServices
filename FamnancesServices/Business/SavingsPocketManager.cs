@@ -54,7 +54,7 @@ namespace FamnancesServices.Business
         {
             var totalByPeriod = context.TotalsByPeriod.Single(e => dateTime >= e.PeriodDateStart && dateTime <= e.PeriodDateEnd && e.UserId == userId);
             return context.SavingsPocket
-                .Where(e => e.UserId == userId || (e.ShareOnHousehold && e.User.HomeId == householdId))
+                .Where(e => (e.UserId == userId || (e.ShareOnHousehold && e.User.HomeId == householdId)) && e.IsActive == true)
                         .Select(e => new SummaryPocketModel
                         {
                             Id = e.Id,

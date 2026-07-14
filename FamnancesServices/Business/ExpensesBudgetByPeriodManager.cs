@@ -20,7 +20,8 @@ namespace FamnancesServices.Business
         {
             return _context.ExpenseBudgetByPeriod
                 .Where(e => dateTime >= e.TotalsByPeriod.PeriodDateStart && dateTime <= e.TotalsByPeriod.PeriodDateEnd
-                    && (e.ExpensesBudget.UserId == userId || (e.ExpensesBudget.ShareOnHousehold && e.ExpensesBudget.User.HomeId == householdId )) && e.ExpensesBudget.BudgetType.Code == "PER")
+                    && (e.ExpensesBudget.UserId == userId || (e.ExpensesBudget.ShareOnHousehold && e.ExpensesBudget.User.HomeId == householdId )) 
+                    && e.ExpensesBudget.BudgetType.Code == "PER" && e.ExpensesBudget.Active == true)
                 .Select(e => new SummaryBudgetModel
                 {
                     BudgetPeriodBalanceId = e.Id,
