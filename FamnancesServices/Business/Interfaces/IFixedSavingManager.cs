@@ -1,4 +1,5 @@
 ﻿using Famnances.DataCore.Entities;
+using FamnancesServices.Models;
 
 namespace FamnancesServices.Business.Interfaces
 {
@@ -9,5 +10,6 @@ namespace FamnancesServices.Business.Interfaces
         FixedSaving Add(FixedSaving fixedSaving);
         bool Update(FixedSaving fixedSaving);
         bool Delete(FixedSaving fixedSaving);
+        List<SummaryFixedSavingsModel> Summary(Guid userId, Guid? homeId, DateTime dateTime);
     }
 }

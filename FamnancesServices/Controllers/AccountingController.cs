@@ -24,6 +24,7 @@ namespace FamnancesServices.Controllers
         IFixedExpenseManager _fixedExpenseManager;
         IExpensesBudgetByPeriodManager _expensesBudgetByPeriodManager;
         IHomeManager _homeManager;
+        IFixedSavingManager _fixedSavingsManager;
 
 
         public AccountingController(
@@ -36,7 +37,8 @@ namespace FamnancesServices.Controllers
             ISavingsPocketManager savingPocketManager,
             IFixedExpenseManager fixedExpenseManager,
             IExpensesBudgetByPeriodManager expensesBudgetByPeriodManager,
-            IHomeManager homeManager
+            IHomeManager homeManager,
+            IFixedSavingManager fixedSavingsManager
             )
         {
             _totalsByPeriodManager = totalsByPeriodManager;
@@ -49,6 +51,7 @@ namespace FamnancesServices.Controllers
             _fixedExpenseManager = fixedExpenseManager;
             _expensesBudgetByPeriodManager = expensesBudgetByPeriodManager;
             _homeManager = homeManager;
+            _fixedSavingsManager = fixedSavingsManager;
         }
         
         [HttpGet("PeriodSummary/{date}")]
@@ -68,6 +71,7 @@ namespace FamnancesServices.Controllers
                 var budgetsByUser = _expensesBudgetByPeriodManager.ExpensesBudgetsSummary(userId, user.HomeId, date?? DateTimeEast.Now).ToLookup(b => b.UserId);
                 var pocketsByUser = _savingPocketManager.Summary(userId, user.HomeId, date ?? DateTimeEast.Now).ToLookup(p => p.UserId);
                 var fixedsByUser = _fixedExpenseManager.Summary(userId, user.HomeId, date ?? DateTimeEast.Now).ToLookup(f => f.UserId);
+                var fixedSavingsByUser = _fixedSavingsManager.Summary(userId, user.HomeId, date ?? DateTimeEast.Now).ToLookup(f => f.UserId);
 
                 var homeMembers = user.HomeId != null ? 
                     _homeManager.GetById(user.HomeId.Value).Users.ToList().ToLookup(e => e.Id)
@@ -80,7 +84,8 @@ namespace FamnancesServices.Controllers
                         IsCurrentUser = g.Key == userId,
                         SummaryBudgets = budgetsByUser[g.Key].ToList(),
                         SummaryPockets = pocketsByUser[g.Key].ToList(),
-                        SummaryFixedExpenses = fixedsByUser[g.Key].ToList()
+                        SummaryFixedExpenses = fixedsByUser[g.Key].ToList(),
+                        SummaryFixedSavings = fixedSavingsByUser[g.Key].ToList()
                     }).OrderByDescending(r => r.IsCurrentUser)
                     .ToList();
                                 

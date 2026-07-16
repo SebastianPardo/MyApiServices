@@ -19,6 +19,8 @@
 
         public List<SummaryFixedExpensesModel> SummaryFixedExpenses { get; set; }
 
+        public List<SummaryFixedSavingsModel> SummaryFixedSavings { get; set; }
+
         public List<SummaryBudgetModel> SummaryBudgets { get; set; }
 
         public List<SummaryPocketModel> SummaryPockets { get; set; }
@@ -30,6 +32,16 @@
         public string Name { get; set; }
         public decimal Value { get; set; }
         public bool WasPaid { get; set; }
+        public Guid UserId { get; set; }
+        public string UserName { get; set; }
+    }
+
+    public class SummaryFixedSavingsModel
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public decimal Value { get; set; }
+        public bool WasTransferred { get; set; }
         public Guid UserId { get; set; }
         public string UserName { get; set; }
     }
