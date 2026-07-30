@@ -34,7 +34,10 @@ namespace AuthServices.Security
                         || context.Request.Host.Port == 7238 
                         || context.Request.Host.Value.Contains("famnances")
                         || context.Request.Host.Value.Contains("famnancesservices")
-                        || context.Request.Host.Value.Contains("sp-authservices")))
+                        || context.Request.Host.Value.Contains("sp-authservices")
+                        || context.Request.Host.Value.Contains("auth-services")
+                        || context.Request.Host.Value.Contains("famnances-services"))
+                        )
                     {
                         var accountManager = context.RequestServices.GetRequiredService<IAccountService>();
                         var account = accountManager.GetById(tokenContent.UserId);
