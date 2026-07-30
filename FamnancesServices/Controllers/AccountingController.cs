@@ -137,7 +137,7 @@ namespace FamnancesServices.Controllers
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             User user = _userManager.GetById(Guid.Parse(accountId.ToString()));
 
-            TotalsByPeriod totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(user.Id);
+            TotalsByPeriod totalsByPeriod = _totalsByPeriodManager.GetByDate(user.Id, DateTimeEast.Now.AddDays(3));
             if (totalsByPeriod == null)
             {
                 TotalsByPeriod? prevTotalsByPeriod = _totalsByPeriodManager.GetMostRecent(user.Id);
