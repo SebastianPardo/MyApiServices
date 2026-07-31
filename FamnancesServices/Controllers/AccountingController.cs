@@ -116,10 +116,8 @@ namespace FamnancesServices.Controllers
             if (totalsByPeriod != null) {
                 MiniSummaryModel summaryModel = new MiniSummaryModel
                 {
-                    ToBeClosed = !(_totalsByPeriodManager.Exist(userId, totalsByPeriod.PeriodDateEnd.AddDays(1))
-                                    || DateTimeEast.Now <= totalsByPeriod.PeriodDateEnd)
-                                    || (DateTimeEast.Now >= totalsByPeriod.PeriodDateEnd.AddDays(-3) 
-                                    && DateTimeEast.Now <= totalsByPeriod.PeriodDateEnd),
+                    ToBeClosed = !_totalsByPeriodManager.Exist(userId, totalsByPeriod.PeriodDateEnd.AddDays(1))
+                                    && (DateTimeEast.Now >= totalsByPeriod.PeriodDateEnd.AddDays(-3) && DateTimeEast.Now <= totalsByPeriod.PeriodDateEnd),
                     PeriodFrom = totalsByPeriod.PeriodDateStart,
                     PeriodTo = totalsByPeriod.PeriodDateEnd,
                     Chequing = user.TotalBudget,
@@ -137,8 +135,9 @@ namespace FamnancesServices.Controllers
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             User user = _userManager.GetById(Guid.Parse(accountId.ToString()));
 
-            TotalsByPeriod totalsByPeriod = _totalsByPeriodManager.GetByDate(user.Id, DateTimeEast.Now.AddDays(3));
-            if (totalsByPeriod == null)
+            TotalsByPeriod nextPeriod = _totalsByPeriodManager.GetByDate(user.Id, DateTimeEast.Now.AddDays(3));
+            TotalsByPeriod totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(user.Id);
+            if (nextPeriod == null )
             {
                 TotalsByPeriod? prevTotalsByPeriod = _totalsByPeriodManager.GetMostRecent(user.Id);
                 totalsByPeriod = GetNewPeriod(user);
@@ -157,7 +156,7 @@ namespace FamnancesServices.Controllers
 
         private TotalsByPeriod GetNewPeriod(User user)
         {
-            var periodDates = _utilitiesManager.GetPeriodDates(user.PeriodId, user.PeriodStartsMonthsDay);
+            var periodDates = _utilitiesManager.GetPeriodDates(user.PeriodId, user.PeriodStartsMonthsDay, DateTimeEast.Now.AddDays(3));
             TotalsByPeriod totalsByPeriod = new TotalsByPeriod
             {
                 Id = Guid.NewGuid(),

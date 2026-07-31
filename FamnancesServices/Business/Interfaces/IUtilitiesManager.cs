@@ -4,6 +4,6 @@ namespace FamnancesServices.Business.Interfaces
 {
     public interface IUtilitiesManager
     {
-        (DateTime, DateTime) GetPeriodDates(Guid periodId, int dayStart);
+        (DateTime, DateTime) GetPeriodDates(Guid periodId, int dayStart, DateTime? date = null);
     }
 }

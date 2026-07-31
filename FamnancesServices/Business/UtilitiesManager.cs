@@ -14,8 +14,10 @@ namespace FamnancesServices.Business
             _context = context;
         }
 
-        public (DateTime, DateTime) GetPeriodDates(Guid periodId, int dayStart)
+        public (DateTime, DateTime) GetPeriodDates(Guid periodId, int dayStart, DateTime? date = null)
         {
+            date = date?? DateTimeEast.Now;
+
             Period period = _context.Period.Single(e => e.Id == periodId);
             
             DateTime dateStart = DateTimeEast.Now.AddMonths(-1);
@@ -25,7 +27,7 @@ namespace FamnancesServices.Business
             
             DateTime? dateEnd = null;
 
-            while (dateEnd == null || !(dateStart <= DateTimeEast.Now && dateEnd >= DateTimeEast.Now))
+            while (dateEnd == null || !(dateStart <= date&& dateEnd >= date))
             {
                 switch (period.Code)
                 {
