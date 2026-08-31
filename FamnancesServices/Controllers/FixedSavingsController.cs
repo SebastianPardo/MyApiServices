@@ -48,6 +48,8 @@ namespace FamnancesServices.Controllers
 
             try
             {
+                fixedSaving.SavingsPocket = null;
+                fixedSaving.SavingSource = null;
                 _fixedSavingManager.Update(fixedSaving);
             }
             catch (DbUpdateConcurrencyException)
