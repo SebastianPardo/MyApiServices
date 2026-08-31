@@ -46,6 +46,7 @@ namespace FamnancesServices.Business
 
         public SavingsPocket? GetCompleteByIdDates(Guid id, DateTime from, DateTime to)
         {
+            to = to.Hour == 0 ? to.AddHours(23).AddMinutes(59).AddSeconds(59) : to;
             return context.SavingsPocket.Include(e => e.SavingsRecords.Where(e => e.TransactionDate >= from && e.TransactionDate <= to).OrderBy(e => e.TransactionDate))
                 .FirstOrDefault(x => x.Id == id);
         }

@@ -47,11 +47,13 @@ namespace FamnancesServices.Business
 
         public decimal GetByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
+            endDate = endDate.Hour == 0 ? endDate.AddHours(23).AddMinutes(59).AddSeconds(59) : endDate;
             return _context.Outflow.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.ExpensesBudget.UserId == userId).Sum(e => e.Value);
         }
 
         public IEnumerable<Outflow> GetAllByPeriod(DateTime from, DateTime to, Guid userId)
         {
+            to = to.Hour == 0 ? to.AddHours(23).AddMinutes(59).AddSeconds(59) : to;
             return _context.Outflow.Include(e=>e.ExpensesBudget).Where(e => e.TransactionDate >= from && e.TransactionDate <= to && e.ExpensesBudget.UserId == userId).OrderByDescending(e => e.TransactionDate);
         }
     }

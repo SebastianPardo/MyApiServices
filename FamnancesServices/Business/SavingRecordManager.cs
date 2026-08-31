@@ -43,6 +43,7 @@ namespace FamnancesServices.Business
 
         public IEnumerable<SavingRecord> GetAllByPeriod(DateTime from, DateTime to, Guid userId)
         {
+            to = to.Hour == 0 ? to.AddHours(23).AddMinutes(59).AddSeconds(59) : to;
             return _context.SavingRecord.Include(e=>e.SavingsPocket).Where(e => e.TransactionDate >= from && e.TransactionDate <= to && e.SavingsPocket.UserId == userId).OrderByDescending(e => e.TransactionDate);
         }
 
@@ -53,11 +54,13 @@ namespace FamnancesServices.Business
 
         public decimal GetSavingsExpensesByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
+            endDate = endDate.Hour == 0 ? endDate.AddHours(23).AddMinutes(59).AddSeconds(59) : endDate;
             return _context.SavingRecord.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.IsExpense == true && e.SavingsPocket.UserId == userId).Sum(e => e.Value);
         }
 
         public decimal GetSavingsIncomeByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
+            endDate = endDate.Hour == 0 ? endDate.AddHours(23).AddMinutes(59).AddSeconds(59) : endDate;
             return _context.SavingRecord.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.IsExpense == false && e.SavingsPocket.UserId == userId).Sum(e => e.Value);
         }
 
