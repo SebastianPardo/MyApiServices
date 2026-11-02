@@ -147,7 +147,7 @@ public class AuthController : ControllerBase
                 Language = firstLogin ? "EN" : account.User.Language,
                 IsFirstLogin = firstLogin
             };
-
+            _accountService.RegisterLogin(account.Id);
             return Ok(response);
         }
         return Unauthorized();

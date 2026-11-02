@@ -8,6 +8,7 @@ namespace AuthServices.Business.Interfaces
         Account? getByUserNameOrEmail(string accountEmail);
         AccountType GetDefault();
         Account Add(Account account);
+        void RegisterLogin(Guid accountId);
         bool Any(string userName);
     }
 }

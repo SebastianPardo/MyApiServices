@@ -19,7 +19,7 @@ namespace AuthServices.Business
         {
             try
             {
-                return context.Account.Include(e => e.User).FirstOrDefault(x => x.Email == accountEmail || x.UserName == accountEmail);
+                return context.Account.Include(e => e.User).SingleOrDefault(x => x.Email == accountEmail || x.UserName == accountEmail);
             }
             catch (Exception ex)
             {
@@ -38,15 +38,32 @@ namespace AuthServices.Business
 
         public AccountType GetDefault()
         {
-            return context.AccountType.First(e=>e.Code == "REG");
+            return context.AccountType.First(e => e.Code == "REG");
         }
 
         public Account Add(Account account)
         {
-            account.LastLogin = DateTimeEast.Now;
-            account = context.Account.Add(account).Entity;
-            context.SaveChanges();
-            return account;
+            var existingAccount = getByUserNameOrEmail(account.Email);
+            if (existingAccount == null)
+            {
+                account.LastLogin = DateTime.UtcNow;
+                account = context.Account.Add(account).Entity;
+                context.SaveChanges();
+
+                return account;
+            }
+            return existingAccount;
+        }
+
+        public void RegisterLogin(Guid accountId)
+        {
+            var account = GetById(accountId);
+            if (account != null)
+            {
+                account.LastLogin = DateTime.UtcNow;
+                context.Update(account);
+                context.SaveChanges();
+            }
         }
     }
 }

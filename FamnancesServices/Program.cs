@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 #if DEBUG
-builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Database_Dev"), x => x.MigrationsAssembly("Famnances.DataCore")));
+builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Database"), x => x.MigrationsAssembly("Famnances.DataCore")));
 #else
 builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Database"), x => x.MigrationsAssembly("Famnances.DataCore")));
 #endif
@@ -30,7 +30,8 @@ builder.Services.AddHttpClient("AuthService", client =>
 #if DEBUG
     client.BaseAddress = new Uri("https://localhost:7238/Api/");
 #else
-    client.BaseAddress = new Uri("https://frustrate-affiliate-devourer.ngrok-free.dev/auth-services/");
+    client.BaseAddress = new Uri("https://famnances-authservices.azurewebsites.net/Api/");
+    //client.BaseAddress = new Uri("https://frustrate-affiliate-devourer.ngrok-free.dev/auth-services/");
     //client.BaseAddress = new Uri("https://sp-authservices.azurewebsites.net/api/");
 #endif
 
