@@ -24,7 +24,10 @@ namespace FamnancesServices.Business
 
         public PeriodDates? GetByDate(Guid userId, DateTime date)
         {
-            return _context.PeriodsDates.Include(e => e.User).SingleOrDefault(e => e.UserId == userId && e.PeriodDateStart <= date && e.PeriodDateEnd >= date);
+            return _context.PeriodsDates
+                .Include(e => e.User)
+                .Include(e => e.FinancialAccountsByPeriodDates).ThenInclude(e => e.FinancialAccount).ThenInclude(e => e.FinancialAccountType)
+                .SingleOrDefault(e => e.UserId == userId && e.PeriodDateStart <= date && e.PeriodDateEnd >= date);
         }
 
         public PeriodDates? GetMostRecent(Guid userId)
@@ -34,7 +37,10 @@ namespace FamnancesServices.Business
 
         public PeriodDates? GetByCurrentDay(Guid userId)
         {
-            return _context.PeriodsDates.Include(e => e.User).SingleOrDefault(e=>e.UserId == userId && e.PeriodDateStart < DateTimeEast.Now && e.PeriodDateEnd > DateTimeEast.Now);
+            return _context.PeriodsDates
+                .Include(e => e.User)
+                .Include(e=>e.FinancialAccountsByPeriodDates).ThenInclude(e=>e.FinancialAccount).ThenInclude(e => e.FinancialAccountType)
+                .SingleOrDefault(e=>e.UserId == userId && e.PeriodDateStart < DateTimeEast.Now && e.PeriodDateEnd > DateTimeEast.Now);
         }
 
         public bool Exist(Guid userId, DateTime date)

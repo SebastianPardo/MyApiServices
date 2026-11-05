@@ -26,6 +26,8 @@ namespace FamnancesServices.Controllers
         IHomeManager _homeManager;
         IFixedSavingManager _fixedSavingsManager;
 
+        IFinancialAccountManager _financialAccountManager;
+
 
         public AccountingController(
             ITotalsByPeriodManager totalsByPeriodManager,
@@ -38,7 +40,8 @@ namespace FamnancesServices.Controllers
             IFixedExpenseManager fixedExpenseManager,
             IExpensesBudgetByPeriodManager expensesBudgetByPeriodManager,
             IHomeManager homeManager,
-            IFixedSavingManager fixedSavingsManager
+            IFixedSavingManager fixedSavingsManager,
+            IFinancialAccountManager financialAccountManager
             )
         {
             _totalsByPeriodManager = totalsByPeriodManager;
@@ -52,6 +55,7 @@ namespace FamnancesServices.Controllers
             _expensesBudgetByPeriodManager = expensesBudgetByPeriodManager;
             _homeManager = homeManager;
             _fixedSavingsManager = fixedSavingsManager;
+            _financialAccountManager = financialAccountManager;
         }
         
         [HttpGet("PeriodSummary/{date}")]
@@ -59,14 +63,15 @@ namespace FamnancesServices.Controllers
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
-            User user = _userManager.GetById(userId);           
+            User user = _userManager.GetById(userId);
+            user.FinancialAccounts = _financialAccountManager.GetByUserId(userId).ToList();
 
-            PeriodDates? PeriodDates = date == null? 
+            PeriodDates? periodDates = date == null? 
                 _totalsByPeriodManager.GetByCurrentDay(userId) : _totalsByPeriodManager.GetByDate(userId, date.Value);
-            
-            if (PeriodDates != null)
+
+            if (periodDates != null)
             {
-                decimal balance = user.BudgetByPeriod - PeriodDates.FinancialAccountsByPeriodDates.Where(e=>e.FinancialAccount.FinancialAccountType.Code == "CA").Sum(e => e.TotalWithdrawals);
+                decimal balance = user.BudgetByPeriod - periodDates.FinancialAccountsByPeriodDates.Where(e=>e.FinancialAccount.FinancialAccountType.Code == "CA").Sum(e => e.TotalWithdrawals);
 
                 var budgetsByUser = _expensesBudgetByPeriodManager.ExpensesBudgetsSummary(userId, user.HomeId, date?? DateTimeEast.Now).ToLookup(b => b.UserId);
                 var pocketsByUser = _savingPocketManager.Summary(userId, user.HomeId, date ?? DateTimeEast.Now).ToLookup(p => p.UserId);
@@ -91,12 +96,12 @@ namespace FamnancesServices.Controllers
                                 
                 SummaryModel summaryModel = new SummaryModel
                 {
-                    PeriodBudget = PeriodDates.User.BudgetByPeriod,
-                    PeriodSpent = PeriodDates.FinancialAccountsByPeriodDates.Where(e => e.FinancialAccount.FinancialAccountType.Code == "CA").Sum(e => e.TotalWithdrawals),
+                    PeriodBudget = periodDates.User.BudgetByPeriod,
+                    PeriodSpent = periodDates.FinancialAccountsByPeriodDates.Where(e => e.FinancialAccount.FinancialAccountType.Code == "CA").Sum(e => e.TotalWithdrawals),
                     HomeSavings = user.HomeId == null ? 0 : _savingRecordManager.GetHomeSavings(user.HomeId.Value),
-                    Chequing = PeriodDates.User.FinancialAccounts.Where(e => e.FinancialAccountType.Code == "CA").Sum(e => e.Amount),
-                    Savings = PeriodDates.User.FinancialAccounts.Where(e => e.FinancialAccountType.Code == "HISA").Sum(e => e.Amount),
-                    PeriodSavingsSpent = PeriodDates.FinancialAccountsByPeriodDates.Where(e => e.FinancialAccount.FinancialAccountType.Code == "HISA").Sum(e => e.TotalWithdrawals),
+                    Chequing = periodDates.User.FinancialAccounts.Where(e => e.FinancialAccountType.Code == "CA").Sum(e => e.Amount),
+                    Savings = periodDates.User.FinancialAccounts.Where(e => e.FinancialAccountType.Code == "HISA").Sum(e => e.Amount),
+                    PeriodSavingsSpent = periodDates.FinancialAccountsByPeriodDates.Where(e => e.FinancialAccount.FinancialAccountType.Code == "HISA").Sum(e => e.TotalWithdrawals),
                     Roommates = roommates,
                 };               
                 return Ok(summaryModel);
@@ -120,8 +125,8 @@ namespace FamnancesServices.Controllers
                                     && (DateTimeEast.Now >= PeriodDates.PeriodDateEnd.AddDays(-3) && DateTimeEast.Now <= PeriodDates.PeriodDateEnd),
                     PeriodFrom = PeriodDates.PeriodDateStart,
                     PeriodTo = PeriodDates.PeriodDateEnd,
-                    Chequing = user.FinancialAccounts.Where(e => e.FinancialAccountType.Code == "CA").Sum(e => e.Amount),
-                    Savings = user.FinancialAccounts.Where(e => e.FinancialAccountType.Code == "HISA").Sum(e => e.Amount),
+                    Chequing = _financialAccountManager.GetByUserId(userId).Where(e => e.FinancialAccountType.Code == "CA").Sum(e => e.Amount),
+                    Savings = _financialAccountManager.GetByUserId(userId).Where(e => e.FinancialAccountType.Code == "HISA").Sum(e => e.Amount),
                 };
                 return Ok(summaryModel);
             }
