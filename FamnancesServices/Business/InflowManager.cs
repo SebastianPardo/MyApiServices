@@ -16,7 +16,7 @@ namespace FamnancesServices.Business
         public decimal GetTotalByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
             endDate = endDate.Hour == 0 ? endDate.AddHours(23).AddMinutes(59).AddSeconds(59) : endDate;
-            return _context.Inflow.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.UserId == userId).Sum(e => e.Value);
+            return _context.Inflow.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.FinancialAccount.UserId == userId).Sum(e => e.Value);
         }
 
         public Inflow GetById(Guid id)
@@ -27,7 +27,7 @@ namespace FamnancesServices.Business
         public List<Inflow> GetAllByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
             endDate = endDate.Hour == 0 ? endDate.AddHours(23).AddMinutes(59).AddSeconds(59) : endDate;
-            return _context.Inflow.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.UserId == userId).OrderByDescending(e => e.TransactionDate).ToList();
+            return _context.Inflow.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.FinancialAccount.UserId == userId).OrderByDescending(e => e.TransactionDate).ToList();
         }
 
         public List<Inflow?> GetByDiscountId(Guid id) => _context.InflowByDiscount.Where(e => e.IncomeDiscountId == id).Select(e => e.Inflow).ToList();

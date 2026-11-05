@@ -31,33 +31,33 @@ namespace FamnancesServices.Business
         {
             return context.ExpensesBudget
                 .Include(e => e.BudgetType)
-                .Include(e => e.Outflow)
-                .Include(e => e.User)
-                .Where(e => e.User.HomeId == homeId && e.BudgetType.Code == "PER").ToList();
+                .Include(e => e.Outflows)
+                .Include(e => e.FinancialAccount.User)
+                .Where(e => e.FinancialAccount.User.HomeId == homeId && e.BudgetType.Code == "PER").ToList();
         }
 
         public List<ExpensesBudget> GetAllByUserIdToEdit(Guid userId)
         {
             return context.ExpensesBudget
                 .Include(e => e.BudgetType)
-                .Include(e => e.Outflow)
-                .Include(e => e.User)
-                .Where(e => e.UserId == userId && e.BudgetType.Code == "PER").ToList();
+                .Include(e => e.Outflows)
+                .Include(e => e.FinancialAccount.User)
+                .Where(e => e.FinancialAccount.User.Id == userId && e.BudgetType.Code == "PER").ToList();
         }
 
         public List<ExpensesBudget> GetAllByUserId(Guid userId)
         {
-            return context.ExpensesBudget.Where(e => e.UserId == userId).ToList();
+            return context.ExpensesBudget.Where(e => e.FinancialAccount.User.Id == userId).ToList();
         }
 
         public List<ExpensesBudget> GetByType(string typeCode, Guid userId)
         {
-            return context.ExpensesBudget.Where(e => e.BudgetType.Code == typeCode && e.UserId == userId).ToList();
+            return context.ExpensesBudget.Where(e => e.BudgetType.Code == typeCode && e.FinancialAccount.User.Id == userId).ToList();
         }
 
         public ExpensesBudget GetById(Guid id)
         {
-            return context.ExpensesBudget.Include(e => e.Outflow).FirstOrDefault(x => x.Id == id);
+            return context.ExpensesBudget.Include(e => e.Outflows).FirstOrDefault(x => x.Id == id);
         }
 
         public bool Update(ExpensesBudget expensesBudget)
@@ -68,7 +68,7 @@ namespace FamnancesServices.Business
 
         public ExpensesBudget? GetCompleteByIdDates(Guid id, DateTime from, DateTime to)
         {
-            return context.ExpensesBudget.Include(e => e.Outflow.Where(e => e.TransactionDate >= from && e.TransactionDate <= to).OrderBy(e => e.TransactionDate))
+            return context.ExpensesBudget.Include(e => e.Outflows.Where(e => e.TransactionDate >= from && e.TransactionDate <= to).OrderBy(e => e.TransactionDate))
                 .FirstOrDefault(x => x.Id == id);
         }
     }

@@ -25,12 +25,12 @@ namespace FamnancesServices.Business
 
         public IEnumerable<SavingsPocket> GetAllByUserId(Guid userId)
         {
-            return context.SavingsPocket.Include(e => e.SavingsRecords).Where(e => e.UserId == userId);
+            return context.SavingsPocket.Include(e => e.SavingsRecords).Where(e => e.FinancialAccount.UserId == userId);
         }
 
         public IEnumerable<SavingsPocket> GetAllByHome(Guid homeId)
         {
-            return context.SavingsPocket.Include(e => e.SavingsRecords).Where(e => e.User.HomeId == homeId);
+            return context.SavingsPocket.Include(e => e.SavingsRecords).Where(e => e.FinancialAccount.User.HomeId == homeId);
         }
 
         public SavingsPocket GetById(Guid id)
@@ -53,9 +53,9 @@ namespace FamnancesServices.Business
 
         public List<SummaryPocketModel> Summary(Guid userId, Guid? householdId, DateTime dateTime)
         {
-            var totalByPeriod = context.TotalsByPeriod.Single(e => dateTime >= e.PeriodDateStart && dateTime <= e.PeriodDateEnd && e.UserId == userId);
+            var totalByPeriod = context.PeriodsDates.Single(e => dateTime >= e.PeriodDateStart && dateTime <= e.PeriodDateEnd && e.UserId == userId);
             return context.SavingsPocket
-                .Where(e => (e.UserId == userId || (e.ShareOnHousehold && e.User.HomeId == householdId)) && e.IsActive == true)
+                .Where(e => (e.FinancialAccount.UserId == userId || (e.ShareOnHousehold && e.FinancialAccount.User.HomeId == householdId)) && e.IsActive == true)
                         .Select(e => new SummaryPocketModel
                         {
                             Id = e.Id,
@@ -63,8 +63,8 @@ namespace FamnancesServices.Business
                             Value = e.Total,
                             Spent = e.SavingsRecords.Where(ee => ee.IsExpense && ee.TransactionDate >= totalByPeriod.PeriodDateStart && ee.TransactionDate <= totalByPeriod.PeriodDateEnd).Sum(e => e.Value),
                             Goal = e.ChallengeValue.Value,
-                            UserId = e.UserId,
-                            UserName = e.User.FirstName
+                            UserId = e.FinancialAccount.UserId,
+                            UserName = e.FinancialAccount.User.FirstName
                         }).ToList();
         }
 

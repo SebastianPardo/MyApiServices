@@ -14,32 +14,32 @@ namespace FamnancesServices.Business
             _context = context;
         }
 
-        public TotalsByPeriod Save(TotalsByPeriod totalsByPeriod)
+        public PeriodDates Save(PeriodDates PeriodDates)
         {
-            totalsByPeriod = _context.TotalsByPeriod.Add(totalsByPeriod).Entity;
+            PeriodDates = _context.PeriodsDates.Add(PeriodDates).Entity;
             _context.SaveChanges();
-            return totalsByPeriod;
+            return PeriodDates;
 
         }
 
-        public TotalsByPeriod? GetByDate(Guid userId, DateTime date)
+        public PeriodDates? GetByDate(Guid userId, DateTime date)
         {
-            return _context.TotalsByPeriod.Include(e => e.User).SingleOrDefault(e => e.UserId == userId && e.PeriodDateStart <= date && e.PeriodDateEnd >= date);
+            return _context.PeriodsDates.Include(e => e.User).SingleOrDefault(e => e.UserId == userId && e.PeriodDateStart <= date && e.PeriodDateEnd >= date);
         }
 
-        public TotalsByPeriod? GetMostRecent(Guid userId)
+        public PeriodDates? GetMostRecent(Guid userId)
         {
-            return _context.TotalsByPeriod.OrderByDescending(e => e.PeriodDateStart).FirstOrDefault(e => e.UserId == userId);
+            return _context.PeriodsDates.OrderByDescending(e => e.PeriodDateStart).FirstOrDefault(e => e.UserId == userId);
         }
 
-        public TotalsByPeriod? GetByCurrentDay(Guid userId)
+        public PeriodDates? GetByCurrentDay(Guid userId)
         {
-            return _context.TotalsByPeriod.Include(e => e.User).SingleOrDefault(e=>e.UserId == userId && e.PeriodDateStart < DateTimeEast.Now && e.PeriodDateEnd > DateTimeEast.Now);
+            return _context.PeriodsDates.Include(e => e.User).SingleOrDefault(e=>e.UserId == userId && e.PeriodDateStart < DateTimeEast.Now && e.PeriodDateEnd > DateTimeEast.Now);
         }
 
         public bool Exist(Guid userId, DateTime date)
         {
-            return _context.TotalsByPeriod.Any(e => e.UserId == userId && e.PeriodDateStart <= date && e.PeriodDateEnd >= date);
+            return _context.PeriodsDates.Any(e => e.UserId == userId && e.PeriodDateStart <= date && e.PeriodDateEnd >= date);
         }
     }
 }

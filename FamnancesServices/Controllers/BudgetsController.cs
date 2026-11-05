@@ -66,14 +66,14 @@ namespace FamnancesServices.Controllers
             var userId = Guid.Parse(accountId.ToString());
             User user = _userManager.GetById(userId);
 
-            var totalsByPeriod = _totalsByPeriodManager.GetMostRecent(userId);
-            var summary = _expensesBudgetByPeriodManager.ExpensesBudgetsSummary(userId, user.HomeId, totalsByPeriod.PeriodDateStart.AddDays(1));
+            var PeriodDates = _totalsByPeriodManager.GetMostRecent(userId);
+            var summary = _expensesBudgetByPeriodManager.ExpensesBudgetsSummary(userId, user.HomeId, PeriodDates.PeriodDateStart.AddDays(1));
 
             return Ok(summary.Where(e => e.UserId == userId));
         }
 
         [HttpGet("GetBalanceByIdDate/{id}/{date}")]
-        public async Task<ActionResult<ExpenseBudgetByPeriod>> GetBalanceByIdDate(Guid id, DateTime? date)
+        public async Task<ActionResult<ExpenseBudgetByPeriodDates>> GetBalanceByIdDate(Guid id, DateTime? date)
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
@@ -110,7 +110,7 @@ namespace FamnancesServices.Controllers
             {
                 HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
                 var userId = Guid.Parse(accountId.ToString());
-                budget.UserId = userId;
+                budget.FinancialAccount.UserId = userId;
                 _expensesBudgetManager.Update(budget);
             }
             catch (DbUpdateConcurrencyException)
@@ -127,7 +127,7 @@ namespace FamnancesServices.Controllers
         public async Task<ActionResult<ExpensesBudget>> Create(ExpensesBudget budget)
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-            budget.UserId = Guid.Parse(accountId.ToString());
+            budget.FinancialAccount.UserId = Guid.Parse(accountId.ToString());
             _expensesBudgetManager.Add(budget);
             return CreatedAtAction("GetBudget", new { id = budget.Id }, budget);
         }
@@ -142,7 +142,7 @@ namespace FamnancesServices.Controllers
                 return NotFound();
             }
 
-            if(budget.Outflow != null && budget.Outflow.Count() > 0)
+            if(budget.Outflows != null && budget.Outflows.Count() > 0)
             {
                 budget.Active = false;
                 _expensesBudgetManager.Update(budget);

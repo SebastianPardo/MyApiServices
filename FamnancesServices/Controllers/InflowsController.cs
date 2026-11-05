@@ -115,7 +115,7 @@ namespace FamnancesServices.Controllers
                                 Value = discountValue,
                                 DateTimeStamp = DateTimeEast.Now,
                                 Description = $"{discount.Description} - Discount",
-                                ExpenseBudgetId = _expensesBudgetManager.GetByType("DIS", entity.UserId).First().Id,
+                                ExpenseBudgetId = _expensesBudgetManager.GetByType("DIS", entity.FinancialAccount.UserId).First().Id,
                                 TransactionDate = entity.TransactionDate,
                             };
                             _outflowManager.Add(outflow);
@@ -141,7 +141,7 @@ namespace FamnancesServices.Controllers
 
             Inflow entity = inflow.Income;
             entity.InflowByDiscount = new List<InflowByDiscount>();
-            entity.UserId = Guid.Parse(accountId.ToString());
+            entity.FinancialAccount.UserId = Guid.Parse(accountId.ToString());
 
             if (inflow.SelectedIncomeDiscountIds != null && inflow.SelectedIncomeDiscountIds.Count > 0)
             {
@@ -163,7 +163,7 @@ namespace FamnancesServices.Controllers
                             Value = discountValue,
                             DateTimeStamp = DateTimeEast.Now,
                             Description = $"{discount.Description} - Discount",
-                            ExpenseBudgetId = _expensesBudgetManager.GetByType("DIS", entity.UserId).First().Id,
+                            ExpenseBudgetId = _expensesBudgetManager.GetByType("DIS", entity.FinancialAccount.UserId).First().Id,
                             TransactionDate = entity.TransactionDate,
                         };
                         _outflowManager.Add(outflow);

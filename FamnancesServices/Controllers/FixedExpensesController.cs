@@ -45,11 +45,11 @@ namespace FamnancesServices.Controllers
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
             var userId = Guid.Parse(accountId.ToString());
             var expenses = _fixedExpenseManager.GetAllByUserId(userId);
-            var totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(userId);
+            var PeriodDates = _totalsByPeriodManager.GetByCurrentDay(userId);
 
             foreach (var expense in expenses)
             {
-                expense.FixedExpensesPaymentsRecord = expense.FixedExpensesPaymentsRecord.Where(e => e.PaymentDate >= totalsByPeriod.PeriodDateStart && e.PaymentDate <= totalsByPeriod.PeriodDateEnd).ToList();
+                expense.FixedExpensesPaymentsRecord = expense.FixedExpensesPaymentsRecord.Where(e => e.PaymentDate >= PeriodDates.PeriodDateStart && e.PaymentDate <= PeriodDates.PeriodDateEnd).ToList();
             }
 
             return Ok(expenses);

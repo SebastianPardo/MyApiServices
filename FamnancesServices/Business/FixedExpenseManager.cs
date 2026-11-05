@@ -51,7 +51,7 @@ namespace FamnancesServices.Business
 
         public List<SummaryFixedExpensesModel> Summary(Guid userId, Guid? householdId, DateTime dateTime)
         {
-            var totalByPeriod = context.TotalsByPeriod.Single(e => dateTime >= e.PeriodDateStart && dateTime <= e.PeriodDateEnd && e.UserId == userId);
+            var totalByPeriod = context.PeriodsDates.Single(e => dateTime >= e.PeriodDateStart && dateTime <= e.PeriodDateEnd && e.UserId == userId);
             return context.FixedExpense.Where(e => (e.UserId == userId || (e.ShareOnHousehold && e.User.HomeId == householdId)) && e.Active == true)
                         .Select(e => new SummaryFixedExpensesModel
                         {

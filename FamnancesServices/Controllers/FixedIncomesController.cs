@@ -121,7 +121,7 @@ namespace FamnancesServices.Controllers
                         Description = income.Description,
                         TransactionDate = DateTimeEast.Now,
                         Value = income.Value,
-                        UserId = userId,
+                        //UserId = userId,
                         InflowByDiscount = new List<InflowByDiscount>()
                     };
 
@@ -146,7 +146,7 @@ namespace FamnancesServices.Controllers
                                     Value = discountValue,
                                     DateTimeStamp = DateTimeEast.Now,
                                     Description = $"{discount.Description} - Discount",
-                                    ExpenseBudgetId = _expensesBudgetManager.GetByType("DIS", inflow.UserId).First().Id,
+                                    ExpenseBudgetId = _expensesBudgetManager.GetByType("DIS", inflow.FinancialAccount.UserId).First().Id,
                                     TransactionDate = inflow.TransactionDate,
                                 };
                                 _outflowManager.Add(outflow);

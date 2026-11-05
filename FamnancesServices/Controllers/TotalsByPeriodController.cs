@@ -19,28 +19,28 @@ namespace FamnancesServices.Controllers
         }
 
         [HttpGet("GetLastPeriod")]
-        public async Task<ActionResult<TotalsByPeriod>> GetLastPeriod()
+        public async Task<ActionResult<PeriodDates>> GetLastPeriod()
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-            TotalsByPeriod totalsByPeriod = _totalsByPeriodManager.GetMostRecent(Guid.Parse(accountId.ToString()));
-            return Ok(totalsByPeriod);
+            PeriodDates PeriodDates = _totalsByPeriodManager.GetMostRecent(Guid.Parse(accountId.ToString()));
+            return Ok(PeriodDates);
         }
 
         [HttpGet("GetCurrentPeriod")]
-        public async Task<ActionResult<TotalsByPeriod?>> GetCurrentPeriod()
+        public async Task<ActionResult<PeriodDates?>> GetCurrentPeriod()
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-            TotalsByPeriod? totalsByPeriod = _totalsByPeriodManager.GetByCurrentDay(Guid.Parse(accountId.ToString()));
-            return Ok(totalsByPeriod);
+            PeriodDates? PeriodDates = _totalsByPeriodManager.GetByCurrentDay(Guid.Parse(accountId.ToString()));
+            return Ok(PeriodDates);
 
         }
 
         [HttpGet("GetByDate/{date}")]
-        public async Task<ActionResult<TotalsByPeriod?>> GetByDate(DateTime date)
+        public async Task<ActionResult<PeriodDates?>> GetByDate(DateTime date)
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-            TotalsByPeriod? totalsByPeriod = _totalsByPeriodManager.GetByDate(Guid.Parse(accountId.ToString()), date);
-            return Ok(totalsByPeriod);
+            PeriodDates? PeriodDates = _totalsByPeriodManager.GetByDate(Guid.Parse(accountId.ToString()), date);
+            return Ok(PeriodDates);
 
         }
     }

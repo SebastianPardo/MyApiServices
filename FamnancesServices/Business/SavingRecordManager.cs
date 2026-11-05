@@ -17,8 +17,8 @@ namespace FamnancesServices.Business
 
         public decimal GetHomeSavings(Guid homeId)
         {
-            var savingsPockets = _context.SavingsPocket.Include(e => e.User)
-                .Where(e => e.ShareOnHousehold == true && e.User.HomeId == homeId);
+            var savingsPockets = _context.SavingsPocket.Include(e => e.FinancialAccount.User)
+                .Where(e => e.ShareOnHousehold == true && e.FinancialAccount.User.HomeId == homeId);
             return savingsPockets.Sum(e => e.Total);
         }
 
@@ -38,13 +38,13 @@ namespace FamnancesServices.Business
 
         public IEnumerable<SavingRecord> GetAll(Guid userId)
         {
-            return _context.SavingRecord.Include(e => e.SavingsPocket).Where(e => e.SavingsPocket.UserId == userId).OrderByDescending(e => e.TransactionDate);
+            return _context.SavingRecord.Include(e => e.SavingsPocket).Where(e => e.SavingsPocket.FinancialAccount.UserId == userId).OrderByDescending(e => e.TransactionDate);
         }
 
         public IEnumerable<SavingRecord> GetAllByPeriod(DateTime from, DateTime to, Guid userId)
         {
             to = to.Hour == 0 ? to.AddHours(23).AddMinutes(59).AddSeconds(59) : to;
-            return _context.SavingRecord.Include(e=>e.SavingsPocket).Where(e => e.TransactionDate >= from && e.TransactionDate <= to && e.SavingsPocket.UserId == userId).OrderByDescending(e => e.TransactionDate);
+            return _context.SavingRecord.Include(e=>e.SavingsPocket).Where(e => e.TransactionDate >= from && e.TransactionDate <= to && e.SavingsPocket.FinancialAccount.UserId == userId).OrderByDescending(e => e.TransactionDate);
         }
 
         public SavingRecord GetById(Guid id)
@@ -55,13 +55,13 @@ namespace FamnancesServices.Business
         public decimal GetSavingsExpensesByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
             endDate = endDate.Hour == 0 ? endDate.AddHours(23).AddMinutes(59).AddSeconds(59) : endDate;
-            return _context.SavingRecord.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.IsExpense == true && e.SavingsPocket.UserId == userId).Sum(e => e.Value);
+            return _context.SavingRecord.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.IsExpense == true && e.SavingsPocket.FinancialAccount.UserId == userId).Sum(e => e.Value);
         }
 
         public decimal GetSavingsIncomeByPeriod(DateTime startDate, DateTime endDate, Guid userId)
         {
             endDate = endDate.Hour == 0 ? endDate.AddHours(23).AddMinutes(59).AddSeconds(59) : endDate;
-            return _context.SavingRecord.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.IsExpense == false && e.SavingsPocket.UserId == userId).Sum(e => e.Value);
+            return _context.SavingRecord.Where(e => e.TransactionDate >= startDate && e.TransactionDate <= endDate && e.IsExpense == false && e.SavingsPocket.FinancialAccount.UserId == userId).Sum(e => e.Value);
         }
 
         public bool Update(SavingRecord savingsRecord)
@@ -83,7 +83,7 @@ namespace FamnancesServices.Business
             foreach (var movement in remainderBalances) {
                 if (movement.IsSavingPocket)
                 {
-                    var expensesBudgetPeriod = _context.ExpenseBudgetByPeriod.Include(e=>e.TotalsByPeriod).Single(e=>e.Id == movement.BudgetBalanceId);
+                    var expensesBudgetPeriod = _context.ExpenseBudgetByPeriodDates.Include(e=>e.PeriodsDates).Single(e=>e.Id == movement.BudgetBalanceId);
                     var expenseBudget = _context.ExpensesBudget.Single(e => e.Id == expensesBudgetPeriod.ExpensesBudgetId);
                     var savingPocket = _context.SavingsPocket.Single(e => e.Id == movement.MoveToId);
 
@@ -91,8 +91,8 @@ namespace FamnancesServices.Business
                     {
                         Description = $"Moving reminders from {expenseBudget.Name} To {savingPocket.Name}",
                         ExpenseBudgetId = expensesBudgetPeriod.ExpensesBudgetId,
-                        Value = expensesBudgetPeriod.Budget - expensesBudgetPeriod.Expense,
-                        TransactionDate = expensesBudgetPeriod.TotalsByPeriod.PeriodDateEnd.AddDays(-1),
+                        Value = expensesBudgetPeriod.TotalDeposits - expensesBudgetPeriod.TotalWithdrawals,
+                        TransactionDate = expensesBudgetPeriod.PeriodsDates.PeriodDateEnd.AddDays(-1),
                         DateTimeStamp = DateTimeEast.Now
                     };
                     _context.Outflow.Add(outflow);
@@ -104,7 +104,7 @@ namespace FamnancesServices.Business
                         SavingsPocketId = savingPocket.Id,
                         IsExpense = false,
                         Value = outflow.Value,
-                        TransactionDate = expensesBudgetPeriod.TotalsByPeriod.PeriodDateEnd.AddDays(-1)
+                        TransactionDate = expensesBudgetPeriod.PeriodsDates.PeriodDateEnd.AddDays(-1)
                     };
                     _context.SavingRecord.Add(savingTransaction);
                     _context.SaveChanges();
