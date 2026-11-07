@@ -169,7 +169,7 @@ namespace FamnancesServices.Controllers
                             Value = discountValue,
                             DateTimeStamp = DateTimeEast.Now,
                             Description = $"{discount.Description} - Discount",
-                            ExpenseBudgetId = _expensesBudgetManager.GetByType("DIS", entity.FinancialAccount.UserId).First().Id,
+                            ExpenseBudgetId = _expensesBudgetManager.GetByType("DIS", userId).First().Id,
                             TransactionDate = entity.TransactionDate,
                         };
                         _outflowManager.Add(outflow);
