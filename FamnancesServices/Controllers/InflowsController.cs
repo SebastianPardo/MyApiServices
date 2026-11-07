@@ -20,18 +20,22 @@ namespace FamnancesServices.Controllers
         IOutflowManager _outflowManager;
         IInflowByDiscountManager _inflowByDiscountManager;
 
+        IFinancialAccountManager _financialAccountManager;
+
         public InflowsController(
             IInflowManager inflowManager,
             IIncomeDiscountManager incomeDiscountManager,
             IExpensesBudgetManager expensesBudgetManager,
             IOutflowManager outflowManager,
-            IInflowByDiscountManager inflowByDiscountManager)
+            IInflowByDiscountManager inflowByDiscountManager,
+            IFinancialAccountManager financialAccountManager)
         {
             _inflowManager = inflowManager;
             _incomeDiscountManager = incomeDiscountManager;
             _expensesBudgetManager = expensesBudgetManager;
             _outflowManager = outflowManager;
             _inflowByDiscountManager = inflowByDiscountManager;
+            _financialAccountManager = financialAccountManager;
         }
 
         // GET: api/Users
@@ -141,7 +145,9 @@ namespace FamnancesServices.Controllers
 
             Inflow entity = inflow.Income;
             entity.InflowByDiscount = new List<InflowByDiscount>();
-            entity.FinancialAccount.UserId = Guid.Parse(accountId.ToString());
+            
+            var userId = Guid.Parse(accountId.ToString());
+            entity.FinancialAccountId = _financialAccountManager.GetByType(userId, "CA").First().Id;
 
             if (inflow.SelectedIncomeDiscountIds != null && inflow.SelectedIncomeDiscountIds.Count > 0)
             {
