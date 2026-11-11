@@ -90,6 +90,8 @@ builder.Services.AddScoped<IHomeManager, HomeManager>();
 builder.Services.AddScoped<IHomeInvitationManager, HomeInvitationManager>();
 builder.Services.AddScoped<IFinancialAccountByPeriodDatesManager, FinancialAccountByPeriodDatesManager>();
 builder.Services.AddScoped<IFinancialAccountManager, FinancialAccountManager>();
+builder.Services.AddScoped<IFinancialAccountTypeManager, FinancialAccountTypeManager>();
+builder.Services.AddScoped<IFinancialInstitutionManager, FinancialInstitutionManager>();
 
 var app = builder.Build();
 

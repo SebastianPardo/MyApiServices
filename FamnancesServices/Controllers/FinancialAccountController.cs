@@ -3,7 +3,7 @@ using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FamnancesServices
+namespace FamnancesServices.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
