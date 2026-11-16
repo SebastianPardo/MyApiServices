@@ -147,7 +147,7 @@ namespace FamnancesServices.Controllers
             entity.InflowByDiscount = new List<InflowByDiscount>();
             
             var userId = Guid.Parse(accountId.ToString());
-            entity.FinancialAccountId = _financialAccountManager.GetByType(userId, "CA").First().Id;
+            entity.FinancialAccountId = _financialAccountManager.GetByFinancialAccountType(userId, "CA").First().Id;
 
             if (inflow.SelectedIncomeDiscountIds != null && inflow.SelectedIncomeDiscountIds.Count > 0)
             {

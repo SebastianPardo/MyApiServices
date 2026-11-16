@@ -47,7 +47,6 @@ namespace FamnancesServices.Controllers
         public async Task<ActionResult<SavingsPocket>> Create(SavingsPocket pocket)
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-            pocket.FinancialAccount.UserId = Guid.Parse(accountId.ToString());
             _savingsPocketManager.Add(pocket);
             return CreatedAtAction("GetPocket", new { id = pocket.Id }, pocket);
         }

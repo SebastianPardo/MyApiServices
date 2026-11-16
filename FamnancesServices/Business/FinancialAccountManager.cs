@@ -15,8 +15,15 @@ namespace FamnancesServices.Business
 
         public IEnumerable<FinancialAccount> GetByUserId(Guid userId) => context.FinancialAccount.Include(f => f.FinancialAccountType).Where(e => e.UserId == userId);
 
-        public IEnumerable<FinancialAccount> GetAll(Guid userId) => context.FinancialAccount.Include(f => f.FinancialAccountType).Where(e => e.UserId == userId);
+        public FinancialAccount? GetById(Guid userId, Guid id) => context.FinancialAccount.Include(f => f.FinancialAccountType).SingleOrDefault(e => e.UserId == userId && e.Id == id);
+        public IEnumerable<FinancialAccount> GetByFinancialAccountType(Guid userId, string financialAccountType) 
+            => context.FinancialAccount.Include(f => f.FinancialAccountType).Where(e => e.UserId == userId && e.FinancialAccountType.Code == financialAccountType);
 
-        public IEnumerable<FinancialAccount> GetByType(Guid userId, string code) => context.FinancialAccount.Include(f => f.FinancialAccountType).Where(e => e.UserId == userId && e.FinancialAccountType.Code == code);
+        public FinancialAccount Add(FinancialAccount financialAccount)
+        {
+            financialAccount = context.FinancialAccount.Add(financialAccount).Entity;
+            context.SaveChanges();
+            return financialAccount;
+        }
     }
 }

@@ -5,7 +5,8 @@ namespace FamnancesServices.Business.Interfaces
     public interface IFinancialAccountManager
     {
         IEnumerable<FinancialAccount> GetByUserId(Guid userId);
-        IEnumerable<FinancialAccount> GetAll(Guid userId);
-        IEnumerable<FinancialAccount> GetByType(Guid userId, string code);
+        IEnumerable<FinancialAccount> GetByFinancialAccountType(Guid userId, string financialAccountType);
+        FinancialAccount Add(FinancialAccount financialAccount);
+        FinancialAccount? GetById(Guid userId, Guid id);
     }
 }

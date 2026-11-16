@@ -127,7 +127,7 @@ namespace FamnancesServices.Controllers
         public async Task<ActionResult<ExpensesBudget>> Create(ExpensesBudget budget)
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-            budget.FinancialAccount.UserId = Guid.Parse(accountId.ToString());
+            //budget.FinancialAccount.UserId = Guid.Parse(accountId.ToString());
             _expensesBudgetManager.Add(budget);
             return CreatedAtAction("GetBudget", new { id = budget.Id }, budget);
         }
