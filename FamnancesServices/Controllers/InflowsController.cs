@@ -19,7 +19,6 @@ namespace FamnancesServices.Controllers
         IExpensesBudgetManager _expensesBudgetManager;
         IOutflowManager _outflowManager;
         IInflowByDiscountManager _inflowByDiscountManager;
-
         IFinancialAccountManager _financialAccountManager;
 
         public InflowsController(
@@ -119,7 +118,7 @@ namespace FamnancesServices.Controllers
                                 Value = discountValue,
                                 DateTimeStamp = DateTimeEast.Now,
                                 Description = $"{discount.Description} - Discount",
-                                ExpenseBudgetId = _expensesBudgetManager.GetByType("DIS", entity.FinancialAccount.UserId).First().Id,
+                                ExpenseBudgetId = _expensesBudgetManager.GetByTypeAndFinancialAccount("DIS", entity.FinancialAccountId.Value, entity.FinancialAccount.UserId).First().Id,
                                 TransactionDate = entity.TransactionDate,
                             };
                             _outflowManager.Add(outflow);
@@ -142,12 +141,10 @@ namespace FamnancesServices.Controllers
         public async Task<ActionResult<Inflow>> Create(IncomeTransactionModel inflow)
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
+            var userId = Guid.Parse(accountId.ToString());
 
             Inflow entity = inflow.Income;
-            entity.InflowByDiscount = new List<InflowByDiscount>();
-            
-            var userId = Guid.Parse(accountId.ToString());
-            entity.FinancialAccountId = _financialAccountManager.GetByFinancialAccountType(userId, "CA").First().Id;
+            entity.InflowByDiscount = new List<InflowByDiscount>();            
 
             if (inflow.SelectedIncomeDiscountIds != null && inflow.SelectedIncomeDiscountIds.Count > 0)
             {
@@ -169,7 +166,7 @@ namespace FamnancesServices.Controllers
                             Value = discountValue,
                             DateTimeStamp = DateTimeEast.Now,
                             Description = $"{discount.Description} - Discount",
-                            ExpenseBudgetId = _expensesBudgetManager.GetByType("DIS", userId).First().Id,
+                            ExpenseBudgetId = _expensesBudgetManager.GetByTypeAndFinancialAccount("DIS", entity.FinancialAccountId.Value, userId).First().Id,
                             TransactionDate = entity.TransactionDate,
                         };
                         _outflowManager.Add(outflow);

@@ -9,6 +9,7 @@ namespace FamnancesServices.Business.Interfaces
         List<ExpensesBudget> GetAllByHomeId(Guid homeId);
         ExpensesBudget GetById(Guid id);
         List<ExpensesBudget> GetByType(string typeCode, Guid userId);
+        List<ExpensesBudget> GetByTypeAndFinancialAccount(string typeCode, Guid financialAccountId, Guid userId);
         ExpensesBudget Add(ExpensesBudget expensesBudget);
         bool Update(ExpensesBudget expensesBudget);
         bool Delete(ExpensesBudget expensesBudget);

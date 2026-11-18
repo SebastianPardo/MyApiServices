@@ -17,6 +17,12 @@ namespace FamnancesServices.Controllers
             _budgetTypeManager = budgetTypeManager;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<BudgetTypes>> Get()
+        {
+            return Ok(_budgetTypeManager.GetAll());
+        }
+
         [HttpGet("GetByCode/{code}")]
         public async Task<ActionResult<BudgetTypes>> GetByCode(string code)
         {

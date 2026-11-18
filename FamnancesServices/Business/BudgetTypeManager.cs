@@ -12,6 +12,11 @@ namespace FamnancesServices.Business
             _context = context;
         }
 
+        public IEnumerable<ExpensesBudgetType> GetAll()
+        {
+            return _context.ExpensesBudgetType;
+        }
+
         public ExpensesBudgetType GetByCode(string code)
         {
             return _context.ExpensesBudgetType.First(x => x.Code == code);

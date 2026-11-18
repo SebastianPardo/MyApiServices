@@ -84,7 +84,7 @@ namespace FamnancesServices.Controllers
             try
             {
                 HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-                fixedExpense.UserId = Guid.Parse(accountId.ToString());
+                fixedExpense.FinancialAccount.UserId = Guid.Parse(accountId.ToString());
                 _fixedExpenseManager.Update(fixedExpense);
             }
             catch (DbUpdateConcurrencyException)
@@ -101,7 +101,6 @@ namespace FamnancesServices.Controllers
         public async Task<ActionResult<FixedExpense>> Create(FixedExpense fixedExpense)
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-            fixedExpense.UserId = Guid.Parse(accountId.ToString());
             _fixedExpenseManager.Add(fixedExpense);
             return CreatedAtAction("GetFixedExpense", new { id = fixedExpense.Id }, fixedExpense);
         }

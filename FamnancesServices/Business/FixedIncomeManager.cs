@@ -35,12 +35,12 @@ namespace FamnancesServices.Business
 
         public IEnumerable<FixedIncome> GetAllByUserId(Guid userId)
         {
-            return context.FixedIncome.Include(e => e.PayablePeriod).Where(e => e.UserId == userId);
+            return context.FixedIncome.Include(e => e.PayablePeriod).Where(e => e.FinancialAccount.UserId == userId);
         }
 
         public FixedIncome GetById(Guid userId, Guid id)
         {
-            return context.FixedIncome.Include(e => e.FixedIncomeByDiscount).FirstOrDefault(x => x.Id == id && x.UserId == userId);
+            return context.FixedIncome.Include(e => e.FixedIncomeByDiscount).FirstOrDefault(x => x.Id == id && x.FinancialAccount.UserId == userId);
         }
 
         public bool Update(FixedIncome fixedIncome)

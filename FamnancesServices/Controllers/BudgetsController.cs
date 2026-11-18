@@ -107,10 +107,7 @@ namespace FamnancesServices.Controllers
             }
 
             try
-            {
-                HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-                var userId = Guid.Parse(accountId.ToString());
-                budget.FinancialAccount.UserId = userId;
+            {               
                 _expensesBudgetManager.Update(budget);
             }
             catch (DbUpdateConcurrencyException)

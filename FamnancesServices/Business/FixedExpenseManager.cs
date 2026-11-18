@@ -24,23 +24,23 @@ namespace FamnancesServices.Business
 
         public IEnumerable<FixedExpense> GetAllByHome(Guid id)
         {
-            return context.FixedExpense.Where(e => e.User.HomeId == id);
+            return context.FixedExpense.Where(e => e.FinancialAccount.User.HomeId == id);
         }
 
         public IEnumerable<FixedExpense> GetAllByUserId(Guid userId)
         {
-            return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord).Include(e => e.Period).Where(fe => fe.UserId == userId);
+            return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord).Include(e => e.Period).Where(fe => fe.FinancialAccount.UserId == userId);
         }
 
         public FixedExpense? GetById(Guid userId, Guid id)
         {
-            return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord).FirstOrDefault(x => x.Id == id && x.UserId == userId);
+            return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord).FirstOrDefault(x => x.Id == id && x.FinancialAccount.UserId == userId);
         }
 
         public FixedExpense? GetCompleteByIdDates(Guid userId, Guid id, DateTime from, DateTime to)
         {
             return context.FixedExpense.Include(e => e.FixedExpensesPaymentsRecord.Where(e => e.PaymentDate >= from && e.PaymentDate <= to).OrderBy(e => e.PaymentDate))
-                .FirstOrDefault(x => x.Id == id && x.UserId == userId);
+                .FirstOrDefault(x => x.Id == id && x.FinancialAccount.UserId == userId);
         }
 
         public bool Update(FixedExpense fixedExpense)
@@ -52,15 +52,15 @@ namespace FamnancesServices.Business
         public List<SummaryFixedExpensesModel> Summary(Guid userId, Guid? householdId, DateTime dateTime)
         {
             var totalByPeriod = context.PeriodsDates.Single(e => dateTime >= e.PeriodDateStart && dateTime <= e.PeriodDateEnd && e.UserId == userId);
-            return context.FixedExpense.Where(e => (e.UserId == userId || (e.ShareOnHousehold && e.User.HomeId == householdId)) && e.Active == true)
+            return context.FixedExpense.Where(e => (e.FinancialAccount.UserId == userId || (e.ShareOnHousehold && e.FinancialAccount.User.HomeId == householdId)) && e.Active == true)
                         .Select(e => new SummaryFixedExpensesModel
                         {
                             Id = e.Id,
                             Name = e.Name,
                             Value = e.Value,
                             WasPaid = e.FixedExpensesPaymentsRecord.Any(e => e.PaymentDate >= totalByPeriod.PeriodDateStart && e.PaymentDate <= totalByPeriod.PeriodDateEnd),
-                            UserId = e.UserId,
-                            UserName = e.User.FirstName
+                            UserId = e.FinancialAccount.UserId,
+                            UserName = e.FinancialAccount.User.FirstName
                         }).ToList();
         }
 

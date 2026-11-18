@@ -55,6 +55,12 @@ namespace FamnancesServices.Business
             return context.ExpensesBudget.Where(e => e.BudgetType.Code == typeCode && e.FinancialAccount.User.Id == userId).ToList();
         }
 
+        public List<ExpensesBudget> GetByTypeAndFinancialAccount(string typeCode, Guid financialAccountId, Guid userId) 
+            => context.ExpensesBudget.Where(e => 
+            e.BudgetType.Code == typeCode 
+            && e.FinancialAccount.Id == financialAccountId 
+            && e.FinancialAccount.User.Id == userId).ToList();
+
         public ExpensesBudget GetById(Guid id)
         {
             return context.ExpensesBudget.Include(e => e.Outflows).FirstOrDefault(x => x.Id == id);

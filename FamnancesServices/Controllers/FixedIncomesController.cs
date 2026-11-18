@@ -22,6 +22,8 @@ namespace FamnancesServices.Controllers
         IOutflowManager _outflowManager;
         IFixedIncomeByDiscountManager _fixedIncomeByDiscountManager;
 
+        IFinancialAccountManager _financialAccountManager;
+
         public FixedIncomesController(
             IFixedIncomeManager fixedIncomeManager, 
             IInflowManager inflowManager,
@@ -29,7 +31,8 @@ namespace FamnancesServices.Controllers
             IIncomeDiscountManager incomeDiscountManager,
             IExpensesBudgetManager expensesBudgetManager,
             IOutflowManager outflowManager,
-            IFixedIncomeByDiscountManager fixedIncomeByDiscountManager)
+            IFixedIncomeByDiscountManager fixedIncomeByDiscountManager,
+            IFinancialAccountManager financialAccountManager)
         {
             _fixedIncomeManager = fixedIncomeManager;
             _inflowManager = inflowManager;
@@ -38,6 +41,7 @@ namespace FamnancesServices.Controllers
             _expensesBudgetManager = expensesBudgetManager;
             _outflowManager = outflowManager;
             _fixedIncomeByDiscountManager = fixedIncomeByDiscountManager;
+            _financialAccountManager = financialAccountManager;
         }
 
         [HttpGet]
@@ -62,7 +66,6 @@ namespace FamnancesServices.Controllers
         public async Task<IActionResult> Add(FixedIncome entity)
         {
             HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-            entity.UserId = Guid.Parse(accountId.ToString());
             entity = _fixedIncomeManager.Add(entity);
             return Ok(entity);
         }
@@ -93,7 +96,7 @@ namespace FamnancesServices.Controllers
             try
             {
                 HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-                fixedIncome.UserId = Guid.Parse(accountId.ToString());
+                fixedIncome.FinancialAccount.UserId = Guid.Parse(accountId.ToString());
                 _fixedIncomeByDiscountManager.DeleteByFixedIncomme(fixedIncome.Id);
                 _fixedIncomeManager.Update(fixedIncome);
             }
@@ -121,7 +124,7 @@ namespace FamnancesServices.Controllers
                         Description = income.Description,
                         TransactionDate = DateTimeEast.Now,
                         Value = income.Value,
-                        //UserId = userId,
+                        FinancialAccount = _financialAccountManager.GetById(income.FinancialAccount.UserId, income.FinancialAccountId),
                         InflowByDiscount = new List<InflowByDiscount>()
                     };
 
@@ -146,7 +149,7 @@ namespace FamnancesServices.Controllers
                                     Value = discountValue,
                                     DateTimeStamp = DateTimeEast.Now,
                                     Description = $"{discount.Description} - Discount",
-                                    ExpenseBudgetId = _expensesBudgetManager.GetByType("DIS", inflow.FinancialAccount.UserId).First().Id,
+                                    ExpenseBudgetId = _expensesBudgetManager.GetByTypeAndFinancialAccount("DIS", inflow.FinancialAccountId.Value, inflow.FinancialAccount.UserId).First().Id,
                                     TransactionDate = inflow.TransactionDate,
                                 };
                                 _outflowManager.Add(outflow);
