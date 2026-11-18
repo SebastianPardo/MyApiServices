@@ -9,5 +9,6 @@ namespace FamnancesServices.Business.Interfaces
         FixedIncome Add(FixedIncome fixedIncome);
         bool Update(FixedIncome fixedIncome);
         bool Delete(FixedIncome fixedIncome);
+        void SetLastAutomaticTransaction(Guid fixedIncomeId);
     }
 }

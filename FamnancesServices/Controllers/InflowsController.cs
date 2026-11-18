@@ -181,12 +181,17 @@ namespace FamnancesServices.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
+
             var inflow = _inflowManager.GetById(id);
             if (inflow == null)
             {
                 return NotFound();
             }
-
+            var oldDiscounts = _inflowByDiscountManager.GetDiscountsByInflow(id);
+            foreach (var oldDiscount in oldDiscounts)
+            {
+                _inflowByDiscountManager.Delete(oldDiscount);
+            }
             _inflowManager.Delete(inflow);
             return Ok();
         }

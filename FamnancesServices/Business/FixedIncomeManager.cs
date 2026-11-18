@@ -1,4 +1,5 @@
-﻿using Famnances.DataCore.Data;
+﻿using Famnances.Core.Utils.Helpers;
+using Famnances.DataCore.Data;
 using Famnances.DataCore.Entities;
 using FamnancesServices.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,13 @@ namespace FamnancesServices.Business
         public FixedIncome GetById(Guid userId, Guid id)
         {
             return context.FixedIncome.Include(e => e.FixedIncomeByDiscount).FirstOrDefault(x => x.Id == id && x.FinancialAccount.UserId == userId);
+        }
+
+        public void SetLastAutomaticTransaction (Guid fixedIncomeId)
+        {
+            var entity = context.FixedIncome.Single(e => e.Id == fixedIncomeId);
+            entity.LastAutomaticDateStamp = DateTimeEast.Now;
+            context.SaveChanges();
         }
 
         public bool Update(FixedIncome fixedIncome)

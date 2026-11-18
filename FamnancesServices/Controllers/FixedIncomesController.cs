@@ -95,8 +95,6 @@ namespace FamnancesServices.Controllers
 
             try
             {
-                HttpContext.Items.TryGetValue(Constants.ACCOUNT_ID, out var accountId);
-                fixedIncome.FinancialAccount.UserId = Guid.Parse(accountId.ToString());
                 _fixedIncomeByDiscountManager.DeleteByFixedIncomme(fixedIncome.Id);
                 _fixedIncomeManager.Update(fixedIncome);
             }
@@ -124,7 +122,7 @@ namespace FamnancesServices.Controllers
                         Description = income.Description,
                         TransactionDate = DateTimeEast.Now,
                         Value = income.Value,
-                        FinancialAccount = _financialAccountManager.GetById(income.FinancialAccount.UserId, income.FinancialAccountId),
+                        FinancialAccountId = income.FinancialAccountId,
                         InflowByDiscount = new List<InflowByDiscount>()
                     };
 
@@ -143,13 +141,14 @@ namespace FamnancesServices.Controllers
                             }
                             else
                             {
+
                                 Outflow outflow = new Outflow
                                 {
                                     Id = Guid.NewGuid(),
                                     Value = discountValue,
                                     DateTimeStamp = DateTimeEast.Now,
                                     Description = $"{discount.Description} - Discount",
-                                    ExpenseBudgetId = _expensesBudgetManager.GetByTypeAndFinancialAccount("DIS", inflow.FinancialAccountId.Value, inflow.FinancialAccount.UserId).First().Id,
+                                    ExpenseBudgetId = _expensesBudgetManager.GetByTypeAndFinancialAccount("DIS", inflow.FinancialAccountId.Value, userId).First().Id,
                                     TransactionDate = inflow.TransactionDate,
                                 };
                                 _outflowManager.Add(outflow);
@@ -157,8 +156,7 @@ namespace FamnancesServices.Controllers
                         }
                     }
                     _inflowManager.Add(inflow);
-                    income.LastAutomaticDateStamp = DateTimeEast.Now;
-                    _fixedIncomeManager.Update(income);
+                    _fixedIncomeManager.SetLastAutomaticTransaction(income.Id);
                 }
                 return Ok();
             }
